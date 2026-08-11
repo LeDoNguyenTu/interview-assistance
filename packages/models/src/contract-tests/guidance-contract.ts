@@ -41,12 +41,12 @@ export function runGuidanceProviderContract(
         },
       });
 
-      await expect(provider.generateGuidance(request)).rejects.toMatchObject({
-        name: 'ProviderError',
+      await expectSafeProviderError(() => provider.generateGuidance(request), {
         code: 'invalid_request',
         providerId: provider.id,
         retryable: false,
         operation: 'generateGuidance',
+        message: 'The request could not be processed.',
       });
     });
 
@@ -55,19 +55,91 @@ export function runGuidanceProviderContract(
       const controller = new AbortController();
       controller.abort();
 
-      await expect(
-        provider.generateGuidance(
-          guidanceRequest({ signal: controller.signal }),
-        ),
-      ).rejects.toMatchObject({
-        name: 'ProviderError',
-        code: 'cancelled',
+      await expectSafeProviderError(
+        () =>
+          provider.generateGuidance(
+            guidanceRequest({ signal: controller.signal }),
+          ),
+        {
+          code: 'cancelled',
+          providerId: provider.id,
+          retryable: false,
+          operation: 'generateGuidance',
+          message: 'The operation was cancelled.',
+        },
+      );
+    });
+
+    it('rejects transcript segments from another session', async () => {
+      const provider = createProvider();
+      const request = guidanceRequest({
+        recentTranscript: [
+          {
+            ...guidanceRequest().recentTranscript[0]!,
+            sessionId: 'another-session',
+          },
+        ],
+      });
+
+      await expectSafeProviderError(() => provider.generateGuidance(request), {
+        code: 'invalid_request',
         providerId: provider.id,
         retryable: false,
         operation: 'generateGuidance',
+        message: 'The request could not be processed.',
       });
     });
+
+    it('rejects invalid transcript sequence, time, and confidence values', async () => {
+      const provider = createProvider();
+      const baseSegment = guidanceRequest().recentTranscript[0]!;
+
+      for (const segment of [
+        { ...baseSegment, sequence: -1 },
+        { ...baseSegment, startedAtMs: 2_501, endedAtMs: 2_500 },
+        { ...baseSegment, confidence: 1.01 },
+      ]) {
+        await expectSafeProviderError(
+          () =>
+            provider.generateGuidance(
+              guidanceRequest({ recentTranscript: [segment] }),
+            ),
+          {
+            code: 'invalid_request',
+            providerId: provider.id,
+            retryable: false,
+            operation: 'generateGuidance',
+            message: 'The request could not be processed.',
+          },
+        );
+      }
+    });
   });
+}
+
+async function expectSafeProviderError(
+  action: () => Promise<unknown>,
+  expected: {
+    code: string;
+    providerId: string;
+    retryable: boolean;
+    operation: string;
+    message: string;
+  },
+): Promise<void> {
+  let thrown: unknown;
+
+  try {
+    await action();
+  } catch (error) {
+    thrown = error;
+  }
+
+  expect(thrown).toMatchObject({ name: 'ProviderError', ...expected });
+  expect(thrown).not.toHaveProperty('cause');
+  expect(thrown).not.toHaveProperty('payload');
+  expect(thrown).not.toHaveProperty('rawPayload');
+  expect(thrown).not.toHaveProperty('response');
 }
 
 function guidanceRequest(

@@ -46,3 +46,32 @@ Implemented `@candorlens/models` with provider-neutral transcription, question d
 
 - The fixture deliberately models only synthetic byte-count usage and transcript events. Real audio encoding, provider SDK error mapping, schema validation, retries, and live provider clients belong to later adapter work.
 - The shared contract intentionally tests provider-neutral guarantees only. Adapter-specific structured-output behavior and provider error cases remain for the Gemini and OpenAI task.
+
+## Review fix round 1
+
+### Red-green evidence
+
+1. Added focused tests before changing behavior for runtime entrypoint isolation, transcript invariants, detection input invariants, and cancellation recovery.
+2. Red command: `corepack pnpm --filter @candorlens/models test`.
+3. Red result: 6 failures across 13 tests. The runtime entrypoint exposed `runGuidanceProviderContract`; mixed and malformed transcript input resolved; and cancelling connect or finish left `connecting` or `finishing` state that rejected a subsequent permitted operation.
+4. Green command: `corepack pnpm --filter @candorlens/models test`.
+5. Green result: 2 test files and 13 tests passed.
+
+### Fixes
+
+- Moved the Vitest-based reusable suite behind the explicit `@candorlens/models/testing` export. The runtime `@candorlens/models` entrypoint no longer re-exports a module that imports Vitest.
+- Strengthened the shared guidance contract suite to assert exact safe invalid-request and cancellation messages, plus no `cause`, `payload`, `rawPayload`, or `response` fields.
+- Added public provider-neutral validation helpers for guidance requests, transcript segments, and question-detection input. They require request-session ownership for guidance segments; non-negative integer sequences; non-negative, ordered timestamps; and confidence values in the inclusive 0 to 1 range or null where allowed. Detection input must also contain one session and strictly increasing sequences with non-decreasing starts.
+- The fixture now restores `idle` and clears connection state when connect is cancelled after transition, and restores `connected` when finish is cancelled. Tests prove a new connection or subsequent audio and finish operation succeeds.
+
+### Workspace dependency policy
+
+`@candorlens/models` remains private and uses `@candorlens/core: workspace:*`, which is the pnpm workspace protocol for a local sibling dependency rather than a published semver dependency. Repository evidence: `pnpm-workspace.yaml` enables `saveExact: true`, while `pnpm-lock.yaml` resolves this specifier as `link:../core`. Because this package is `private: true`, it has no publish-time dependency manifest; therefore `workspace:*` does not violate an external published-version policy in this repository. Fixed external package pins, including `vitest: 4.1.10`, remain unchanged.
+
+### Review verification
+
+- `corepack pnpm --filter @candorlens/models lint` passed.
+- `corepack pnpm --filter @candorlens/models typecheck` passed.
+- `corepack pnpm --filter @candorlens/models test` passed: 13 tests.
+- `corepack pnpm exec prettier --check packages/models` passed.
+- `git diff --check` passed.

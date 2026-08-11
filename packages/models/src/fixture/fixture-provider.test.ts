@@ -2,10 +2,10 @@ import { describe, expect, it } from 'vitest';
 
 import {
   FixtureProvider,
-  runGuidanceProviderContract,
   type GuidanceRequest,
   type TranscriptSegment,
 } from '../index.js';
+import { runGuidanceProviderContract } from '../testing.js';
 
 runGuidanceProviderContract(() => new FixtureProvider());
 
@@ -79,6 +79,85 @@ describe('FixtureProvider', () => {
         confidence: 0.98,
       },
     ]);
+  });
+
+  it('rejects mixed-session and malformed question detection input', async () => {
+    const provider = new FixtureProvider();
+    const segment: TranscriptSegment = {
+      id: 'segment-1',
+      sessionId: 'session-1',
+      sequence: 1,
+      speaker: 'interviewer',
+      text: 'Tell me about a challenging project?',
+      startedAtMs: 0,
+      endedAtMs: 2_500,
+      isFinal: true,
+      confidence: 0.98,
+    };
+
+    for (const input of [
+      [
+        segment,
+        { ...segment, id: 'segment-2', sessionId: 'session-2', sequence: 2 },
+      ],
+      [segment, { ...segment, id: 'segment-2', sequence: 1 }],
+      [{ ...segment, startedAtMs: 2_501, endedAtMs: 2_500 }],
+      [{ ...segment, confidence: 1.01 }],
+    ]) {
+      await expect(provider.detect(input)).rejects.toMatchObject({
+        name: 'ProviderError',
+        code: 'invalid_request',
+        providerId: 'fixture',
+        retryable: false,
+        operation: 'detectQuestions',
+        message: 'The request could not be processed.',
+      });
+    }
+  });
+
+  it('restores idle after connect cancellation so a new connection can be used', async () => {
+    const provider = new FixtureProvider();
+    const states: string[] = [];
+    provider.subscribe('connectionState', (event) => states.push(event.state));
+    const controller = new AbortController();
+
+    const connecting = provider.connect({
+      sessionId: 'session-1',
+      signal: controller.signal,
+    });
+    controller.abort();
+
+    await expect(connecting).rejects.toMatchObject({
+      name: 'ProviderError',
+      code: 'cancelled',
+      operation: 'connect',
+    });
+    await expect(
+      provider.connect({ sessionId: 'session-1' }),
+    ).resolves.toBeUndefined();
+    await expect(
+      provider.sendAudio(new Uint8Array([1])),
+    ).resolves.toBeUndefined();
+    expect(states).toEqual(['connecting', 'idle', 'connecting', 'connected']);
+  });
+
+  it('restores connected after finish cancellation so processing can continue', async () => {
+    const provider = new FixtureProvider();
+    await provider.connect({ sessionId: 'session-1' });
+    const controller = new AbortController();
+
+    const finishing = provider.finish(controller.signal);
+    controller.abort();
+
+    await expect(finishing).rejects.toMatchObject({
+      name: 'ProviderError',
+      code: 'cancelled',
+      operation: 'finish',
+    });
+    await expect(
+      provider.sendAudio(new Uint8Array([1])),
+    ).resolves.toBeUndefined();
+    await expect(provider.finish()).resolves.toBeUndefined();
   });
 
   it('emits a deterministic transcript lifecycle', async () => {

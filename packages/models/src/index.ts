@@ -10,6 +10,12 @@ export type {
   GuidanceRequest,
   GuidanceResult,
 } from './contracts/guidance.js';
+export {
+  validateGuidanceRequest,
+  validateQuestionDetectionInput,
+  validateTranscriptSegments,
+} from './contracts/invariants.js';
+export type { InputInvariant } from './contracts/invariants.js';
 export type {
   DetectedQuestion,
   QuestionDetector,
@@ -24,5 +30,3 @@ export type {
 } from './contracts/transcription.js';
 
 export { FixtureProvider } from './fixture/fixture-provider.js';
-export { runGuidanceProviderContract } from './contract-tests/guidance-contract.js';
-export type { GuidanceProviderFactory } from './contract-tests/guidance-contract.js';

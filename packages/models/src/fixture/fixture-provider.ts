@@ -16,10 +16,15 @@ import type {
 } from '../contracts/questions.js';
 import type {
   TranscriptSegment,
+  TranscriptionConnectRequest,
   TranscriptionConnectionState,
   TranscriptionEvents,
   TranscriptionProvider,
 } from '../contracts/transcription.js';
+import {
+  validateGuidanceRequest,
+  validateQuestionDetectionInput,
+} from '../contracts/invariants.js';
 
 type EventListener<EventName extends keyof TranscriptionEvents> = (
   event: TranscriptionEvents[EventName],
@@ -42,12 +47,7 @@ export class FixtureProvider
 
   async generateGuidance(request: GuidanceRequest): Promise<GuidanceResult> {
     this.#throwIfAborted(request.signal, 'generateGuidance');
-    if (
-      request.sessionId.trim().length === 0 ||
-      request.question.sessionId !== request.sessionId ||
-      request.question.id.trim().length === 0 ||
-      request.question.text.trim().length === 0
-    ) {
+    if (validateGuidanceRequest(request) !== null) {
       this.#fail('generateGuidance', 'invalid_request');
     }
 
@@ -74,13 +74,7 @@ export class FixtureProvider
   }
 
   async detect(segments: TranscriptSegment[]): Promise<DetectedQuestion[]> {
-    if (
-      segments.some(
-        (segment) =>
-          segment.id.trim().length === 0 ||
-          segment.sessionId.trim().length === 0,
-      )
-    ) {
+    if (validateQuestionDetectionInput(segments) !== null) {
       this.#fail('detectQuestions', 'invalid_request');
     }
 
@@ -97,10 +91,7 @@ export class FixtureProvider
       }));
   }
 
-  async connect(request: {
-    sessionId: string;
-    signal?: AbortSignal;
-  }): Promise<void> {
+  async connect(request: TranscriptionConnectRequest): Promise<void> {
     this.#throwIfAborted(request.signal, 'connect');
     if (request.sessionId.trim().length === 0 || this.#state !== 'idle') {
       this.#fail('connect', 'invalid_request');
@@ -109,7 +100,12 @@ export class FixtureProvider
     this.#sessionId = request.sessionId;
     this.#emitState('connecting');
     await Promise.resolve();
-    this.#throwIfAborted(request.signal, 'connect');
+    if (request.signal?.aborted) {
+      this.#sessionId = null;
+      this.#sequence = 0;
+      this.#emitState('idle');
+      this.#fail('connect', 'cancelled');
+    }
     this.#emitState('connected');
   }
 
@@ -148,7 +144,10 @@ export class FixtureProvider
 
     this.#emitState('finishing');
     await Promise.resolve();
-    this.#throwIfAborted(signal, 'finish');
+    if (signal?.aborted) {
+      this.#emitState('connected');
+      this.#fail('finish', 'cancelled');
+    }
     this.#emitState('finished');
   }
 
