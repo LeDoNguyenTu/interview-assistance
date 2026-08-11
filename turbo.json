@@ -7,20 +7,19 @@
     },
     "lint": {
       "dependsOn": ["^lint"],
-      "outputs": []
+      "cache": false
     },
     "typecheck": {
       "dependsOn": ["^typecheck"],
-      "outputs": ["*.tsbuildinfo"]
+      "cache": false
     },
     "test": {
       "dependsOn": ["^test"],
-      "outputs": ["coverage/**"]
+      "cache": false
     },
     "test:e2e": {
       "dependsOn": ["build"],
-      "cache": false,
-      "outputs": ["playwright-report/**", "test-results/**"]
+      "cache": false
     },
     "dev": {
       "cache": false,
