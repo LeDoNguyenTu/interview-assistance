@@ -1,0 +1,129 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>CandorLens identity preview</title>
+    <style>
+      :root {
+        color-scheme: light;
+        font-family: Manrope, "Segoe UI", sans-serif;
+        background: #eef4f1;
+        color: #16211f;
+      }
+
+      * { box-sizing: border-box; }
+
+      body { margin: 0; padding: 48px; }
+
+      main { max-width: 1120px; margin: 0 auto; }
+
+      header { margin-bottom: 32px; }
+
+      h1 { margin: 0 0 8px; font-size: 36px; letter-spacing: -0.04em; }
+
+      p { margin: 0; color: #52645f; line-height: 1.6; }
+
+      .grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 20px;
+      }
+
+      .card {
+        min-height: 260px;
+        padding: 28px;
+        border: 1px solid #d9e5e0;
+        border-radius: 24px;
+        background: #ffffff;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+      }
+
+      .card.dark { background: #173c36; border-color: #173c36; color: #f7faf8; }
+
+      .wide { grid-column: 1 / -1; }
+
+      .label {
+        font-size: 12px;
+        font-weight: 700;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        color: #657771;
+      }
+
+      .dark .label { color: #a9c5bb; }
+
+      .logo { display: block; max-width: 100%; }
+
+      .horizontal { width: min(100%, 430px); margin: 44px auto; }
+
+      .mark { width: 150px; margin: 28px auto; }
+
+      .sizes {
+        display: flex;
+        align-items: flex-end;
+        justify-content: center;
+        gap: 34px;
+        min-height: 150px;
+      }
+
+      .size-sample { display: grid; justify-items: center; gap: 12px; color: #657771; font-size: 12px; }
+
+      .palette { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-top: 28px; }
+
+      .swatch { min-height: 120px; border-radius: 16px; padding: 16px; display: flex; align-items: flex-end; font-weight: 700; }
+
+      .ink { background: #16211f; color: #f7faf8; }
+      .forest { background: #173c36; color: #f7faf8; }
+      .action { background: #216b58; color: #f7faf8; }
+      .mint { background: #67cfa8; color: #173c36; }
+    </style>
+  </head>
+  <body>
+    <main>
+      <header>
+        <h1>CandorLens — Open Exchange</h1>
+        <p>Two equal voices create an open passage: candid conversation becomes clearer evidence.</p>
+      </header>
+
+      <section class="grid">
+        <article class="card wide">
+          <span class="label">Primary horizontal logo</span>
+          <img class="logo horizontal" src="../assets/brand/logo-horizontal.svg" alt="CandorLens" />
+        </article>
+
+        <article class="card">
+          <span class="label">Brand mark</span>
+          <img class="logo mark" src="../assets/brand/logo-mark.svg" alt="CandorLens open exchange mark" />
+        </article>
+
+        <article class="card dark">
+          <span class="label">Reversed logo</span>
+          <img class="logo horizontal" src="../assets/brand/logo-reversed.svg" alt="CandorLens reversed logo" />
+        </article>
+
+        <article class="card wide">
+          <span class="label">Small-size behavior</span>
+          <div class="sizes">
+            <span class="size-sample"><img src="../assets/brand/logo-mark.svg" width="16" height="16" alt="" />16 px</span>
+            <span class="size-sample"><img src="../assets/brand/logo-mark.svg" width="24" height="24" alt="" />24 px</span>
+            <span class="size-sample"><img src="../assets/brand/logo-mark.svg" width="32" height="32" alt="" />32 px</span>
+            <span class="size-sample"><img src="../assets/brand/logo-mark.svg" width="64" height="64" alt="" />64 px</span>
+          </div>
+        </article>
+
+        <article class="card wide">
+          <span class="label">Core palette</span>
+          <div class="palette">
+            <div class="swatch ink">Ink<br />#16211F</div>
+            <div class="swatch forest">Forest<br />#173C36</div>
+            <div class="swatch action">Action<br />#216B58</div>
+            <div class="swatch mint">Mint<br />#67CFA8</div>
+          </div>
+        </article>
+      </section>
+    </main>
+  </body>
+</html>

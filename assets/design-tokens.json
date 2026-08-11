@@ -1,0 +1,78 @@
+{
+  "$schema": "https://tr.designtokens.org/format/",
+  "primitive": {
+    "color": {
+      "ink": { "$value": "#16211F", "$type": "color" },
+      "forest": { "$value": "#173C36", "$type": "color" },
+      "forestAction": { "$value": "#216B58", "$type": "color" },
+      "forestActionDark": { "$value": "#185444", "$type": "color" },
+      "mint": { "$value": "#67CFA8", "$type": "color" },
+      "mintSurface": { "$value": "#DDF5EB", "$type": "color" },
+      "canvas": { "$value": "#F7FAF8", "$type": "color" },
+      "surface": { "$value": "#FFFFFF", "$type": "color" },
+      "mutedSurface": { "$value": "#EEF4F1", "$type": "color" },
+      "border": { "$value": "#D9E5E0", "$type": "color" },
+      "mutedText": { "$value": "#52645F", "$type": "color" },
+      "destructive": { "$value": "#DC2626", "$type": "color" }
+    },
+    "space": {
+      "1": { "$value": "0.25rem", "$type": "dimension" },
+      "2": { "$value": "0.5rem", "$type": "dimension" },
+      "3": { "$value": "0.75rem", "$type": "dimension" },
+      "4": { "$value": "1rem", "$type": "dimension" },
+      "6": { "$value": "1.5rem", "$type": "dimension" },
+      "8": { "$value": "2rem", "$type": "dimension" }
+    },
+    "radius": {
+      "sm": { "$value": "0.375rem", "$type": "dimension" },
+      "md": { "$value": "0.625rem", "$type": "dimension" },
+      "lg": { "$value": "1rem", "$type": "dimension" },
+      "xl": { "$value": "1.5rem", "$type": "dimension" }
+    },
+    "duration": {
+      "fast": { "$value": "150ms", "$type": "duration" },
+      "normal": { "$value": "200ms", "$type": "duration" },
+      "slow": { "$value": "300ms", "$type": "duration" }
+    }
+  },
+  "semantic": {
+    "color": {
+      "background": { "$value": "{primitive.color.canvas}", "$type": "color" },
+      "foreground": { "$value": "{primitive.color.ink}", "$type": "color" },
+      "surface": { "$value": "{primitive.color.surface}", "$type": "color" },
+      "muted": { "$value": "{primitive.color.mutedSurface}", "$type": "color" },
+      "mutedForeground": { "$value": "{primitive.color.mutedText}", "$type": "color" },
+      "primary": { "$value": "{primitive.color.forestAction}", "$type": "color" },
+      "primaryHover": { "$value": "{primitive.color.forestActionDark}", "$type": "color" },
+      "primaryForeground": { "$value": "{primitive.color.surface}", "$type": "color" },
+      "accent": { "$value": "{primitive.color.mintSurface}", "$type": "color" },
+      "accentForeground": { "$value": "{primitive.color.forest}", "$type": "color" },
+      "border": { "$value": "{primitive.color.border}", "$type": "color" },
+      "focus": { "$value": "{primitive.color.forestAction}", "$type": "color" },
+      "destructive": { "$value": "{primitive.color.destructive}", "$type": "color" }
+    },
+    "typography": {
+      "sans": { "$value": "Manrope, Inter, Segoe UI, Arial, sans-serif", "$type": "fontFamily" },
+      "mono": { "$value": "Fira Code, Consolas, monospace", "$type": "fontFamily" }
+    }
+  },
+  "component": {
+    "button": {
+      "background": { "$value": "{semantic.color.primary}", "$type": "color" },
+      "foreground": { "$value": "{semantic.color.primaryForeground}", "$type": "color" },
+      "hoverBackground": { "$value": "{semantic.color.primaryHover}", "$type": "color" },
+      "radius": { "$value": "{primitive.radius.md}", "$type": "dimension" }
+    },
+    "card": {
+      "background": { "$value": "{semantic.color.surface}", "$type": "color" },
+      "border": { "$value": "{semantic.color.border}", "$type": "color" },
+      "radius": { "$value": "{primitive.radius.lg}", "$type": "dimension" }
+    },
+    "input": {
+      "background": { "$value": "{semantic.color.surface}", "$type": "color" },
+      "border": { "$value": "{semantic.color.border}", "$type": "color" },
+      "focus": { "$value": "{semantic.color.focus}", "$type": "color" },
+      "radius": { "$value": "{primitive.radius.md}", "$type": "dimension" }
+    }
+  }
+}
