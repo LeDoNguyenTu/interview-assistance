@@ -1,8 +1,10 @@
 import { z } from 'zod';
 
+import { consentRecordSchema } from '../consent/schema.js';
+
 export const sessionEventSchema = z.discriminatedUnion('type', [
   z.object({ type: z.literal('PREPARE') }),
-  z.object({ type: z.literal('CONFIRM_CONSENT') }),
+  z.object({ type: z.literal('CONFIRM_CONSENT'), consent: consentRecordSchema }),
   z.object({ type: z.literal('START_CAPTURE') }),
   z.object({ type: z.literal('INTERRUPT') }),
   z.object({ type: z.literal('RESUME') }),

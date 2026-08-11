@@ -28,6 +28,17 @@ function update(
   return { ...session, ...changes(timestamp), updatedAt: timestamp };
 }
 
+function authorizesCaptureSources(
+  session: SessionRecord,
+  event: Extract<SessionEvent, { type: 'CONFIRM_CONSENT' }>,
+): boolean {
+  return (
+    event.consent.sessionId === session.id &&
+    event.consent.ownerId === session.ownerId &&
+    session.captureSources.every((source) => event.consent.acceptedSources.includes(source))
+  );
+}
+
 export function reduceSession(
   session: SessionRecord,
   event: SessionEvent,
@@ -39,8 +50,10 @@ export function reduceSession(
         ? update(session, clock, () => ({ status: 'ready' }))
         : reject(session, event);
     case 'CONFIRM_CONSENT':
-      return session.status === 'ready' && session.consentedAt === null
-        ? update(session, clock, (timestamp) => ({ consentedAt: timestamp }))
+      return session.status === 'ready' &&
+        session.consentedAt === null &&
+        authorizesCaptureSources(session, event)
+        ? update(session, clock, () => ({ consentedAt: event.consent.acceptedAt }))
         : reject(session, event);
     case 'START_CAPTURE':
       return session.status === 'ready' && session.consentedAt !== null

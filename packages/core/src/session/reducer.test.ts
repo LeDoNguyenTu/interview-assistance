@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
+import type { ConsentRecord } from '../consent/schema.js';
 import type { SessionRecord } from './schema.js';
 import { reduceSession, SessionTransitionError } from './reducer.js';
 
@@ -28,6 +29,18 @@ function clock(...timestamps: string[]): () => string {
   return () => timestamps[index++] ?? timestamps.at(-1) ?? createdAt;
 }
 
+function consent(overrides: Partial<ConsentRecord> = {}): ConsentRecord {
+  return {
+    sessionId: 'session-1',
+    ownerId: 'owner-1',
+    consentVersion: '2026-08-12',
+    acceptedSources: ['microphone'],
+    acceptedAt: '2026-08-12T00:02:00.000Z',
+    locale: 'en-SG',
+    ...overrides,
+  };
+}
+
 function transitionError(action: () => void): SessionTransitionError {
   try {
     action();
@@ -53,7 +66,11 @@ describe('reduceSession', () => {
     );
 
     const prepared = reduceSession(session(), { type: 'PREPARE' }, now);
-    const consented = reduceSession(prepared, { type: 'CONFIRM_CONSENT' }, now);
+    const consented = reduceSession(
+      prepared,
+      { type: 'CONFIRM_CONSENT', consent: consent() },
+      now,
+    );
     const capturing = reduceSession(consented, { type: 'START_CAPTURE' }, now);
     const processing = reduceSession(capturing, { type: 'STOP_CAPTURE' }, now);
     const completed = reduceSession(processing, { type: 'COMPLETE_PROCESSING' }, now);
@@ -91,6 +108,53 @@ describe('reduceSession', () => {
       from: 'ready',
       eventType: 'START_CAPTURE',
     });
+  });
+
+  it('rejects consent authorized for a different session', () => {
+    const ready = session({ status: 'ready' });
+
+    const error = transitionError(() =>
+      reduceSession(
+        ready,
+        { type: 'CONFIRM_CONSENT', consent: consent({ sessionId: 'session-2' }) },
+        clock('2026-08-12T00:02:00.000Z'),
+      ),
+    );
+
+    expect(error).toMatchObject({ from: 'ready', eventType: 'CONFIRM_CONSENT' });
+  });
+
+  it('rejects consent authorized for a different owner', () => {
+    const ready = session({ status: 'ready' });
+
+    const error = transitionError(() =>
+      reduceSession(
+        ready,
+        { type: 'CONFIRM_CONSENT', consent: consent({ ownerId: 'owner-2' }) },
+        clock('2026-08-12T00:02:00.000Z'),
+      ),
+    );
+
+    expect(error).toMatchObject({ from: 'ready', eventType: 'CONFIRM_CONSENT' });
+  });
+
+  it('rejects consent that does not cover every configured capture source', () => {
+    const ready = session({ status: 'ready', captureSources: ['microphone', 'system-audio'] });
+
+    const error = transitionError(() =>
+      reduceSession(
+        ready,
+        { type: 'CONFIRM_CONSENT', consent: consent({ acceptedSources: ['microphone'] }) },
+        clock('2026-08-12T00:02:00.000Z'),
+      ),
+    );
+
+    expect(error).toMatchObject({ from: 'ready', eventType: 'CONFIRM_CONSENT' });
+    expect(
+      transitionError(() =>
+        reduceSession(ready, { type: 'START_CAPTURE' }, clock('2026-08-12T00:03:00.000Z')),
+      ),
+    ).toMatchObject({ from: 'ready', eventType: 'START_CAPTURE' });
   });
 
   it('rejects starting a capture that is already running', () => {
