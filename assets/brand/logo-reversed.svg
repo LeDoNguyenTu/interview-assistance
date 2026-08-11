@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 286 64" role="img" aria-labelledby="title desc">
+  <title id="title">CandorLens reversed</title>
+  <desc id="desc">CandorLens logo for dark backgrounds.</desc>
+  <g>
+    <path d="M47 17A21 21 0 1 0 47 47" fill="none" stroke="#F8FAFC" stroke-linecap="round" stroke-width="8"/>
+    <path d="M40 24A12 12 0 1 0 40 40" fill="none" stroke="#60A5FA" stroke-linecap="round" stroke-width="6"/>
+  </g>
+  <text x="76" y="41" fill="#F8FAFC" font-family="Fira Sans, Inter, Arial, sans-serif" font-size="28" font-weight="700" letter-spacing="-0.7">Candor</text>
+  <text x="169" y="41" fill="#60A5FA" font-family="Fira Sans, Inter, Arial, sans-serif" font-size="28" font-weight="700" letter-spacing="-0.7">Lens</text>
+</svg>

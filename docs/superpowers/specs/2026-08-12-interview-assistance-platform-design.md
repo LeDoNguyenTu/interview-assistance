@@ -1,11 +1,11 @@
-# Interview Assistance Platform Design
+# CandorLens Platform Design
 
 Date: 2026-08-12
 Status: Proposed for implementation
 
 ## 1. Purpose
 
-Build a personal, full-stack interview simulation and interviewer-defense platform with two clients:
+Build **CandorLens**, a personal, full-stack interview simulation and interviewer-defense platform with two clients:
 
 - a browser-based web application for authorized browser sessions, preparation, session history, and reports;
 - a Windows-first desktop application for authorized microphone and system-audio capture in controlled or disclosed sessions.
@@ -216,9 +216,9 @@ Vercel hosts the Next.js web application and short-lived API routes for:
 
 Supabase remains the system of record and object-storage service. Environment variables are synchronized through the authorized Vercel/Supabase integration. Long-lived audio sockets are not implemented as conventional Vercel serverless functions; clients connect using provider-supported real-time protocols and short-lived credentials.
 
-## 12. UI and UX System
+## 12. Brand, UI, and UX System
 
-The interface uses a professional operations-dashboard style:
+CandorLens uses the brand idea **“See the conversation clearly.”** Its concentric open-arc mark represents candid conversation, contextual focus, and human judgment. The interface uses a professional operations-dashboard style:
 
 - light-first neutral surfaces with optional dark mode;
 - navy primary text and controls, blue primary actions, and accessible semantic status colors;
@@ -242,6 +242,8 @@ Primary web screens:
 8. Provider, privacy, retention, and export settings.
 
 The desktop client shares screens 3–5 and a compact connection/settings view.
+
+The production logo variants and usage rules live in `assets/brand/` and `docs/brand-guidelines.md`. The archived generated concept is retained for design provenance but is not used as the production mark.
 
 ## 13. Privacy, Retention, and Security
 
@@ -308,4 +310,5 @@ The first complete release is achieved when:
 - post-session notes and defense analysis are stored and viewable;
 - permission, provider, network, and persistence failures have recoverable UX;
 - all automated and manual verification listed above passes;
-- web preview deployment and a Windows desktop build are available for review.
+- web preview deployment and a Windows desktop build are available for review;
+- the CandorLens name, logo variants, and brand guidelines are consistently applied across both clients.
