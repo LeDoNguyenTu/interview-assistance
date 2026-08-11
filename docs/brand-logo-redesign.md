@@ -1,6 +1,6 @@
 # CandorLens Logo Redesign
 
-Status: Concept review  
+Status: Direction C selected and finalized
 Date: 2026-08-12
 
 ## Why the first mark failed
@@ -12,7 +12,7 @@ The original concentric C construction was technically clean but strategically w
 - One dominant idea that can be explained in a sentence.
 - A silhouette that remains identifiable at favicon size.
 - A credible single-color version.
-- A human, editorial character rather than a generic AI aesthetic.
+- A human, editorial character rather than a generic technology aesthetic.
 - No eyes, camera lenses, concentric rings, microphones, shields, sparkles, or surveillance cues.
 - No gradients, shadows, or small details in the production vector.
 
@@ -24,8 +24,8 @@ Two opposing conversation forms create a vertical opening in negative space. The
 
 Palette: Ink `#171A1F`, Human Coral `#F0645A`.
 
-Strengths: strongest brand story, distinctive silhouette, human warmth, and no literal surveillance imagery.  
-Risk: the production vector must simplify the pointed terminals so they remain calm rather than aggressive.
+Strengths: strong brand story, distinctive silhouette, human warmth, and no literal surveillance imagery.
+Risk: the pointed terminals can feel more assertive than the product's intended tone.
 
 ## Direction B — Candor Ligature
 
@@ -44,13 +44,13 @@ Risk: the meaning is primarily mnemonic; it says less about conversation than th
 
 Two equal conversational ribbons face each other and create an open passage. It represents dialogue becoming a clearer path while keeping both participants visually equal.
 
-Palette: Deep Forest `#173C36`, Warm Mint `#72D6B0`.
+Palette: Deep Forest `#173C36`, Warm Mint `#67CFA8`.
 
-Strengths: approachable, balanced, and clearly conversational.  
-Risk: speech forms are common in collaboration products, so the doorway geometry must remain distinctive.
+Strengths: approachable, balanced, clearly conversational, and directly relevant to both interview participants.
+Risk: speech forms are common in collaboration products, so the crossing geometry and central passage must remain intact.
 
-## Recommendation
+## Selection
 
-Proceed with **Direction A — Dialogue Aperture**. It best captures the brand promise — seeing a conversation clearly — without drawing a literal eye or lens. It is also the direction least dependent on the CandorLens wordmark and therefore has the best chance to become recognizable on its own.
+**Direction C — Open Exchange** was selected. Its equal conversational forms are the strongest match for a product intended to support both candidates and interviewers, while the central opening communicates clarity without implying observation or surveillance.
 
-The selected concept will be redrawn as deterministic SVG geometry, tested at 16, 24, 32, and 64 pixels, paired with a custom wordmark treatment, and delivered in horizontal, reversed, and monochrome variants. These raster images are concept references, not production logo files.
+The selected concept has been redrawn as deterministic SVG geometry, tested at 16, 24, 32, and 64 pixels, paired with a self-contained outlined wordmark, and delivered in horizontal, reversed, wordmark-only, and monochrome variants. The raster images above remain concept references rather than production logo files.

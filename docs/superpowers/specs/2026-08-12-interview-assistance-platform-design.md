@@ -10,11 +10,11 @@ Build **CandorLens**, a personal, full-stack interview simulation and interviewe
 - a browser-based web application for authorized browser sessions, preparation, session history, and reports;
 - a Windows-first desktop application for authorized microphone and system-audio capture in controlled or disclosed sessions.
 
-The system will reproduce the useful workflow of an AI interview copilot through an independent implementation: real-time transcription, conversational context tracking, question detection, document-aware AI guidance, session notes, and post-session analysis. It will also provide an interviewer mode that generates follow-up questions and evidence-oriented reports.
+The system will reproduce the useful workflow of an interview intelligence assistant through an independent implementation: real-time transcription, conversational context tracking, question detection, document-aware model guidance, session notes, and post-session analysis. It will also provide an interviewer mode that generates follow-up questions and evidence-oriented reports.
 
 ## 2. Product Boundary
 
-The product supports authorized mock interviews, disclosed coaching, and consented interviewer analysis. It will not include screen-share bypasses, concealed overlays, evasion of monitoring, hidden recording, or claims that AI-use detection is conclusive.
+The product supports authorized mock interviews, disclosed coaching, and consented interviewer analysis. It will not include screen-share bypasses, concealed overlays, evasion of monitoring, hidden recording, or claims that model-use detection is conclusive.
 
 Every capture flow must:
 
@@ -39,7 +39,7 @@ The platform design in this document governs all four. Each subproject receives 
 
 ### Option A: Shared TypeScript monorepo with Next.js and Tauri — selected
 
-Use a pnpm/Turborepo workspace. Next.js powers the Vercel web application. Tauri wraps a React/Vite desktop client and provides a Rust boundary for Windows audio capture. Shared packages hold UI components, domain logic, validation, and AI-provider contracts.
+Use a pnpm/Turborepo workspace. Next.js powers the Vercel web application. Tauri wraps a React/Vite desktop client and provides a Rust boundary for Windows audio capture. Shared packages hold UI components, domain logic, validation, and model-provider contracts.
 
 Advantages:
 
@@ -101,7 +101,7 @@ apps/
 packages/
   ui/                  Shared accessible components and design tokens
   core/                Session state, schemas, domain types, and utilities
-  ai/                  Provider-neutral AI contracts and adapters
+  models/              Provider-neutral model contracts and adapters
   config/              Shared lint, TypeScript, and test configuration
 supabase/
   migrations/          Versioned schema and RLS policies
@@ -160,13 +160,13 @@ After a session, it compares the transcript with reference answers generated fro
 5. Final segments enter a conversation-context window.
 6. The question detector identifies questions, follow-ups, corrections, and topic changes.
 7. Relevant profile, resume, job description, rubric, and document excerpts are retrieved.
-8. The selected AI provider generates mode-specific output.
+8. The selected model provider generates mode-specific output.
 9. The client renders incremental results while finalized events are persisted.
 10. On session end, background processing creates notes, rubric coverage, metrics, and the final report.
 
 Raw audio is never routed through Supabase Realtime. Realtime is used for durable session/event synchronization. Low-latency audio travels directly to a provider using a short-lived session credential when supported, or through a dedicated authenticated gateway when required.
 
-## 9. AI Provider Design
+## 9. Model Provider Design
 
 The application exposes one internal contract for:
 
@@ -210,7 +210,7 @@ Vercel hosts the Next.js web application and short-lived API routes for:
 
 - creating scoped provider sessions;
 - document ingestion orchestration;
-- non-streaming AI requests;
+- non-streaming model requests;
 - post-session report jobs that fit function execution limits;
 - signed export initiation.
 
@@ -243,7 +243,7 @@ Primary web screens:
 
 The desktop client shares screens 3–5 and a compact connection/settings view.
 
-The production logo variants and usage rules live in `assets/brand/` and `docs/brand-guidelines.md`. The archived generated concept is retained for design provenance but is not used as the production mark.
+The production logo variants and usage rules live in `assets/brand/` and `docs/brand-guidelines.md`. Archived concepts are retained for design provenance but are not used as production marks.
 
 ## 13. Privacy, Retention, and Security
 
@@ -254,7 +254,7 @@ The production logo variants and usage rules live in `assets/brand/` and `docs/b
 - Logs exclude raw resume contents, transcript text, audio, access tokens, and provider keys.
 - Uploads enforce allow-listed MIME types and size limits.
 - Document extraction treats uploaded content as untrusted data and does not execute embedded instructions.
-- The application records the AI provider and model used for each generated artifact.
+- The application records the model provider and model used for each generated artifact.
 - Defense reports show confidence and supporting evidence and prohibit automatic adverse decisions.
 
 ## 14. Error Handling and Recovery
@@ -292,7 +292,7 @@ The production logo variants and usage rules live in `assets/brand/` and `docs/b
 ## 16. Deployment and GitHub Workflow
 
 - Each completed, verified milestone is committed and pushed to GitHub.
-- Feature work uses `agent/*` branches and draft pull requests unless the user directs otherwise.
+- Branch names use neutral conventional prefixes such as `feature/*`, `fix/*`, `design/*`, and `docs/*`; workflow or tool attribution is never included.
 - Vercel preview deployments are used for web review before production promotion.
 - Supabase schema changes are created as versioned local migrations and verified locally before remote application.
 - Production deployment, paid-provider activation, and destructive remote database operations require explicit confirmation at the point of action.

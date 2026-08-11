@@ -1,0 +1,80 @@
+:root {
+  /* Primitive colors */
+  --color-ink: #16211f;
+  --color-forest: #173c36;
+  --color-forest-action: #216b58;
+  --color-forest-action-dark: #185444;
+  --color-mint: #67cfa8;
+  --color-mint-surface: #ddf5eb;
+  --color-canvas: #f7faf8;
+  --color-surface: #ffffff;
+  --color-muted-surface: #eef4f1;
+  --color-border-base: #d9e5e0;
+  --color-muted-text: #52645f;
+  --color-red-600: #dc2626;
+
+  /* Primitive spacing */
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-6: 1.5rem;
+  --space-8: 2rem;
+
+  /* Primitive shape and motion */
+  --radius-sm: 0.375rem;
+  --radius-md: 0.625rem;
+  --radius-lg: 1rem;
+  --radius-xl: 1.5rem;
+  --duration-fast: 150ms;
+  --duration-normal: 200ms;
+  --duration-slow: 300ms;
+
+  /* Semantic */
+  --color-background: var(--color-canvas);
+  --color-foreground: var(--color-ink);
+  --color-card: var(--color-surface);
+  --color-card-foreground: var(--color-ink);
+  --color-muted: var(--color-muted-surface);
+  --color-muted-foreground: var(--color-muted-text);
+  --color-primary: var(--color-forest-action);
+  --color-primary-hover: var(--color-forest-action-dark);
+  --color-primary-foreground: var(--color-surface);
+  --color-accent: var(--color-mint-surface);
+  --color-accent-foreground: var(--color-forest);
+  --color-border: var(--color-border-base);
+  --color-ring: var(--color-forest-action);
+  --color-destructive: var(--color-red-600);
+  --font-sans: Manrope, Inter, "Segoe UI", Arial, sans-serif;
+  --font-mono: "Fira Code", Consolas, monospace;
+
+  /* Components */
+  --button-bg: var(--color-primary);
+  --button-fg: var(--color-primary-foreground);
+  --button-hover-bg: var(--color-primary-hover);
+  --button-radius: var(--radius-md);
+  --card-bg: var(--color-card);
+  --card-fg: var(--color-card-foreground);
+  --card-border: var(--color-border);
+  --card-radius: var(--radius-lg);
+  --input-bg: var(--color-surface);
+  --input-border: var(--color-border);
+  --input-focus: var(--color-ring);
+  --input-radius: var(--radius-md);
+}
+
+.dark {
+  --color-background: #102a25;
+  --color-foreground: #f7faf8;
+  --color-card: #173c36;
+  --color-card-foreground: #f7faf8;
+  --color-muted: #204c43;
+  --color-muted-foreground: #b6cdc5;
+  --color-primary: #67cfa8;
+  --color-primary-hover: #82d9b8;
+  --color-primary-foreground: #173c36;
+  --color-accent: #204c43;
+  --color-accent-foreground: #f7faf8;
+  --color-border: #315c52;
+  --color-ring: #67cfa8;
+}

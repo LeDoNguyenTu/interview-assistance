@@ -1,6 +1,6 @@
 # CandorLens Brand Guidelines
 
-Status: Initial identity
+Status: Direction C approved
 Date: 2026-08-12
 
 ## Brand Name
@@ -25,7 +25,7 @@ CandorLens helps people understand what was asked, what was answered, what evide
 
 ## Positioning
 
-CandorLens is an interview intelligence workspace for people who want clearer practice, more structured interviews, and evidence-oriented review. It combines consented conversation capture, contextual AI guidance, and transparent post-session analysis without presenting automated judgments as facts.
+CandorLens is an interview intelligence workspace for people who want clearer practice, more structured interviews, and evidence-oriented review. It combines consented conversation capture, contextual model guidance, and transparent post-session analysis without presenting automated judgments as facts.
 
 ## Voice
 
@@ -39,9 +39,9 @@ Avoid claims such as “100% accurate,” “undetectable,” “proves cheating
 
 ## Logo Concept
 
-The mark uses two concentric open arcs. Together they form a clear **C**, reference conversational turn-taking, and suggest a lens focusing context. The open right edge signals that the system supports human judgment rather than closing the decision automatically.
+The **Open Exchange** mark uses two equal conversational ribbons to create an open passage in negative space. Each ribbon represents one participant; the passage represents clarity emerging from candid dialogue rather than being imposed by the software.
 
-The identity intentionally avoids eye, shield, microphone, and surveillance imagery.
+The crossing top edges show context moving between both sides. The open lower edge keeps the symbol active and unfinished, reinforcing that CandorLens supports human judgment instead of replacing it. The silhouette intentionally avoids eye, camera, shield, microphone, and surveillance imagery.
 
 ## Logo Files
 
@@ -51,38 +51,46 @@ The identity intentionally avoids eye, shield, microphone, and surveillance imag
 | `assets/brand/logo-mark.svg` | App icon, favicon, avatar, and compact navigation |
 | `assets/brand/logo-reversed.svg` | Dark surfaces |
 | `assets/brand/logo-monochrome.svg` | One-color printing and constrained contexts |
-| `assets/brand/concepts/candorlens-logo-concept.png` | Archived AI concept; not the production logo |
+| `assets/brand/logo-wordmark.svg` | Wordmark-only placements |
+| `assets/brand/previews/candorlens-identity-preview.png` | Approved identity reference board |
+| `assets/brand/concepts/` | Archived exploration; not production assets |
 
 ## Logo Usage
 
-- Keep clear space equal to the inner arc's stroke width on every side.
+- Keep clear space equal to one quarter of the mark's height on every side.
 - Use the full horizontal logo at widths of 120 px or greater.
-- Use the mark alone at 24–64 px.
+- Use the mark alone at 16–64 px; prefer 24 px or larger for interface controls.
 - Do not stretch, rotate, crop, recolor, add shadows, or apply gradients.
-- Use the reversed version on navy or similarly dark backgrounds.
+- Use the reversed version on Deep Forest or similarly dark backgrounds.
 - Use the monochrome mark when only one ink or color is available.
+- Preserve the open center; never close the passage or remove either participant.
 
 ## Color Palette
 
 | Token | Value | Use |
 |---|---:|---|
-| Ink Navy | `#0F172A` | Primary text, navigation, outer logo arc |
-| Focus Blue | `#3B82F6` | Primary actions, links, inner logo arc |
-| Focus Blue Dark | `#1D4ED8` | Hover/pressed actions on light surfaces |
-| Focus Blue Light | `#60A5FA` | Dark-theme accents and reversed logo |
-| Canvas | `#F8FAFC` | Application background |
+| Ink | `#16211F` | Primary text and wordmark |
+| Deep Forest | `#173C36` | Primary brand field and left logo ribbon |
+| Action Forest | `#216B58` | Primary actions and links |
+| Action Forest Dark | `#185444` | Hover and pressed actions |
+| Warm Mint | `#67CFA8` | Right logo ribbon and restrained highlights |
+| Mint Surface | `#DDF5EB` | Selected and informational surfaces |
+| Canvas | `#F7FAF8` | Application background |
 | Surface | `#FFFFFF` | Cards, panels, dialogs |
-| Muted Surface | `#E8ECF1` | Secondary regions and skeletons |
-| Border | `#E2E8F0` | Dividers and control outlines |
+| Muted Surface | `#EEF4F1` | Secondary regions and skeletons |
+| Border | `#D9E5E0` | Dividers and control outlines |
 | Destructive | `#DC2626` | Destructive actions and errors |
 
-All text/background pairs must meet WCAG AA contrast. Status must never be communicated by color alone.
+All text/background pairs must meet WCAG AA contrast. Warm Mint is decorative on light surfaces and must not be used for body text. Status must never be communicated by color alone.
 
 ## Typography
 
-- Fira Sans: application headings, body, controls, reports, and wordmark.
+- Manrope: application headings, body, controls, and reports.
+- The production wordmark uses outlined Manrope Bold letterforms and has no runtime font dependency.
 - Fira Code: transcript timestamps, code, identifiers, metrics, and technical metadata only.
 - System fallback: Inter, Segoe UI, Arial, sans-serif.
+
+Manrope is distributed under the SIL Open Font License 1.1. The source font and license are stored in `assets/brand/type/` so logo exports are reproducible.
 
 ## Iconography and Motion
 
