@@ -24,6 +24,7 @@ export interface AppShellProps {
 }
 
 const approvedHorizontalLogo = '/assets/brand/logo-horizontal.svg';
+const approvedReversedLogo = '/assets/brand/logo-reversed.svg';
 
 export function AppShell({
   children,
@@ -37,9 +38,16 @@ export function AppShell({
   const [mobileNavigationOpen, setMobileNavigationOpen] = useState(false);
   const contentId = useId();
   const nextTheme = theme === 'light' ? 'dark' : 'light';
+  const activeLogoSrc = theme === 'dark' ? approvedReversedLogo : logoSrc;
 
   return (
-    <div className={cn('min-h-dvh bg-[var(--cl-color-background)] font-[family-name:var(--cl-font-sans)] text-[var(--cl-color-foreground)]', className)}>
+    <div
+      className={cn(
+        'min-h-dvh bg-[var(--cl-color-background)] font-[family-name:var(--cl-font-sans)] text-[var(--cl-color-foreground)]',
+        theme === 'dark' && 'dark',
+        className,
+      )}
+    >
       <a
         className="sr-only absolute left-4 top-4 z-[70] min-h-11 rounded-[var(--cl-radius-control)] bg-[var(--cl-color-primary)] px-4 py-2 font-semibold text-[var(--cl-color-primary-foreground)] focus:not-sr-only focus:outline-none focus:ring-2 focus:ring-[var(--cl-color-ring)] focus:ring-offset-2"
         href={`#${contentId}`}
@@ -47,16 +55,16 @@ export function AppShell({
         Skip to main content
       </a>
       <header className="sticky top-0 z-40 border-b border-[var(--cl-color-border)] bg-[var(--cl-color-surface)]/95 backdrop-blur-sm">
-        <div className="mx-auto flex min-h-[var(--cl-nav-height)] max-w-7xl items-center gap-3 px-4 sm:px-6 lg:px-8">
+        <div className="mx-auto flex min-h-[var(--cl-nav-height)] max-w-7xl items-center gap-2 px-4 sm:px-6 lg:px-8">
           <a aria-label={`${productName} home`} className="flex shrink-0 items-center" href="/">
-            <img alt={productName} className="h-8 w-auto" src={logoSrc} />
+            <img alt={productName} className="h-8 w-auto" src={activeLogoSrc} />
           </a>
-          <nav aria-label="Primary navigation" className="hidden min-w-0 flex-1 items-center gap-1 md:flex">
+          <nav aria-label="Primary navigation" className="hidden min-w-0 flex-1 items-center gap-2 md:flex">
             {navigation.map(({ current, href, icon, label }) => (
               <a
                 aria-current={current ? 'page' : undefined}
                 className={cn(
-                  'inline-flex min-h-11 items-center gap-2 rounded-[var(--cl-radius-control)] px-3 py-2 text-sm font-semibold transition-[background-color,color] duration-[var(--cl-duration-fast)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--cl-color-ring)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--cl-color-surface)]',
+                  'inline-flex min-h-11 items-center gap-2 rounded-[var(--cl-radius-control)] px-4 py-2 text-sm font-semibold transition-[background-color,color] duration-[var(--cl-duration-fast)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--cl-color-ring)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--cl-color-surface)]',
                   current
                     ? 'bg-[var(--cl-color-accent)] text-[var(--cl-color-accent-foreground)]'
                     : 'text-[var(--cl-color-muted-foreground)] hover:bg-[var(--cl-color-muted)] hover:text-[var(--cl-color-foreground)]',
@@ -99,21 +107,18 @@ export function AppShell({
             ) : null}
           </div>
         </div>
-        {navigation.length > 0 ? (
+        {navigation.length > 0 && mobileNavigationOpen ? (
           <nav
             aria-label="Mobile primary navigation"
-            className={cn(
-              'grid overflow-hidden border-t border-[var(--cl-color-border)] bg-[var(--cl-color-surface)] px-4 transition-[grid-template-rows,opacity] duration-[var(--cl-duration-normal)] md:hidden',
-              mobileNavigationOpen ? 'grid-rows-[1fr] py-2 opacity-100' : 'grid-rows-[0fr] py-0 opacity-0',
-            )}
+            className="border-t border-[var(--cl-color-border)] bg-[var(--cl-color-surface)] px-4 py-2 motion-safe:animate-[cl-nav-in_var(--cl-duration-normal)_ease-out] md:hidden"
             id="candorlens-mobile-navigation"
           >
-            <div className="min-h-0">
+            <div>
               {navigation.map(({ current, href, icon, label }) => (
                 <a
                   aria-current={current ? 'page' : undefined}
                   className={cn(
-                    'flex min-h-11 items-center gap-2 rounded-[var(--cl-radius-control)] px-3 py-2 text-sm font-semibold text-[var(--cl-color-muted-foreground)] hover:bg-[var(--cl-color-muted)] hover:text-[var(--cl-color-foreground)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--cl-color-ring)]',
+                    'flex min-h-11 items-center gap-2 rounded-[var(--cl-radius-control)] px-4 py-2 text-sm font-semibold text-[var(--cl-color-muted-foreground)] hover:bg-[var(--cl-color-muted)] hover:text-[var(--cl-color-foreground)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--cl-color-ring)]',
                     current && 'bg-[var(--cl-color-accent)] text-[var(--cl-color-accent-foreground)]',
                   )}
                   href={href}

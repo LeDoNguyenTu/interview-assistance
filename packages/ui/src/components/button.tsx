@@ -23,7 +23,7 @@ const variantClasses: Record<ButtonVariant, string> = {
 
 const sizeClasses: Record<ButtonSize, string> = {
   default: 'min-h-11 px-4 py-2 text-sm',
-  compact: 'min-h-11 min-w-11 px-3 py-2 text-sm',
+  compact: 'min-h-11 min-w-11 px-4 py-2 text-sm',
 };
 
 export const Button = forwardRef<HTMLButtonElement, ButtonProps>(function Button(

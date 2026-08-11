@@ -56,6 +56,6 @@ export const CardContent = forwardRef<HTMLDivElement, HTMLAttributes<HTMLDivElem
 
 export const CardFooter = forwardRef<HTMLElement, HTMLAttributes<HTMLElement>>(
   function CardFooter({ className, ...props }, ref) {
-    return <footer className={cn('flex items-center gap-3 p-6 pt-0', className)} ref={ref} {...props} />;
+    return <footer className={cn('flex items-center gap-2 p-6 pt-0', className)} ref={ref} {...props} />;
   },
 );

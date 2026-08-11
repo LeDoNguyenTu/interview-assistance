@@ -13,7 +13,7 @@ const toneClasses: Record<BadgeTone, string> = {
   muted: 'bg-[var(--cl-color-muted)] text-[var(--cl-color-muted-foreground)]',
   success: 'bg-[var(--cl-color-status-success-surface)] text-[var(--cl-color-status-success)]',
   warning: 'bg-[var(--cl-color-status-warning-surface)] text-[var(--cl-color-status-warning)]',
-  danger: 'bg-[var(--cl-color-status-danger-surface)] text-[var(--cl-color-destructive)]',
+  danger: 'bg-[var(--cl-color-status-danger-surface)] text-[var(--cl-color-status-danger)]',
 };
 
 export const Badge = forwardRef<HTMLSpanElement, BadgeProps>(function Badge(
@@ -23,7 +23,7 @@ export const Badge = forwardRef<HTMLSpanElement, BadgeProps>(function Badge(
   return (
     <span
       className={cn(
-        'inline-flex min-h-6 items-center gap-1 rounded-full px-2 py-0.5 text-xs font-bold tracking-[0.01em]',
+        'inline-flex min-h-8 items-center gap-2 rounded-full px-2 py-2 text-xs font-bold tracking-[0.01em]',
         toneClasses[tone],
         className,
       )}

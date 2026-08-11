@@ -48,7 +48,6 @@ function StateIcon({ state }: Pick<CaptureIndicatorProps, 'state'>) {
   };
 
   if (state === 'interrupted') return <PauseCircleIcon {...props} />;
-  if (state === 'capturing') return <MicrophoneIcon {...props} />;
   return <MicrophoneIcon {...props} />;
 }
 
@@ -65,11 +64,16 @@ export function CaptureIndicator({
     <section
       aria-label="Capture status"
       className={cn(
-        'flex flex-col gap-3 rounded-[var(--cl-radius-card)] border border-[var(--cl-color-border)] bg-[var(--cl-color-surface)] p-4 shadow-[var(--cl-shadow-card)] sm:flex-row sm:items-center sm:justify-between',
+        'flex flex-col gap-2 rounded-[var(--cl-radius-card)] border border-[var(--cl-color-border)] bg-[var(--cl-color-surface)] p-4 shadow-[var(--cl-shadow-card)] sm:flex-row sm:items-center sm:justify-between',
         state === 'interrupted' && 'border-[var(--cl-color-destructive)]',
       )}
     >
-      <div aria-atomic="true" aria-live="polite" className="flex min-w-0 items-center gap-3" role="status">
+      <div
+        aria-atomic="true"
+        aria-live="polite"
+        className="flex min-w-0 items-center gap-2"
+        role="status"
+      >
         <span className="inline-flex min-h-11 min-w-11 items-center justify-center rounded-full bg-[var(--cl-color-accent)] text-[var(--cl-color-accent-foreground)]">
           <StateIcon state={state} />
         </span>
@@ -77,10 +81,18 @@ export function CaptureIndicator({
           <p className="font-bold tracking-[-0.01em]">{stateCopy[state]}</p>
           <p className="text-sm text-[var(--cl-color-muted-foreground)]">
             {sourceSummary || 'No capture sources selected'}
-            {elapsedSeconds === undefined ? '' : ` · ${formatElapsed(elapsedSeconds)}`}
           </p>
         </div>
       </div>
+      {elapsedSeconds === undefined ? null : (
+        <p
+          aria-label="Elapsed capture time"
+          className="font-[family-name:var(--cl-font-mono)] text-sm text-[var(--cl-color-muted-foreground)]"
+          role="timer"
+        >
+          {formatElapsed(elapsedSeconds)}
+        </p>
+      )}
       {isStopAvailable ? (
         <Button onClick={onStop} size="compact" variant="secondary">
           <StopIcon aria-hidden="true" size={20} weight="regular" />

@@ -44,7 +44,7 @@ export const DialogContent = forwardRef<
         {children}
         <DialogPrimitive.Close
           aria-label="Close dialog"
-          className="absolute right-3 top-3 inline-flex min-h-11 min-w-11 items-center justify-center rounded-[var(--cl-radius-control)] text-[var(--cl-color-muted-foreground)] transition-[background-color,color] duration-[var(--cl-duration-fast)] hover:bg-[var(--cl-color-muted)] hover:text-[var(--cl-color-foreground)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--cl-color-ring)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--cl-color-surface)]"
+          className="absolute right-2 top-2 inline-flex min-h-11 min-w-11 items-center justify-center rounded-[var(--cl-radius-control)] text-[var(--cl-color-muted-foreground)] transition-[background-color,color] duration-[var(--cl-duration-fast)] hover:bg-[var(--cl-color-muted)] hover:text-[var(--cl-color-foreground)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--cl-color-ring)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--cl-color-surface)]"
         >
           <XIcon aria-hidden="true" size={20} weight="regular" />
         </DialogPrimitive.Close>

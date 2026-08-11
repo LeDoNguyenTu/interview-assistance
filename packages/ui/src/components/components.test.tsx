@@ -1,10 +1,13 @@
 // @vitest-environment jsdom
 import { cleanup, fireEvent, render, screen } from '@testing-library/react';
 import { userEvent } from '@testing-library/user-event';
+import { readFileSync } from 'node:fs';
+import { resolve } from 'node:path';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 
 import type { CaptureSource } from '@candorlens/core';
 
+import { AppShell } from './app-shell.js';
 import { Button } from './button.js';
 import { CaptureIndicator } from './capture-indicator.js';
 import { Dialog, DialogContent, DialogTitle, DialogTrigger } from './dialog.js';
@@ -12,6 +15,48 @@ import { Input } from './input.js';
 import { Label } from './label.js';
 
 afterEach(cleanup);
+
+const tokensCss = readFileSync(resolve(process.cwd(), 'src/styles/tokens.css'), 'utf8');
+
+function tokenValue(scope: string, token: string): string {
+  const scopeMatch = tokensCss.match(new RegExp(`${scope}\\s*\\{([\\s\\S]*?)\\n\\}`));
+  const valueMatch = scopeMatch?.[1]?.match(new RegExp(`${token}:\\s*([^;]+);`));
+
+  if (!valueMatch?.[1]) {
+    throw new Error(`Missing ${token} in ${scope}`);
+  }
+
+  return valueMatch[1].trim();
+}
+
+function resolvedTokenValue(scope: string, token: string): string {
+  const value = tokenValue(scope, token);
+  const reference = value.match(/^var\((--[^)]+)\)$/)?.[1];
+  return reference ? resolvedTokenValue(scope, reference) : value;
+}
+
+function contrastRatio(foreground: string, background: string): number {
+  const luminance = (hex: string) => {
+    if (!/^#[0-9a-f]{6}$/i.test(hex)) {
+      throw new Error(`Expected a six-digit hex colour, received ${hex}`);
+    }
+
+    const toLinearChannel = (offset: number) => {
+      const channel = Number.parseInt(hex.slice(offset, offset + 2), 16) / 255;
+      return channel <= 0.04045 ? channel / 12.92 : ((channel + 0.055) / 1.055) ** 2.4;
+    };
+    const red = toLinearChannel(1);
+    const green = toLinearChannel(3);
+    const blue = toLinearChannel(5);
+    return 0.2126 * red + 0.7152 * green + 0.0722 * blue;
+  };
+
+  const foregroundLuminance = luminance(foreground);
+  const backgroundLuminance = luminance(background);
+  const lighter = Math.max(foregroundLuminance, backgroundLuminance);
+  const darker = Math.min(foregroundLuminance, backgroundLuminance);
+  return (lighter + 0.05) / (darker + 0.05);
+}
 
 describe('Button', () => {
   it('activates from the keyboard', async () => {
@@ -94,9 +139,25 @@ describe('CaptureIndicator', () => {
 
     const status = screen.getByRole('status');
     expect(status.textContent).toContain('Capturing');
-    expect(status.textContent).toContain('1:05 elapsed');
+    expect(status.textContent).toContain('Microphone, System audio');
+    expect(screen.getByRole('timer', { name: 'Elapsed capture time' }).textContent).toBe('1:05 elapsed');
     expect(screen.getByTestId('capture-indicator-icon')).toBeInstanceOf(SVGElement);
     expect(screen.getByRole('button', { name: 'Stop capture' })).toBeTruthy();
+  });
+
+  it('keeps elapsed time out of the live status announcement', () => {
+    render(
+      <CaptureIndicator
+        elapsedSeconds={65}
+        sources={['microphone']}
+        state="capturing"
+      />,
+    );
+
+    expect(screen.getByRole('status').textContent).not.toContain('1:05 elapsed');
+    const timer = screen.getByRole('timer', { name: 'Elapsed capture time' });
+    expect(timer.textContent).toBe('1:05 elapsed');
+    expect(timer.getAttribute('aria-live')).toBeNull();
   });
 
   it('keeps the stop control available for an interrupted capture', () => {
@@ -110,5 +171,68 @@ describe('CaptureIndicator', () => {
 
     expect(screen.getByRole('status').textContent).toContain('Capture interrupted');
     expect(screen.getByRole('button', { name: 'Stop capture' })).toBeTruthy();
+  });
+});
+
+describe('AppShell', () => {
+  const navigation = [{ href: '/sessions', label: 'Sessions' }];
+
+  it('removes closed mobile navigation links from the keyboard and accessibility tree', async () => {
+    const user = userEvent.setup();
+    render(
+      <AppShell navigation={navigation}>
+        <p>Workspace</p>
+      </AppShell>,
+    );
+
+    expect(screen.getAllByRole('link', { name: 'Sessions' })).toHaveLength(1);
+    expect(screen.queryByRole('navigation', { name: 'Mobile primary navigation' })).toBeNull();
+
+    await user.click(screen.getByRole('button', { name: 'Toggle navigation' }));
+
+    expect(screen.getAllByRole('link', { name: 'Sessions' })).toHaveLength(2);
+  });
+
+  it('uses the approved reversed mark for dark semantic surfaces', () => {
+    render(
+      <AppShell logoSrc="/assets/brand/logo-horizontal.svg" theme="dark">
+        <p>Workspace</p>
+      </AppShell>,
+    );
+
+    expect(screen.getByRole('img', { name: 'CandorLens' }).getAttribute('src')).toBe(
+      '/assets/brand/logo-reversed.svg',
+    );
+  });
+});
+
+describe('design tokens', () => {
+  it('keeps the spacing token scale on strict 8px increments', () => {
+    const spacing = [...tokensCss.matchAll(/--cl-space-(\d+):\s*([\d.]+)rem/g)].map(
+      ([, pixels, rem]) => [pixels, rem],
+    );
+
+    expect(spacing).toEqual([
+      ['8', '0.5'],
+      ['16', '1'],
+      ['24', '1.5'],
+      ['32', '2'],
+      ['40', '2.5'],
+      ['48', '3'],
+    ]);
+  });
+
+  it('keeps danger badge foreground and surface pairs at WCAG AA contrast', () => {
+    const lightRatio = contrastRatio(
+      resolvedTokenValue(':root', '--cl-color-status-danger'),
+      resolvedTokenValue(':root', '--cl-color-status-danger-surface'),
+    );
+    const darkRatio = contrastRatio(
+      tokenValue('\\.dark', '--cl-color-status-danger'),
+      tokenValue('\\.dark', '--cl-color-status-danger-surface'),
+    );
+
+    expect(lightRatio).toBeGreaterThanOrEqual(4.5);
+    expect(darkRatio).toBeGreaterThanOrEqual(4.5);
   });
 });
