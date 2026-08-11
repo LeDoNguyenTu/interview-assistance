@@ -36,6 +36,16 @@ importers:
         specifier: 4.1.10
         version: 4.1.10
 
+  packages/models:
+    dependencies:
+      '@candorlens/core':
+        specifier: workspace:*
+        version: link:../core
+    devDependencies:
+      vitest:
+        specifier: 4.1.10
+        version: 4.1.10
+
 packages:
 
   '@eslint-community/eslint-utils@4.10.1':
