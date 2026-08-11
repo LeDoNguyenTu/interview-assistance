@@ -1,0 +1,12 @@
+{
+  "name": "@candorlens/config",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    "./eslint/base": "./eslint/base.mjs",
+    "./typescript/base": "./typescript/base.json",
+    "./typescript/react": "./typescript/react.json",
+    "./typescript/nextjs": "./typescript/nextjs.json"
+  }
+}

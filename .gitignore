@@ -5,3 +5,11 @@ dist/
 .env
 .env.*
 !.env.example
+.next/
+.turbo/
+build/
+coverage/
+playwright-report/
+test-results/
+*.tsbuildinfo
+pnpm-debug.log*
