@@ -36,8 +36,8 @@
   --cl-color-status-success-surface-base: #def7e9;
   --cl-color-status-warning-base: #8a4b08;
   --cl-color-status-warning-surface-base: #fff2d5;
-  --cl-color-status-danger-base: #991b1b;
-  --cl-color-status-danger-surface-base: #fff1f2;
+  --cl-color-danger-foreground-base: #991b1b;
+  --cl-color-danger-surface-base: #fff1f2;
 
   --cl-color-background: var(--cl-color-canvas);
   --cl-color-foreground: var(--cl-color-ink);
@@ -58,8 +58,8 @@
   --cl-color-status-success-surface: var(--cl-color-status-success-surface-base);
   --cl-color-status-warning: var(--cl-color-status-warning-base);
   --cl-color-status-warning-surface: var(--cl-color-status-warning-surface-base);
-  --cl-color-status-danger: var(--cl-color-status-danger-base);
-  --cl-color-status-danger-surface: var(--cl-color-status-danger-surface-base);
+  --cl-color-danger-foreground: var(--cl-color-danger-foreground-base);
+  --cl-color-danger-surface: var(--cl-color-danger-surface-base);
   --cl-color-overlay: rgb(9 31 26 / 56%);
 
   --cl-font-sans: "Manrope", Inter, "Segoe UI", Arial, sans-serif;
@@ -100,8 +100,8 @@
   --cl-color-status-success-surface: #1b513b;
   --cl-color-status-warning: #ffd28f;
   --cl-color-status-warning-surface: #65400f;
-  --cl-color-status-danger: #fecdd3;
-  --cl-color-status-danger-surface: #5e1c27;
+  --cl-color-danger-foreground: #fecdd3;
+  --cl-color-danger-surface: #5e1c27;
   --cl-color-overlay: rgb(3 12 10 / 64%);
 }
 

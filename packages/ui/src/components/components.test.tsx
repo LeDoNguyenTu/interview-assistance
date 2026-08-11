@@ -8,6 +8,7 @@ import { afterEach, describe, expect, it, vi } from 'vitest';
 import type { CaptureSource } from '@candorlens/core';
 
 import { AppShell } from './app-shell.js';
+import { Badge } from './badge.js';
 import { Button } from './button.js';
 import { CaptureIndicator } from './capture-indicator.js';
 import { Dialog, DialogContent, DialogTitle, DialogTrigger } from './dialog.js';
@@ -207,6 +208,14 @@ describe('AppShell', () => {
 });
 
 describe('design tokens', () => {
+  it('binds danger badges to their dedicated foreground and surface tokens', () => {
+    render(<Badge tone="danger">Needs attention</Badge>);
+
+    const badge = screen.getByText('Needs attention');
+    expect(badge.className).toContain('bg-[var(--cl-color-danger-surface)]');
+    expect(badge.className).toContain('text-[var(--cl-color-danger-foreground)]');
+  });
+
   it('keeps the spacing token scale on strict 8px increments', () => {
     const spacing = [...tokensCss.matchAll(/--cl-space-(\d+):\s*([\d.]+)rem/g)].map(
       ([, pixels, rem]) => [pixels, rem],
@@ -224,12 +233,12 @@ describe('design tokens', () => {
 
   it('keeps danger badge foreground and surface pairs at WCAG AA contrast', () => {
     const lightRatio = contrastRatio(
-      resolvedTokenValue(':root', '--cl-color-status-danger'),
-      resolvedTokenValue(':root', '--cl-color-status-danger-surface'),
+      resolvedTokenValue(':root', '--cl-color-danger-foreground'),
+      resolvedTokenValue(':root', '--cl-color-danger-surface'),
     );
     const darkRatio = contrastRatio(
-      tokenValue('\\.dark', '--cl-color-status-danger'),
-      tokenValue('\\.dark', '--cl-color-status-danger-surface'),
+      tokenValue('\\.dark', '--cl-color-danger-foreground'),
+      tokenValue('\\.dark', '--cl-color-danger-surface'),
     );
 
     expect(lightRatio).toBeGreaterThanOrEqual(4.5);
