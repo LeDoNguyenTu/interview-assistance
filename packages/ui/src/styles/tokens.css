@@ -1,0 +1,148 @@
+@import "tailwindcss";
+
+@font-face {
+  font-family: "Manrope";
+  font-display: swap;
+  font-style: normal;
+  font-weight: 200 800;
+  src: url("../../../../assets/brand/type/Manrope-VariableFont_wght.ttf") format("truetype");
+}
+
+@theme inline {
+  --color-background: var(--cl-color-background);
+  --color-foreground: var(--cl-color-foreground);
+  --color-surface: var(--cl-color-surface);
+  --color-muted: var(--cl-color-muted);
+  --color-primary: var(--cl-color-primary);
+  --color-border: var(--cl-color-border);
+  --font-sans: var(--cl-font-sans);
+}
+
+:root {
+  --cl-color-ink: #16211f;
+  --cl-color-deep-forest: #173c36;
+  --cl-color-action-forest: #216b58;
+  --cl-color-action-forest-dark: #185444;
+  --cl-color-warm-mint: #67cfa8;
+  --cl-color-mint-surface: #ddf5eb;
+  --cl-color-canvas: #f7faf8;
+  --cl-color-white: #ffffff;
+  --cl-color-muted-surface: #eef4f1;
+  --cl-color-border-base: #d9e5e0;
+  --cl-color-muted-text: #52645f;
+  --cl-color-destructive-base: #dc2626;
+  --cl-color-destructive-hover-base: #b91c1c;
+  --cl-color-status-success-base: #176b45;
+  --cl-color-status-success-surface-base: #def7e9;
+  --cl-color-status-warning-base: #8a4b08;
+  --cl-color-status-warning-surface-base: #fff2d5;
+  --cl-color-status-danger-surface-base: #fee2e2;
+
+  --cl-color-background: var(--cl-color-canvas);
+  --cl-color-foreground: var(--cl-color-ink);
+  --cl-color-surface: var(--cl-color-white);
+  --cl-color-muted: var(--cl-color-muted-surface);
+  --cl-color-muted-foreground: var(--cl-color-muted-text);
+  --cl-color-primary: var(--cl-color-action-forest);
+  --cl-color-primary-hover: var(--cl-color-action-forest-dark);
+  --cl-color-primary-foreground: var(--cl-color-white);
+  --cl-color-accent: var(--cl-color-mint-surface);
+  --cl-color-accent-foreground: var(--cl-color-deep-forest);
+  --cl-color-border: var(--cl-color-border-base);
+  --cl-color-ring: var(--cl-color-action-forest);
+  --cl-color-destructive: var(--cl-color-destructive-base);
+  --cl-color-destructive-hover: var(--cl-color-destructive-hover-base);
+  --cl-color-on-destructive: var(--cl-color-white);
+  --cl-color-status-success: var(--cl-color-status-success-base);
+  --cl-color-status-success-surface: var(--cl-color-status-success-surface-base);
+  --cl-color-status-warning: var(--cl-color-status-warning-base);
+  --cl-color-status-warning-surface: var(--cl-color-status-warning-surface-base);
+  --cl-color-status-danger-surface: var(--cl-color-status-danger-surface-base);
+  --cl-color-overlay: rgb(9 31 26 / 56%);
+
+  --cl-font-sans: "Manrope", Inter, "Segoe UI", Arial, sans-serif;
+  --cl-font-mono: "Fira Code", Consolas, monospace;
+  --cl-space-1: 0.25rem;
+  --cl-space-2: 0.5rem;
+  --cl-space-3: 0.75rem;
+  --cl-space-4: 1rem;
+  --cl-space-5: 1.25rem;
+  --cl-space-6: 1.5rem;
+  --cl-space-8: 2rem;
+  --cl-space-10: 2.5rem;
+  --cl-space-12: 3rem;
+  --cl-radius-control: 0.625rem;
+  --cl-radius-card: 1rem;
+  --cl-radius-dialog: 1.25rem;
+  --cl-duration-fast: 150ms;
+  --cl-duration-normal: 200ms;
+  --cl-duration-slow: 300ms;
+  --cl-nav-height: 4.5rem;
+  --cl-shadow-control: 0 1px 2px rgb(22 33 31 / 6%);
+  --cl-shadow-card: 0 8px 24px rgb(22 33 31 / 7%);
+  --cl-shadow-dialog: 0 24px 64px rgb(9 31 26 / 22%);
+}
+
+.dark {
+  --cl-color-background: #102a25;
+  --cl-color-foreground: var(--cl-color-canvas);
+  --cl-color-surface: var(--cl-color-deep-forest);
+  --cl-color-muted: #204c43;
+  --cl-color-muted-foreground: #c2d7d0;
+  --cl-color-primary: var(--cl-color-warm-mint);
+  --cl-color-primary-hover: #82d9b8;
+  --cl-color-primary-foreground: var(--cl-color-deep-forest);
+  --cl-color-accent: #204c43;
+  --cl-color-accent-foreground: var(--cl-color-canvas);
+  --cl-color-border: #467369;
+  --cl-color-ring: var(--cl-color-warm-mint);
+  --cl-color-status-success: #90e8c0;
+  --cl-color-status-success-surface: #1b513b;
+  --cl-color-status-warning: #ffd28f;
+  --cl-color-status-warning-surface: #65400f;
+  --cl-color-status-danger-surface: #651f25;
+  --cl-color-overlay: rgb(3 12 10 / 64%);
+}
+
+@keyframes cl-fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes cl-fade-out {
+  from { opacity: 1; }
+  to { opacity: 0; }
+}
+
+@keyframes cl-dialog-in {
+  from { opacity: 0; transform: translate(-50%, calc(-50% + 8px)) scale(0.98); }
+  to { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+}
+
+@keyframes cl-dialog-out {
+  from { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+  to { opacity: 0; transform: translate(-50%, calc(-50% + 8px)) scale(0.98); }
+}
+
+*,
+::before,
+::after {
+  box-sizing: border-box;
+}
+
+html {
+  background: var(--cl-color-background);
+  color: var(--cl-color-foreground);
+  font-family: var(--cl-font-sans);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  ::before,
+  ::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    scroll-behavior: auto !important;
+    transition-duration: 0.01ms !important;
+  }
+}
