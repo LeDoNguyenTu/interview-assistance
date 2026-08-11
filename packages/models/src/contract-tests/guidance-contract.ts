@@ -114,6 +114,24 @@ export function runGuidanceProviderContract(
         );
       }
     });
+
+    it('rejects a question without a numeric confidence value', async () => {
+      const provider = createProvider();
+      const request = guidanceRequest({
+        question: {
+          ...guidanceRequest().question,
+          confidence: null as unknown as number,
+        },
+      });
+
+      await expectSafeProviderError(() => provider.generateGuidance(request), {
+        code: 'invalid_request',
+        providerId: provider.id,
+        retryable: false,
+        operation: 'generateGuidance',
+        message: 'The request could not be processed.',
+      });
+    });
   });
 }
 

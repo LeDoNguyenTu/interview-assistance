@@ -75,3 +75,27 @@ Implemented `@candorlens/models` with provider-neutral transcription, question d
 - `corepack pnpm --filter @candorlens/models test` passed: 13 tests.
 - `corepack pnpm exec prettier --check packages/models` passed.
 - `git diff --check` passed.
+
+## Re-review fix round 2
+
+### Red-green evidence
+
+1. Added independent tests before implementation for a null `DetectedQuestion.confidence`, an unsupported transcript speaker, and a non-boolean transcript `isFinal` value.
+2. Red command: `corepack pnpm --filter @candorlens/models test`.
+3. Red result: 3 failures across 16 tests. The fixture resolved each invalid input instead of rejecting it with `ProviderError`.
+4. Green command: `corepack pnpm --filter @candorlens/models test`.
+5. Green result: 2 test files and 16 tests passed.
+
+### Fix
+
+- Question confidence now requires a finite numeric value in the inclusive 0 to 1 range; `null` remains valid only for `TranscriptSegment.confidence` as its contract permits.
+- Transcript validation now rejects values outside `interviewer`, `interviewee`, and `unknown`, and rejects any `isFinal` value that is not a boolean.
+- Existing valid deterministic fixture transcripts, safe normalized errors, cancellation recovery, and testing-only export boundaries remain covered by the passing suite.
+
+### Verification
+
+- `corepack pnpm --filter @candorlens/models lint` passed.
+- `corepack pnpm --filter @candorlens/models typecheck` passed.
+- `corepack pnpm --filter @candorlens/models test` passed: 16 tests.
+- `corepack pnpm exec prettier --check packages/models` passed.
+- `git diff --check` passed.

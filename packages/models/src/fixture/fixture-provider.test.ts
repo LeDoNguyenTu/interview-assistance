@@ -115,6 +115,60 @@ describe('FixtureProvider', () => {
     }
   });
 
+  it('rejects a transcript segment with an unsupported speaker', async () => {
+    const provider = new FixtureProvider();
+
+    await expect(
+      provider.detect([
+        {
+          id: 'segment-1',
+          sessionId: 'session-1',
+          sequence: 1,
+          speaker: 'system' as unknown as TranscriptSegment['speaker'],
+          text: 'Tell me about a challenging project?',
+          startedAtMs: 0,
+          endedAtMs: 2_500,
+          isFinal: true,
+          confidence: 0.98,
+        },
+      ]),
+    ).rejects.toMatchObject({
+      name: 'ProviderError',
+      code: 'invalid_request',
+      providerId: 'fixture',
+      retryable: false,
+      operation: 'detectQuestions',
+      message: 'The request could not be processed.',
+    });
+  });
+
+  it('rejects a transcript segment with non-boolean finality', async () => {
+    const provider = new FixtureProvider();
+
+    await expect(
+      provider.detect([
+        {
+          id: 'segment-1',
+          sessionId: 'session-1',
+          sequence: 1,
+          speaker: 'interviewer',
+          text: 'Tell me about a challenging project?',
+          startedAtMs: 0,
+          endedAtMs: 2_500,
+          isFinal: 'true' as unknown as boolean,
+          confidence: 0.98,
+        },
+      ]),
+    ).rejects.toMatchObject({
+      name: 'ProviderError',
+      code: 'invalid_request',
+      providerId: 'fixture',
+      retryable: false,
+      operation: 'detectQuestions',
+      message: 'The request could not be processed.',
+    });
+  });
+
   it('restores idle after connect cancellation so a new connection can be used', async () => {
     const provider = new FixtureProvider();
     const states: string[] = [];

@@ -23,7 +23,7 @@ export function validateGuidanceRequest(
     request.question.sourceSegmentIds.length === 0 ||
     request.question.sourceSegmentIds.some((id) => !hasText(id)) ||
     !isNonNegativeFinite(request.question.detectedAtMs) ||
-    !isConfidence(request.question.confidence)
+    !isQuestionConfidence(request.question.confidence)
   ) {
     return 'invalid_question';
   }
@@ -81,6 +81,8 @@ export function validateTranscriptSegments(
       !hasText(segment.text) ||
       !Number.isInteger(segment.sequence) ||
       segment.sequence < 0 ||
+      !isSpeaker(segment.speaker) ||
+      typeof segment.isFinal !== 'boolean' ||
       !isNonNegativeFinite(segment.startedAtMs) ||
       !isNonNegativeFinite(segment.endedAtMs) ||
       segment.endedAtMs < segment.startedAtMs ||
@@ -110,4 +112,14 @@ function isNonNegativeFinite(value: number): boolean {
 
 function isConfidence(value: number | null): boolean {
   return value === null || (Number.isFinite(value) && value >= 0 && value <= 1);
+}
+
+function isQuestionConfidence(value: number): boolean {
+  return Number.isFinite(value) && value >= 0 && value <= 1;
+}
+
+function isSpeaker(value: TranscriptSegment['speaker']): boolean {
+  return (
+    value === 'interviewer' || value === 'interviewee' || value === 'unknown'
+  );
 }
