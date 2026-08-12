@@ -1,4 +1,10 @@
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@candorlens/ui';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@candorlens/ui';
 
 import { AuthForm } from '../../../components/auth/auth-form';
 import { signUp } from '../sign-in/actions';
@@ -11,9 +17,13 @@ export default function SignUpPage() {
       <Card className="w-full max-w-lg">
         <CardHeader>
           <CardTitle>Create your CandorLens account</CardTitle>
-          <CardDescription>Start a consent-first interview workspace.</CardDescription>
+          <CardDescription>
+            Start a consent-first interview workspace.
+          </CardDescription>
         </CardHeader>
-        <CardContent><AuthForm action={signUp} mode="sign-up" /></CardContent>
+        <CardContent>
+          <AuthForm action={signUp} mode="sign-up" />
+        </CardContent>
       </Card>
     </main>
   );

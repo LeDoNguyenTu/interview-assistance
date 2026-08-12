@@ -1,4 +1,10 @@
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@candorlens/ui';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@candorlens/ui';
 
 import { AuthForm } from '../../../components/auth/auth-form';
 import { signIn } from './actions';

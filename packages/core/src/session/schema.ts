@@ -14,7 +14,12 @@ export const sessionStatusSchema = z.enum([
 ]);
 export type SessionStatus = z.infer<typeof sessionStatusSchema>;
 
-export const captureSourceSchema = z.enum(['microphone', 'browser-tab', 'system-audio', 'upload']);
+export const captureSourceSchema = z.enum([
+  'microphone',
+  'browser-tab',
+  'system-audio',
+  'upload',
+]);
 export type CaptureSource = z.infer<typeof captureSourceSchema>;
 
 export const providerIdSchema = z.enum(['gemini', 'openai', 'fixture']);

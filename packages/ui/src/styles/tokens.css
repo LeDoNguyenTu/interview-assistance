@@ -1,11 +1,12 @@
-@import "tailwindcss";
+@import 'tailwindcss';
 
 @font-face {
-  font-family: "Manrope";
+  font-family: 'Manrope';
   font-display: swap;
   font-style: normal;
   font-weight: 200 800;
-  src: url("../../../../assets/brand/type/Manrope-VariableFont_wght.ttf") format("truetype");
+  src: url('../../../../assets/brand/type/Manrope-VariableFont_wght.ttf')
+    format('truetype');
 }
 
 @theme inline {
@@ -55,15 +56,19 @@
   --cl-color-destructive-hover: var(--cl-color-destructive-hover-base);
   --cl-color-on-destructive: var(--cl-color-white);
   --cl-color-status-success: var(--cl-color-status-success-base);
-  --cl-color-status-success-surface: var(--cl-color-status-success-surface-base);
+  --cl-color-status-success-surface: var(
+    --cl-color-status-success-surface-base
+  );
   --cl-color-status-warning: var(--cl-color-status-warning-base);
-  --cl-color-status-warning-surface: var(--cl-color-status-warning-surface-base);
+  --cl-color-status-warning-surface: var(
+    --cl-color-status-warning-surface-base
+  );
   --cl-color-danger-foreground: var(--cl-color-danger-foreground-base);
   --cl-color-danger-surface: var(--cl-color-danger-surface-base);
   --cl-color-overlay: rgb(9 31 26 / 56%);
 
-  --cl-font-sans: "Manrope", Inter, "Segoe UI", Arial, sans-serif;
-  --cl-font-mono: "Fira Code", Consolas, monospace;
+  --cl-font-sans: 'Manrope', Inter, 'Segoe UI', Arial, sans-serif;
+  --cl-font-mono: 'Fira Code', Consolas, monospace;
   /* Layout spacing is deliberately limited to strict 8px increments. */
   --cl-space-8: 0.5rem;
   --cl-space-16: 1rem;
@@ -106,28 +111,54 @@
 }
 
 @keyframes cl-fade-in {
-  from { opacity: 0; }
-  to { opacity: 1; }
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
 }
 
 @keyframes cl-fade-out {
-  from { opacity: 1; }
-  to { opacity: 0; }
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
 }
 
 @keyframes cl-dialog-in {
-  from { opacity: 0; transform: translate(-50%, calc(-50% + 8px)) scale(0.98); }
-  to { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+  from {
+    opacity: 0;
+    transform: translate(-50%, calc(-50% + 8px)) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+  }
 }
 
 @keyframes cl-dialog-out {
-  from { opacity: 1; transform: translate(-50%, -50%) scale(1); }
-  to { opacity: 0; transform: translate(-50%, calc(-50% + 8px)) scale(0.98); }
+  from {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+  }
+  to {
+    opacity: 0;
+    transform: translate(-50%, calc(-50% + 8px)) scale(0.98);
+  }
 }
 
 @keyframes cl-nav-in {
-  from { opacity: 0; transform: translateY(-8px); }
-  to { opacity: 1; transform: translateY(0); }
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 *,

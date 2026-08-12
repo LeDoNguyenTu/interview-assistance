@@ -1,16 +1,26 @@
-import { Badge, Card, CardContent, CardDescription, CardHeader, CardTitle } from '@candorlens/ui';
+import {
+  Badge,
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@candorlens/ui';
 
 const principles = [
   {
-    description: 'Practice and interview conversations stay grounded in context, not automated conclusions.',
+    description:
+      'Practice and interview conversations stay grounded in context, not automated conclusions.',
     title: 'Clear context',
   },
   {
-    description: 'Each participant makes an informed choice before a session is captured or reviewed.',
+    description:
+      'Each participant makes an informed choice before a session is captured or reviewed.',
     title: 'Explicit consent',
   },
   {
-    description: 'Observations, inferences, and uncertainty remain visible for human judgment.',
+    description:
+      'Observations, inferences, and uncertainty remain visible for human judgment.',
     title: 'Human review',
   },
 ];
@@ -27,7 +37,8 @@ export default function HomePage() {
             See the conversation clearly.
           </h1>
           <p className="mt-6 max-w-2xl text-base leading-7 text-[var(--cl-color-muted-foreground)] sm:text-lg sm:leading-8">
-            A consent-first interview workspace for clearer practice, structured conversations, and evidence-oriented review.
+            A consent-first interview workspace for clearer practice, structured
+            conversations, and evidence-oriented review.
           </p>
           <div className="mt-8 flex flex-wrap items-center gap-4">
             <a
@@ -46,22 +57,35 @@ export default function HomePage() {
           <CardHeader>
             <CardTitle>Built for considered conversations</CardTitle>
             <CardDescription>
-              CandorLens helps participants prepare, ask better follow-ups, and review what happened with care.
+              CandorLens helps participants prepare, ask better follow-ups, and
+              review what happened with care.
             </CardDescription>
           </CardHeader>
           <CardContent>
             <dl className="space-y-4 border-t border-[var(--cl-color-border)] pt-5 text-sm leading-6">
               <div>
-                <dt className="font-semibold text-[var(--cl-color-foreground)]">What was asked</dt>
-                <dd className="text-[var(--cl-color-muted-foreground)]">A shared record of the conversation.</dd>
+                <dt className="font-semibold text-[var(--cl-color-foreground)]">
+                  What was asked
+                </dt>
+                <dd className="text-[var(--cl-color-muted-foreground)]">
+                  A shared record of the conversation.
+                </dd>
               </div>
               <div>
-                <dt className="font-semibold text-[var(--cl-color-foreground)]">What supports an answer</dt>
-                <dd className="text-[var(--cl-color-muted-foreground)]">Evidence stays connected to the relevant context.</dd>
+                <dt className="font-semibold text-[var(--cl-color-foreground)]">
+                  What supports an answer
+                </dt>
+                <dd className="text-[var(--cl-color-muted-foreground)]">
+                  Evidence stays connected to the relevant context.
+                </dd>
               </div>
               <div>
-                <dt className="font-semibold text-[var(--cl-color-foreground)]">What deserves follow-up</dt>
-                <dd className="text-[var(--cl-color-muted-foreground)]">People decide the next useful question.</dd>
+                <dt className="font-semibold text-[var(--cl-color-foreground)]">
+                  What deserves follow-up
+                </dt>
+                <dd className="text-[var(--cl-color-muted-foreground)]">
+                  People decide the next useful question.
+                </dd>
               </div>
             </dl>
           </CardContent>

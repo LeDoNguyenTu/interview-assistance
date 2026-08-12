@@ -10,6 +10,8 @@ describe('SignInPage', () => {
   it('renders a generic accessible authentication failure alert', async () => {
     render(<SignInErrorAlert error="auth" />);
 
-    expect(screen.getByRole('alert').textContent).toBe('We could not complete authentication. Please try again.');
+    expect(screen.getByRole('alert').textContent).toBe(
+      'We could not complete authentication. Please try again.',
+    );
   });
 });

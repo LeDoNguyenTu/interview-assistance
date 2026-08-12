@@ -17,7 +17,11 @@ describe('requireUserForRoute', () => {
 
     await expect(
       requireUserForRoute(
-        { auth: { getClaims: async () => ({ data: { claims: null }, error: null }) } },
+        {
+          auth: {
+            getClaims: async () => ({ data: { claims: null }, error: null }),
+          },
+        },
         redirect,
       ),
     ).rejects.toThrow('redirect:/sign-in');
@@ -26,7 +30,14 @@ describe('requireUserForRoute', () => {
   it('returns the claims Supabase validates for a signed-in route', async () => {
     await expect(
       requireUserForRoute(
-        { auth: { getClaims: async () => ({ data: { claims: validClaims }, error: null }) } },
+        {
+          auth: {
+            getClaims: async () => ({
+              data: { claims: validClaims },
+              error: null,
+            }),
+          },
+        },
         () => {
           throw new Error('should not redirect');
         },
@@ -44,7 +55,9 @@ describe('requireUserForRoute', () => {
       getValidatedClaims({
         auth: {
           getClaims: async () => ({
-            data: { claims: cookieShapedSession as unknown as typeof validClaims },
+            data: {
+              claims: cookieShapedSession as unknown as typeof validClaims,
+            },
             error: null,
           }),
         },
@@ -56,7 +69,9 @@ describe('requireUserForRoute', () => {
     const cookiePresent = true;
 
     const clientWithCookie = {
-      auth: { getClaims: async () => ({ data: { claims: null }, error: null }) },
+      auth: {
+        getClaims: async () => ({ data: { claims: null }, error: null }),
+      },
       cookiePresent,
     };
 

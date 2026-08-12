@@ -16,7 +16,10 @@ export {
   CardTitle,
 } from './components/card';
 
-export { CaptureIndicator, captureSourceIcons } from './components/capture-indicator';
+export {
+  CaptureIndicator,
+  captureSourceIcons,
+} from './components/capture-indicator';
 export type { CaptureIndicatorProps } from './components/capture-indicator';
 
 export {

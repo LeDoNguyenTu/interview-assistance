@@ -35,7 +35,9 @@ function authorizesCaptureSources(
   return (
     event.consent.sessionId === session.id &&
     event.consent.ownerId === session.ownerId &&
-    session.captureSources.every((source) => event.consent.acceptedSources.includes(source))
+    session.captureSources.every((source) =>
+      event.consent.acceptedSources.includes(source),
+    )
   );
 }
 
@@ -53,11 +55,16 @@ export function reduceSession(
       return session.status === 'ready' &&
         session.consentedAt === null &&
         authorizesCaptureSources(session, event)
-        ? update(session, clock, () => ({ consentedAt: event.consent.acceptedAt }))
+        ? update(session, clock, () => ({
+            consentedAt: event.consent.acceptedAt,
+          }))
         : reject(session, event);
     case 'START_CAPTURE':
       return session.status === 'ready' && session.consentedAt !== null
-        ? update(session, clock, (timestamp) => ({ status: 'capturing', startedAt: timestamp }))
+        ? update(session, clock, (timestamp) => ({
+            status: 'capturing',
+            startedAt: timestamp,
+          }))
         : reject(session, event);
     case 'INTERRUPT':
       return session.status === 'capturing'
@@ -69,7 +76,10 @@ export function reduceSession(
         : reject(session, event);
     case 'STOP_CAPTURE':
       return session.status === 'capturing' || session.status === 'interrupted'
-        ? update(session, clock, (timestamp) => ({ status: 'processing', endedAt: timestamp }))
+        ? update(session, clock, (timestamp) => ({
+            status: 'processing',
+            endedAt: timestamp,
+          }))
         : reject(session, event);
     case 'COMPLETE_PROCESSING':
       return session.status === 'processing'

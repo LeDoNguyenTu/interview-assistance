@@ -60,7 +60,9 @@ export function CaptureIndicator({
   state,
 }: CaptureIndicatorProps) {
   const isStopAvailable = state === 'capturing' || state === 'interrupted';
-  const sourceSummary = sources.map((source) => sourceLabels[source]).join(', ');
+  const sourceSummary = sources
+    .map((source) => sourceLabels[source])
+    .join(', ');
 
   return (
     <section
@@ -105,9 +107,10 @@ export function CaptureIndicator({
   );
 }
 
-export const captureSourceIcons: Record<CaptureSource, typeof MicrophoneIcon> = {
-  microphone: MicrophoneIcon,
-  'browser-tab': BrowserIcon,
-  'system-audio': SpeakerHighIcon,
-  upload: UploadSimpleIcon,
-};
+export const captureSourceIcons: Record<CaptureSource, typeof MicrophoneIcon> =
+  {
+    microphone: MicrophoneIcon,
+    'browser-tab': BrowserIcon,
+    'system-audio': SpeakerHighIcon,
+    upload: UploadSimpleIcon,
+  };

@@ -10,10 +10,16 @@ type ClaimsClient = {
 };
 
 function isValidatedClaims(value: unknown): value is ValidatedClaims {
-  return typeof value === 'object' && value !== null && typeof (value as { sub?: unknown }).sub === 'string';
+  return (
+    typeof value === 'object' &&
+    value !== null &&
+    typeof (value as { sub?: unknown }).sub === 'string'
+  );
 }
 
-export async function getValidatedClaims(client: ClaimsClient): Promise<ValidatedClaims | null> {
+export async function getValidatedClaims(
+  client: ClaimsClient,
+): Promise<ValidatedClaims | null> {
   const { data, error } = await client.auth.getClaims();
 
   if (error || !isValidatedClaims(data?.claims)) {

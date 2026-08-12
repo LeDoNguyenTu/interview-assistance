@@ -17,11 +17,18 @@ import { Label } from './label.js';
 
 afterEach(cleanup);
 
-const tokensCss = readFileSync(resolve(process.cwd(), 'src/styles/tokens.css'), 'utf8');
+const tokensCss = readFileSync(
+  resolve(process.cwd(), 'src/styles/tokens.css'),
+  'utf8',
+);
 
 function tokenValue(scope: string, token: string): string {
-  const scopeMatch = tokensCss.match(new RegExp(`${scope}\\s*\\{([\\s\\S]*?)\\n\\}`));
-  const valueMatch = scopeMatch?.[1]?.match(new RegExp(`${token}:\\s*([^;]+);`));
+  const scopeMatch = tokensCss.match(
+    new RegExp(`${scope}\\s*\\{([\\s\\S]*?)\\n\\}`),
+  );
+  const valueMatch = scopeMatch?.[1]?.match(
+    new RegExp(`${token}:\\s*([^;]+);`),
+  );
 
   if (!valueMatch?.[1]) {
     throw new Error(`Missing ${token} in ${scope}`);
@@ -44,7 +51,9 @@ function contrastRatio(foreground: string, background: string): number {
 
     const toLinearChannel = (offset: number) => {
       const channel = Number.parseInt(hex.slice(offset, offset + 2), 16) / 255;
-      return channel <= 0.04045 ? channel / 12.92 : ((channel + 0.055) / 1.055) ** 2.4;
+      return channel <= 0.04045
+        ? channel / 12.92
+        : ((channel + 0.055) / 1.055) ** 2.4;
     };
     const red = toLinearChannel(1);
     const green = toLinearChannel(3);
@@ -118,7 +127,9 @@ describe('Dialog', () => {
       </Dialog>,
     );
 
-    const trigger = screen.getByRole('button', { name: 'Open session details' });
+    const trigger = screen.getByRole('button', {
+      name: 'Open session details',
+    });
     await user.click(trigger);
     await user.keyboard('{Escape}');
 
@@ -141,8 +152,12 @@ describe('CaptureIndicator', () => {
     const status = screen.getByRole('status');
     expect(status.textContent).toContain('Capturing');
     expect(status.textContent).toContain('Microphone, System audio');
-    expect(screen.getByRole('timer', { name: 'Elapsed capture time' }).textContent).toBe('1:05 elapsed');
-    expect(screen.getByTestId('capture-indicator-icon')).toBeInstanceOf(SVGElement);
+    expect(
+      screen.getByRole('timer', { name: 'Elapsed capture time' }).textContent,
+    ).toBe('1:05 elapsed');
+    expect(screen.getByTestId('capture-indicator-icon')).toBeInstanceOf(
+      SVGElement,
+    );
     expect(screen.getByRole('button', { name: 'Stop capture' })).toBeTruthy();
   });
 
@@ -155,7 +170,9 @@ describe('CaptureIndicator', () => {
       />,
     );
 
-    expect(screen.getByRole('status').textContent).not.toContain('1:05 elapsed');
+    expect(screen.getByRole('status').textContent).not.toContain(
+      '1:05 elapsed',
+    );
     const timer = screen.getByRole('timer', { name: 'Elapsed capture time' });
     expect(timer.textContent).toBe('1:05 elapsed');
     expect(timer.getAttribute('aria-live')).toBeNull();
@@ -170,7 +187,9 @@ describe('CaptureIndicator', () => {
       />,
     );
 
-    expect(screen.getByRole('status').textContent).toContain('Capture interrupted');
+    expect(screen.getByRole('status').textContent).toContain(
+      'Capture interrupted',
+    );
     expect(screen.getByRole('button', { name: 'Stop capture' })).toBeTruthy();
   });
 });
@@ -187,7 +206,9 @@ describe('AppShell', () => {
     );
 
     expect(screen.getAllByRole('link', { name: 'Sessions' })).toHaveLength(1);
-    expect(screen.queryByRole('navigation', { name: 'Mobile primary navigation' })).toBeNull();
+    expect(
+      screen.queryByRole('navigation', { name: 'Mobile primary navigation' }),
+    ).toBeNull();
 
     await user.click(screen.getByRole('button', { name: 'Toggle navigation' }));
 
@@ -201,9 +222,9 @@ describe('AppShell', () => {
       </AppShell>,
     );
 
-    expect(screen.getByRole('img', { name: 'CandorLens' }).getAttribute('src')).toBe(
-      '/assets/brand/logo-reversed.svg',
-    );
+    expect(
+      screen.getByRole('img', { name: 'CandorLens' }).getAttribute('src'),
+    ).toBe('/assets/brand/logo-reversed.svg');
   });
 });
 
@@ -213,13 +234,15 @@ describe('design tokens', () => {
 
     const badge = screen.getByText('Needs attention');
     expect(badge.className).toContain('bg-[var(--cl-color-danger-surface)]');
-    expect(badge.className).toContain('text-[var(--cl-color-danger-foreground)]');
+    expect(badge.className).toContain(
+      'text-[var(--cl-color-danger-foreground)]',
+    );
   });
 
   it('keeps the spacing token scale on strict 8px increments', () => {
-    const spacing = [...tokensCss.matchAll(/--cl-space-(\d+):\s*([\d.]+)rem/g)].map(
-      ([, pixels, rem]) => [pixels, rem],
-    );
+    const spacing = [
+      ...tokensCss.matchAll(/--cl-space-(\d+):\s*([\d.]+)rem/g),
+    ].map(([, pixels, rem]) => [pixels, rem]);
 
     expect(spacing).toEqual([
       ['8', '0.5'],
