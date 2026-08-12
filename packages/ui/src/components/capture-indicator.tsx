@@ -1,3 +1,5 @@
+'use client';
+
 import { BrowserIcon } from '@phosphor-icons/react/Browser';
 import { MicrophoneIcon } from '@phosphor-icons/react/Microphone';
 import { PauseCircleIcon } from '@phosphor-icons/react/PauseCircle';
@@ -7,8 +9,8 @@ import { UploadSimpleIcon } from '@phosphor-icons/react/UploadSimple';
 
 import type { CaptureSource } from '@candorlens/core';
 
-import { cn } from '../lib/cn.js';
-import { Button } from './button.js';
+import { cn } from '../lib/cn';
+import { Button } from './button';
 
 export interface CaptureIndicatorProps {
   state: 'idle' | 'starting' | 'capturing' | 'interrupted' | 'stopping';

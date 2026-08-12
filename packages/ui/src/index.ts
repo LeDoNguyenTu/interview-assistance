@@ -1,11 +1,11 @@
-export { AppShell } from './components/app-shell.js';
-export type { AppNavigationItem, AppShellProps } from './components/app-shell.js';
+export { AppShell } from './components/app-shell';
+export type { AppNavigationItem, AppShellProps } from './components/app-shell';
 
-export { Badge } from './components/badge.js';
-export type { BadgeProps } from './components/badge.js';
+export { Badge } from './components/badge';
+export type { BadgeProps } from './components/badge';
 
-export { Button } from './components/button.js';
-export type { ButtonProps } from './components/button.js';
+export { Button } from './components/button';
+export type { ButtonProps } from './components/button';
 
 export {
   Card,
@@ -14,10 +14,10 @@ export {
   CardFooter,
   CardHeader,
   CardTitle,
-} from './components/card.js';
+} from './components/card';
 
-export { CaptureIndicator, captureSourceIcons } from './components/capture-indicator.js';
-export type { CaptureIndicatorProps } from './components/capture-indicator.js';
+export { CaptureIndicator, captureSourceIcons } from './components/capture-indicator';
+export type { CaptureIndicatorProps } from './components/capture-indicator';
 
 export {
   Dialog,
@@ -27,8 +27,8 @@ export {
   DialogOverlay,
   DialogTitle,
   DialogTrigger,
-} from './components/dialog.js';
+} from './components/dialog';
 
-export { Input } from './components/input.js';
-export { Label } from './components/label.js';
-export { cn } from './lib/cn.js';
+export { Input } from './components/input';
+export { Label } from './components/label';
+export { cn } from './lib/cn';

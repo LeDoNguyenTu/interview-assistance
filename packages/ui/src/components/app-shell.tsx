@@ -1,10 +1,12 @@
+'use client';
+
 import { ListIcon } from '@phosphor-icons/react/List';
 import { MoonIcon } from '@phosphor-icons/react/Moon';
 import { SunIcon } from '@phosphor-icons/react/Sun';
 import { type ReactNode, useId, useState } from 'react';
 
-import { cn } from '../lib/cn.js';
-import { Button } from './button.js';
+import { cn } from '../lib/cn';
+import { Button } from './button';
 
 export interface AppNavigationItem {
   label: string;

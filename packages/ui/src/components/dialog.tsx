@@ -1,8 +1,10 @@
+'use client';
+
 import { XIcon } from '@phosphor-icons/react/X';
 import * as DialogPrimitive from '@radix-ui/react-dialog';
 import { forwardRef, type ComponentPropsWithoutRef, type ElementRef } from 'react';
 
-import { cn } from '../lib/cn.js';
+import { cn } from '../lib/cn';
 
 export const Dialog = DialogPrimitive.Root;
 export const DialogTrigger = DialogPrimitive.Trigger;
