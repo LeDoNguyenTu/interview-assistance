@@ -18,6 +18,7 @@ export async function createSession(
   const claims = await requireUser();
   const title = formData.get('title');
   const mode = formData.get('mode');
+  let sessionId: string;
 
   try {
     const database = (await createClient()) as unknown as SessionDatabaseClient;
@@ -26,7 +27,7 @@ export async function createSession(
       providerId: 'fixture',
       title,
     });
-    redirect(`/sessions/${session.id}`);
+    sessionId = session.id;
   } catch (error) {
     if (error instanceof SessionInputError) {
       return { message: error.message, status: 'error' };
@@ -37,4 +38,6 @@ export async function createSession(
       status: 'error',
     };
   }
+
+  redirect(`/sessions/${sessionId}`);
 }
