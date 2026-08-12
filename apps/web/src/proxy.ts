@@ -1,11 +1,11 @@
 import type { NextRequest } from 'next/server';
 
-import { updateSession } from './lib/supabase/proxy';
+import { getNeonAuth } from './lib/auth/neon-auth';
 
-export function proxy(request: NextRequest) {
-  return updateSession(request);
+export async function proxy(request: NextRequest) {
+  return getNeonAuth().middleware({ loginUrl: '/sign-in' })(request);
 }
 
 export const config = {
-  matcher: ['/((?!_next/static|_next/image|favicon.ico|assets/).*)'],
+  matcher: ['/dashboard/:path*', '/sessions/:path*'],
 };

@@ -6,7 +6,7 @@ import {
   createDraftSession,
   getSessionForOwner,
   listSessionsForOwner,
-  type SessionDatabaseClient,
+  type SessionSql,
 } from './repository.js';
 
 type SessionRow = Database['public']['Tables']['sessions']['Row'];
@@ -45,18 +45,33 @@ class MemorySessionDatabase {
     this.rows = [...rows];
   }
 
-  readonly client: SessionDatabaseClient = {
-    from: () => ({
-      insert: (values) => ({
-        select: () => ({
-          single: async () => {
-            const row = this.insert(values);
-            return { data: row, error: null };
-          },
+  readonly sql: SessionSql = async (strings, ...values) => {
+    const statement = strings.join(' ').toLowerCase();
+
+    if (statement.includes('insert into public.sessions')) {
+      return [
+        this.insert({
+          capture_sources: values[5] as string[],
+          mode: values[1] as string,
+          platform: values[2] as string,
+          provider: values[3] as string,
+          recording_enabled: values[6] as boolean,
+          status: values[4] as string,
+          title: values[7] as string,
+          user_id: values[0] as string,
         }),
-      }),
-      select: () => this.query(),
-    }),
+      ];
+    }
+
+    if (statement.includes('where id =')) {
+      const [id, userId] = values as [string, string];
+      return this.rows.filter((row) => row.id === id && row.user_id === userId);
+    }
+
+    const [userId] = values as [string];
+    return this.rows
+      .filter((row) => row.user_id === userId)
+      .sort((left, right) => right.created_at.localeCompare(left.created_at));
   };
 
   private insert(values: SessionInsert): SessionRow {
@@ -110,7 +125,7 @@ describe('session repository', () => {
   it('creates only a fixture-backed draft without consent or a capture start', async () => {
     const database = new MemorySessionDatabase();
 
-    const created = await createDraftSession(database.client, owner, {
+    const created = await createDraftSession(database.sql, owner, {
       mode: 'interviewer',
       providerId: 'fixture',
       title: '  Architecture interview  ',
@@ -156,7 +171,7 @@ describe('session repository', () => {
       }),
     ]);
 
-    const sessions = await listSessionsForOwner(database.client, owner);
+    const sessions = await listSessionsForOwner(database.sql, owner);
 
     expect(sessions.map((session) => session.title)).toEqual([
       'Newest',
@@ -168,7 +183,7 @@ describe('session repository', () => {
     const database = new MemorySessionDatabase([sessionRow()]);
 
     const session = await getSessionForOwner(
-      database.client,
+      database.sql,
       owner,
       'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa',
     );
@@ -184,7 +199,7 @@ describe('session repository', () => {
 
     await expect(
       getSessionForOwner(
-        database.client,
+        database.sql,
         secondOwner,
         'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa',
       ),
@@ -195,7 +210,7 @@ describe('session repository', () => {
     const database = new MemorySessionDatabase();
 
     await expect(
-      createDraftSession(database.client, owner, {
+      createDraftSession(database.sql, owner, {
         mode: 'coach',
         providerId: 'openai',
         title: ' ',
@@ -208,11 +223,11 @@ describe('session repository', () => {
     const database = new MemorySessionDatabase();
 
     await expect(
-      getSessionForOwner(database.client, owner, 'not-a-session-id'),
+      getSessionForOwner(database.sql, owner, 'not-a-session-id'),
     ).resolves.toBeNull();
     await expect(
       getSessionForOwner(
-        database.client,
+        database.sql,
         owner,
         'dddddddd-dddd-dddd-dddd-dddddddddddd',
       ),

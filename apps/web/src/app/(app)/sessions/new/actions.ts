@@ -4,11 +4,11 @@ import { redirect } from 'next/navigation';
 
 import {
   SessionInputError,
+  asSessionSql,
   createDraftSession,
-  type SessionDatabaseClient,
 } from '../../../../data/sessions/repository';
 import { requireUser } from '../../../../lib/auth/require-user-server';
-import { createClient } from '../../../../lib/supabase/server';
+import { getNeonSql } from '../../../../lib/neon/database';
 import type { SessionFormState } from '../../../../components/sessions/session-form';
 
 export async function createSession(
@@ -21,12 +21,15 @@ export async function createSession(
   let sessionId: string;
 
   try {
-    const database = (await createClient()) as unknown as SessionDatabaseClient;
-    const session = await createDraftSession(database, claims, {
-      mode,
-      providerId: 'fixture',
-      title,
-    });
+    const session = await createDraftSession(
+      asSessionSql(getNeonSql()),
+      claims,
+      {
+        mode,
+        providerId: 'fixture',
+        title,
+      },
+    );
     sessionId = session.id;
   } catch (error) {
     if (error instanceof SessionInputError) {

@@ -1,26 +1,16 @@
 import type { Database, SessionRecord } from '@candorlens/core';
+import type { NeonSql } from '../../lib/neon/database';
 
 type SessionRow = Database['public']['Tables']['sessions']['Row'];
-type SessionInsert = Database['public']['Tables']['sessions']['Insert'];
-type DatabaseError = { message: string } | null;
-type QueryResult<T> = PromiseLike<{ data: T; error: DatabaseError }>;
 
-type SessionQuery = {
-  eq(column: keyof SessionRow, value: string): SessionQuery;
-  maybeSingle(): QueryResult<SessionRow | null>;
-  order(
-    column: keyof SessionRow,
-    options: { ascending: boolean },
-  ): QueryResult<SessionRow[] | null>;
-};
+export type SessionSql = (
+  strings: TemplateStringsArray,
+  ...values: unknown[]
+) => Promise<SessionRow[]>;
 
-export interface SessionDatabaseClient {
-  from(table: 'sessions'): {
-    insert(values: SessionInsert): {
-      select(): { single(): QueryResult<SessionRow | null> };
-    };
-    select(columns?: string): SessionQuery;
-  };
+export function asSessionSql(sql: NeonSql): SessionSql {
+  const sessionSql = sql as unknown as SessionSql;
+  return (strings, ...values) => sessionSql(strings, ...values);
 }
 
 type ValidatedOwner = { sub: string };
@@ -69,7 +59,7 @@ function parseDraftSessionInput(input: unknown) {
   }
 
   return { mode: candidate.mode, title } as {
-    mode: SessionInsert['mode'];
+    mode: SessionRow['mode'];
     title: string;
   };
 }
@@ -99,58 +89,60 @@ function mapSession(row: SessionRow): SessionRecord {
   };
 }
 
-function databaseFailure(error: DatabaseError): never {
-  throw new Error(error?.message ?? 'The session data could not be loaded.');
-}
-
 export async function createDraftSession(
-  database: SessionDatabaseClient,
+  sql: SessionSql,
   owner: ValidatedOwner,
   input: unknown,
 ): Promise<SessionRecord> {
   const result = parseDraftSessionInput(input);
 
-  const { data, error } = await database
-    .from('sessions')
-    .insert({
-      capture_sources: [],
-      mode: result.mode,
-      platform: 'web',
-      provider: 'fixture',
-      recording_enabled: false,
-      status: 'draft',
-      title: result.title,
-      user_id: owner.sub,
-    })
-    .select()
-    .single();
+  const [row] = await sql`
+    insert into public.sessions (
+      user_id,
+      mode,
+      platform,
+      provider,
+      status,
+      capture_sources,
+      recording_enabled,
+      title
+    )
+    values (
+      ${owner.sub},
+      ${result.mode},
+      ${'web'},
+      ${'fixture'},
+      ${'draft'},
+      ${[]},
+      ${false},
+      ${result.title}
+    )
+    returning *
+  `;
 
-  if (error || !data) {
-    return databaseFailure(error);
+  if (!row) {
+    throw new Error('The session data could not be loaded.');
   }
 
-  return mapSession(data);
+  return mapSession(row);
 }
 
 export async function listSessionsForOwner(
-  database: SessionDatabaseClient,
+  sql: SessionSql,
   owner: ValidatedOwner,
 ): Promise<SessionRecord[]> {
-  const { data, error } = await database
-    .from('sessions')
-    .select('*')
-    .eq('user_id', owner.sub)
-    .order('created_at', { ascending: false });
+  const rows = await sql`
+    select *
+    from public.sessions
+    where user_id = ${owner.sub}
+    order by created_at desc
+  `;
 
-  if (error) {
-    return databaseFailure(error);
-  }
-
-  return (data ?? []).map(mapSession);
+  return rows.map(mapSession);
 }
 
 export async function getSessionForOwner(
-  database: SessionDatabaseClient,
+  sql: SessionSql,
   owner: ValidatedOwner,
   sessionId: string,
 ): Promise<SessionRecord | null> {
@@ -162,16 +154,12 @@ export async function getSessionForOwner(
     return null;
   }
 
-  const { data, error } = await database
-    .from('sessions')
-    .select('*')
-    .eq('id', sessionId)
-    .eq('user_id', owner.sub)
-    .maybeSingle();
+  const [row] = await sql`
+    select *
+    from public.sessions
+    where id = ${sessionId} and user_id = ${owner.sub}
+    limit 1
+  `;
 
-  if (error) {
-    return databaseFailure(error);
-  }
-
-  return data ? mapSession(data) : null;
+  return row ? mapSession(row) : null;
 }

@@ -1,17 +1,16 @@
 import { NextResponse } from 'next/server';
 
-import { getValidatedClaims } from '../../../lib/auth/require-user';
+import { getAuthenticatedUser } from '../../../lib/auth/neon-auth';
 import {
   GuidanceDispatcherError,
   generateGuidance,
   type GuidanceInput,
 } from '../../../lib/guidance/dispatcher';
-import { createClient } from '../../../lib/supabase/server';
 
 const noStore = { 'Cache-Control': 'no-store' };
 
 export async function POST(request: Request) {
-  const claims = await getValidatedClaims(await createClient());
+  const claims = await getAuthenticatedUser();
   if (!claims) {
     return NextResponse.json(
       { error: 'Sign in to generate guidance.' },

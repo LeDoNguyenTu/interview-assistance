@@ -4,15 +4,16 @@ import type { SVGProps } from 'react';
 
 import { SessionList } from '../../../components/sessions/session-list';
 import {
+  asSessionSql,
   listSessionsForOwner,
-  type SessionDatabaseClient,
 } from '../../../data/sessions/repository';
 import { requireUser } from '../../../lib/auth/require-user-server';
-import { createClient } from '../../../lib/supabase/server';
+import { getNeonSql } from '../../../lib/neon/database';
 
 import { signOut } from './actions';
 
 export const metadata = { title: 'Dashboard' };
+export const dynamic = 'force-dynamic';
 
 type IconProps = SVGProps<SVGSVGElement> & { size?: number };
 
@@ -125,8 +126,10 @@ function SessionSignal() {
 
 export default async function DashboardPage() {
   const claims = await requireUser();
-  const database = (await createClient()) as unknown as SessionDatabaseClient;
-  const sessions = await listSessionsForOwner(database, claims);
+  const sessions = await listSessionsForOwner(
+    asSessionSql(getNeonSql()),
+    claims,
+  );
 
   return (
     <section className="relative isolate -mx-4 -my-8 overflow-hidden bg-[#071b18] px-4 py-10 text-[#f5f9f7] sm:-mx-6 sm:px-6 sm:py-14 lg:-mx-8 lg:px-8">

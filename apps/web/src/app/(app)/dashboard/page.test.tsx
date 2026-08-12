@@ -5,10 +5,11 @@ import { afterEach, describe, expect, it, vi } from 'vitest';
 vi.mock('../../../lib/auth/require-user-server.js', () => ({
   requireUser: vi.fn().mockResolvedValue({ sub: 'owner-1' }),
 }));
-vi.mock('../../../lib/supabase/server.js', () => ({
-  createClient: vi.fn().mockResolvedValue({}),
+vi.mock('../../../lib/neon/database.js', () => ({
+  getNeonSql: vi.fn(),
 }));
 vi.mock('../../../data/sessions/repository.js', () => ({
+  asSessionSql: vi.fn((sql) => sql),
   listSessionsForOwner: vi.fn().mockResolvedValue([]),
 }));
 vi.mock('./actions.js', () => ({ signOut: vi.fn() }));

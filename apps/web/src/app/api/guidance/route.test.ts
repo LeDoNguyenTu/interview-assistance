@@ -1,10 +1,7 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
 
-vi.mock('../../../lib/supabase/server.js', () => ({
-  createClient: vi.fn().mockResolvedValue({}),
-}));
-vi.mock('../../../lib/auth/require-user.js', () => ({
-  getValidatedClaims: vi.fn().mockResolvedValue({ sub: 'owner-1' }),
+vi.mock('../../../lib/auth/neon-auth.js', () => ({
+  getAuthenticatedUser: vi.fn().mockResolvedValue({ sub: 'owner-1' }),
 }));
 vi.mock('../../../lib/guidance/dispatcher.js', () => ({
   GuidanceDispatcherError: class GuidanceDispatcherError extends Error {},
@@ -15,10 +12,10 @@ vi.mock('../../../lib/guidance/dispatcher.js', () => ({
 }));
 
 import { POST } from './route';
-import { getValidatedClaims } from '../../../lib/auth/require-user';
+import { getAuthenticatedUser } from '../../../lib/auth/neon-auth';
 
 afterEach(() => {
-  vi.mocked(getValidatedClaims).mockResolvedValue({ sub: 'owner-1' });
+  vi.mocked(getAuthenticatedUser).mockResolvedValue({ sub: 'owner-1' });
 });
 
 const payload = {
@@ -37,7 +34,7 @@ const payload = {
 
 describe('POST /api/guidance', () => {
   it('rejects an unauthenticated request without calling a provider', async () => {
-    vi.mocked(getValidatedClaims).mockResolvedValueOnce(null);
+    vi.mocked(getAuthenticatedUser).mockResolvedValueOnce(null);
 
     const response = await POST(
       new Request('https://candorlens.test/api/guidance', {
