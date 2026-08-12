@@ -74,4 +74,14 @@ corepack pnpm --filter @candorlens/web typecheck
 corepack pnpm --filter @candorlens/web build
 ```
 
-The pinned `2.112.3` Supabase package family is explicitly exempted by exact package-and-version entries in `minimumReleaseAgeExclude`, because the required versions are newer than the repository's release-age policy. This does not introduce a floating dependency or change the pinned versions.
+The pinned `2.112.3` Supabase package family remains subject to the repository minimum-release-age policy. `corepack pnpm install --frozen-lockfile` is blocked until its age window passes; no local policy bypass or `minimumReleaseAgeExclude` exception is retained. The exact version pins and lockfile resolution remain unchanged.
+
+### Review correction evidence
+
+The temporary `minimumReleaseAgeExclude` entries were removed without modifying `apps/web/package.json` or `pnpm-lock.yaml`. A fresh frozen installation check now correctly fails with `ERR_PNPM_MINIMUM_RELEASE_AGE_VIOLATION` for the six exact required Supabase `2.112.3` entries. Existing installed dependencies were used only to run verification commands while installation remains policy-blocked:
+
+```text
+vitest run                                  # 5 files, 16 tests passed
+tsc --project tsconfig.json                 # passed
+next build                                  # passed
+```
