@@ -12,8 +12,20 @@ function getPublicSupabaseConfig() {
   return { publishableKey, url };
 }
 
+function hasPublicSupabaseConfig() {
+  return Boolean(
+    process.env.NEXT_PUBLIC_SUPABASE_URL &&
+      process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY,
+  );
+}
+
 export async function updateSession(request: NextRequest) {
   let response = NextResponse.next({ request });
+
+  if (!hasPublicSupabaseConfig()) {
+    return response;
+  }
+
   const { publishableKey, url } = getPublicSupabaseConfig();
   const supabase = createServerClient(url, publishableKey, {
     cookies: {
