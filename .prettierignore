@@ -1,0 +1,12 @@
+.agents/
+.superpowers/
+assets/
+coverage/
+dist/
+build/
+docs/
+node_modules/
+.next/
+.turbo/
+playwright-report/
+test-results/

@@ -1,0 +1,17 @@
+@import '@candorlens/ui/styles/tokens.css';
+
+@source '../../../../packages/ui/src';
+
+:root {
+  --cl-font-sans: var(--font-manrope), Inter, 'Segoe UI', Arial, sans-serif;
+}
+
+body {
+  margin: 0;
+  background: var(--cl-color-background);
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
