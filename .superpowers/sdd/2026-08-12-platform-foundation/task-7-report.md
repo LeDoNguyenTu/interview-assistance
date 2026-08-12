@@ -112,3 +112,15 @@ Consequently these local-only checks could not run: `supabase start`, `supabase 
 - `packages/core/src/database/mappers.ts`
 - `packages/core/src/database/mappers.test.ts`
 - `packages/core/src/index.ts`
+
+## Static review fix round 1
+
+Applied the Task 7 static review corrections without any remote command.
+
+- Replaced the three generated-constraint-message assertions with the documented four-argument `throws_ok(sql, sqlstate, null, description)` form. They now assert only SQLSTATE `23514`, so PostgreSQL-generated constraint names and localized wording cannot make them flaky.
+- Made storage limits consistent: the global default is `1GiB`, the private recordings bucket and `recordings.byte_size` cap are `1GiB`, and the documents/exports buckets plus `documents.byte_size` cap remain `50MiB`.
+- Removed `profiles_user_id_idx` and `utterances_session_id_sequence_idx`. Those standalone indexes duplicated indexes created by the `profiles.user_id` and `utterances(session_id, sequence)` unique constraints.
+- Expanded the pgTAP plan to 87 assertions. It explicitly checks all ten public application tables have RLS, each has check constraints, the relevant constrained fields include negative sequence/duration/token protections, all 15 non-unique access indexes exist, and all four unique owner/sequence/idempotency constraints exist. The existing anonymous, owner, cross-user, ownership-change, child-row, and private storage tests remain.
+- Added a focused TypeScript regression test. It initially failed typecheck because `utterances.text` was required despite `text text not null default ''` in the migration. `utterances.Insert.text` is now optional and the test/typecheck pass.
+
+The local Docker engine is still unavailable, so pgTAP, local reset, lint, and actual CLI type generation remain unexecuted. The static review changes do not claim those database tests were run. `types.ts` is a provisional hand-maintained interface, not generated output; it must be replaced by `supabase gen types --local` after Docker is running and the migration passes local reset.

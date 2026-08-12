@@ -190,10 +190,13 @@ export interface Database {
           session_id: string;
           sequence: number;
           speaker: string;
-          text: string;
           start_ms: number;
           end_ms: number;
-        } & Partial<{ is_final: boolean; confidence: number | null }>;
+        } & Partial<{
+            text: string;
+            is_final: boolean;
+            confidence: number | null;
+          }>;
         Update: FoundationUpdate &
           Partial<{
             session_id: string;
