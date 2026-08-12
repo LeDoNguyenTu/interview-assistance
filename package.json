@@ -13,7 +13,8 @@
     "test": "turbo run test",
     "test:e2e": "turbo run test:e2e",
     "build": "turbo run build",
-    "format:check": "prettier --check ."
+    "format:check": "prettier --check .",
+    "ci:validate": "node scripts/validate-ci-workflows.mjs"
   },
   "devDependencies": {
     "@typescript-eslint/parser": "8.67.0",
