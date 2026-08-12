@@ -45,6 +45,9 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
+      - name: Test CI configuration validator
+        run: pnpm ci:validate:test
+
       - name: Validate CI configuration
         run: pnpm ci:validate
 

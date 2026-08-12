@@ -14,7 +14,8 @@
     "test:e2e": "turbo run test:e2e",
     "build": "turbo run build",
     "format:check": "prettier --check .",
-    "ci:validate": "node scripts/validate-ci-workflows.mjs"
+    "ci:validate": "node scripts/validate-ci-workflows.mjs",
+    "ci:validate:test": "node --test scripts/test/validate-ci-workflows.test.mjs"
   },
   "devDependencies": {
     "@typescript-eslint/parser": "8.67.0",
