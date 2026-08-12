@@ -1,6 +1,5 @@
 import {
   Badge,
-  Button,
   Card,
   CardContent,
   CardDescription,
@@ -16,6 +15,7 @@ import {
 } from '../../../../data/sessions/repository';
 import { requireUser } from '../../../../lib/auth/require-user-server';
 import { createClient } from '../../../../lib/supabase/server';
+import { SessionWorkspace } from '../../../../components/workspace/session-workspace';
 
 export const metadata = { title: 'Session details' };
 
@@ -39,7 +39,7 @@ export default async function SessionDetailPage({
       >
         Back to sessions
       </Link>
-      <div className="mt-6 max-w-2xl space-y-6">
+      <div className="mt-6 space-y-6">
         <div>
           <Badge tone="muted">{session.status}</Badge>
           <h1 className="mt-4 text-3xl font-bold tracking-[-0.035em] text-[var(--cl-color-deep-forest)]">
@@ -82,9 +82,7 @@ export default async function SessionDetailPage({
             </dl>
           </CardContent>
         </Card>
-        <Button disabled type="button">
-          Available in the live-session milestone
-        </Button>
+        <SessionWorkspace session={session} />
       </div>
     </section>
   );

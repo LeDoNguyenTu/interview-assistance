@@ -1,7 +1,7 @@
 import type { NextConfig } from 'next';
 
 const nextConfig: NextConfig = {
-  transpilePackages: ['@candorlens/ui'],
+  transpilePackages: ['@candorlens/core', '@candorlens/ui'],
 };
 
 export default nextConfig;
