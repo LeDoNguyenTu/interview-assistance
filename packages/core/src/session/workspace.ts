@@ -1,6 +1,7 @@
 import type { SessionRecord } from './schema.js';
 
-export type WorkspaceCaptureState = 'idle' | 'capturing' | 'interrupted' | 'completed';
+export type WorkspaceCaptureState =
+  'idle' | 'capturing' | 'interrupted' | 'completed';
 
 export interface WorkspaceTranscriptItem {
   id: string;
@@ -62,9 +63,13 @@ export function reduceWorkspace(
         ? { ...state, state: 'capturing', transcript: fixtureTranscript }
         : state;
     case 'pause-fixture':
-      return state.state === 'capturing' ? { ...state, state: 'interrupted' } : state;
+      return state.state === 'capturing'
+        ? { ...state, state: 'interrupted' }
+        : state;
     case 'resume-fixture':
-      return state.state === 'interrupted' ? { ...state, state: 'capturing' } : state;
+      return state.state === 'interrupted'
+        ? { ...state, state: 'capturing' }
+        : state;
     case 'stop-fixture':
       return state.state === 'capturing' || state.state === 'interrupted'
         ? { ...state, state: 'completed' }
