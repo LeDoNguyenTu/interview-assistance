@@ -21,10 +21,16 @@ describe('DashboardPage', () => {
   it('presents a new session action and a consent-first empty state', async () => {
     render(await DashboardPage());
 
-    expect(screen.getByRole('link', { name: 'New session' })).toHaveProperty(
+    const newSession = screen.getByRole('link', { name: 'New session' });
+
+    expect(newSession).toHaveProperty(
       'href',
       expect.stringContaining('/sessions/new'),
     );
+    expect(newSession.className).toContain('text-white');
+    expect(
+      screen.getByLabelText('Session activity visualization'),
+    ).toBeTruthy();
     expect(screen.getByText('No sessions yet')).toBeTruthy();
     expect(
       screen.getByText(/Capture only begins after you confirm consent/i),
