@@ -1,6 +1,10 @@
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 
-import { getValidatedClaims, requireUserForRoute } from './require-user.js';
+vi.mock('./neon-auth.js', () => ({
+  getAuthenticatedUser: vi.fn(),
+}));
+
+import { requireUserForRoute } from './require-user.js';
 
 const validClaims = {
   aud: 'authenticated',
@@ -16,65 +20,29 @@ describe('requireUserForRoute', () => {
     };
 
     await expect(
-      requireUserForRoute(
-        {
-          auth: {
-            getClaims: async () => ({ data: { claims: null }, error: null }),
-          },
-        },
-        redirect,
-      ),
+      requireUserForRoute(redirect, async () => null),
     ).rejects.toThrow('redirect:/sign-in');
   });
 
-  it('returns the claims Supabase validates for a signed-in route', async () => {
+  it('returns the authenticated Neon user for a signed-in route', async () => {
     await expect(
       requireUserForRoute(
-        {
-          auth: {
-            getClaims: async () => ({
-              data: { claims: validClaims },
-              error: null,
-            }),
-          },
-        },
         () => {
           throw new Error('should not redirect');
         },
+        async () => validClaims,
       ),
     ).resolves.toEqual(validClaims);
   });
 
-  it('does not accept a cookie-shaped session when Supabase returns invalid claims', async () => {
-    const cookieShapedSession = {
-      access_token: 'not-trusted',
-      user: { user_metadata: { role: 'admin' } },
-    };
-
+  it('does not accept a missing authenticated user', async () => {
     await expect(
-      getValidatedClaims({
-        auth: {
-          getClaims: async () => ({
-            data: {
-              claims: cookieShapedSession as unknown as typeof validClaims,
-            },
-            error: null,
-          }),
+      requireUserForRoute(
+        () => {
+          throw new Error('redirect:/sign-in');
         },
-      }),
-    ).resolves.toBeNull();
-  });
-
-  it('does not fall back to cookie presence when Supabase returns no claims', async () => {
-    const cookiePresent = true;
-
-    const clientWithCookie = {
-      auth: {
-        getClaims: async () => ({ data: { claims: null }, error: null }),
-      },
-      cookiePresent,
-    };
-
-    await expect(getValidatedClaims(clientWithCookie)).resolves.toBeNull();
+        async () => null,
+      ),
+    ).rejects.toThrow('redirect:/sign-in');
   });
 });

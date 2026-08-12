@@ -10,22 +10,26 @@ import Link from 'next/link';
 import { notFound } from 'next/navigation';
 
 import {
+  asSessionSql,
   getSessionForOwner,
-  type SessionDatabaseClient,
 } from '../../../../data/sessions/repository';
 import { requireUser } from '../../../../lib/auth/require-user-server';
-import { createClient } from '../../../../lib/supabase/server';
+import { getNeonSql } from '../../../../lib/neon/database';
 import { SessionWorkspace } from '../../../../components/workspace/session-workspace';
 
 export const metadata = { title: 'Session details' };
+export const dynamic = 'force-dynamic';
 
 export default async function SessionDetailPage({
   params,
 }: Readonly<{ params: Promise<{ sessionId: string }> }>) {
   const claims = await requireUser();
   const { sessionId } = await params;
-  const database = (await createClient()) as unknown as SessionDatabaseClient;
-  const session = await getSessionForOwner(database, claims, sessionId);
+  const session = await getSessionForOwner(
+    asSessionSql(getNeonSql()),
+    claims,
+    sessionId,
+  );
 
   if (!session) {
     notFound();

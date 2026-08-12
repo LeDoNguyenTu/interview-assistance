@@ -2,18 +2,21 @@ import Link from 'next/link';
 
 import { SessionList } from '../../../components/sessions/session-list';
 import {
+  asSessionSql,
   listSessionsForOwner,
-  type SessionDatabaseClient,
 } from '../../../data/sessions/repository';
 import { requireUser } from '../../../lib/auth/require-user-server';
-import { createClient } from '../../../lib/supabase/server';
+import { getNeonSql } from '../../../lib/neon/database';
 
 export const metadata = { title: 'Sessions' };
+export const dynamic = 'force-dynamic';
 
 export default async function SessionsPage() {
   const claims = await requireUser();
-  const database = (await createClient()) as unknown as SessionDatabaseClient;
-  const sessions = await listSessionsForOwner(database, claims);
+  const sessions = await listSessionsForOwner(
+    asSessionSql(getNeonSql()),
+    claims,
+  );
 
   return (
     <section className="py-8 sm:py-12">

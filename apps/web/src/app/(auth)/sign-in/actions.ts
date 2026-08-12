@@ -1,9 +1,8 @@
 'use server';
 
-import { headers } from 'next/headers';
 import { redirect } from 'next/navigation';
 
-import { createClient } from '../../../lib/supabase/server';
+import { getNeonAuth } from '../../../lib/auth/neon-auth';
 
 type AuthFormState = {
   message: string | null;
@@ -38,8 +37,7 @@ export async function signIn(
     };
   }
 
-  const supabase = await createClient();
-  const { error } = await supabase.auth.signInWithPassword(credentials);
+  const { error } = await getNeonAuth().signIn.email(credentials);
 
   if (error) {
     return {
@@ -63,22 +61,17 @@ export async function signUp(
     };
   }
 
-  const origin =
-    (await headers()).get('origin') ?? process.env.NEXT_PUBLIC_APP_URL;
-  const supabase = await createClient();
-  await supabase.auth.signUp({
+  const { error } = await getNeonAuth().signUp.email({
     ...credentials,
-    ...(origin
-      ? {
-          options: {
-            emailRedirectTo: new URL(
-              '/auth/callback?next=/dashboard',
-              origin,
-            ).toString(),
-          },
-        }
-      : {}),
+    name: credentials.email.split('@')[0] || 'CandorLens user',
   });
+
+  if (error) {
+    return {
+      message: 'Unable to create an account with those credentials.',
+      status: 'error',
+    };
+  }
 
   return {
     message: 'If an account can be created, check your email to continue.',
