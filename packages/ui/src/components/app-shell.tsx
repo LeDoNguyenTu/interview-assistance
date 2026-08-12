@@ -58,10 +58,17 @@ export function AppShell({
       </a>
       <header className="sticky top-0 z-40 border-b border-[var(--cl-color-border)] bg-[var(--cl-color-surface)]/95 backdrop-blur-sm">
         <div className="mx-auto flex min-h-[var(--cl-nav-height)] max-w-7xl items-center gap-2 px-4 sm:px-6 lg:px-8">
-          <a aria-label={`${productName} home`} className="flex shrink-0 items-center" href="/">
+          <a
+            aria-label={`${productName} home`}
+            className="flex shrink-0 items-center"
+            href="/"
+          >
             <img alt={productName} className="h-8 w-auto" src={activeLogoSrc} />
           </a>
-          <nav aria-label="Primary navigation" className="hidden min-w-0 flex-1 items-center gap-2 md:flex">
+          <nav
+            aria-label="Primary navigation"
+            className="hidden min-w-0 flex-1 items-center gap-2 md:flex"
+          >
             {navigation.map(({ current, href, icon, label }) => (
               <a
                 aria-current={current ? 'page' : undefined}
@@ -121,7 +128,8 @@ export function AppShell({
                   aria-current={current ? 'page' : undefined}
                   className={cn(
                     'flex min-h-11 items-center gap-2 rounded-[var(--cl-radius-control)] px-4 py-2 text-sm font-semibold text-[var(--cl-color-muted-foreground)] hover:bg-[var(--cl-color-muted)] hover:text-[var(--cl-color-foreground)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--cl-color-ring)]',
-                    current && 'bg-[var(--cl-color-accent)] text-[var(--cl-color-accent-foreground)]',
+                    current &&
+                      'bg-[var(--cl-color-accent)] text-[var(--cl-color-accent-foreground)]',
                   )}
                   href={href}
                   key={href}
@@ -135,7 +143,10 @@ export function AppShell({
           </nav>
         ) : null}
       </header>
-      <main className="mx-auto w-full max-w-7xl px-4 py-6 sm:px-6 sm:py-8 lg:px-8" id={contentId}>
+      <main
+        className="mx-auto w-full max-w-7xl px-4 py-6 sm:px-6 sm:py-8 lg:px-8"
+        id={contentId}
+      >
         {children}
       </main>
     </div>

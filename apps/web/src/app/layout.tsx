@@ -27,13 +27,20 @@ export const viewport: Viewport = {
   initialScale: 1,
 };
 
-export default function RootLayout({ children }: Readonly<{ children: ReactNode }>) {
+export default function RootLayout({
+  children,
+}: Readonly<{ children: ReactNode }>) {
   return (
     <html lang="en">
-      <body className={`${manrope.variable} min-h-dvh bg-[var(--cl-color-background)] text-[var(--cl-color-foreground)] antialiased`}>
+      <body
+        className={`${manrope.variable} min-h-dvh bg-[var(--cl-color-background)] text-[var(--cl-color-foreground)] antialiased`}
+      >
         <header className="border-b border-[var(--cl-color-border)] bg-[var(--cl-color-surface)]">
           <div className="mx-auto flex h-[var(--cl-nav-height)] max-w-7xl items-center px-4 sm:px-6 lg:px-8">
-            <a className="inline-flex rounded-[var(--cl-radius-control)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--cl-color-ring)] focus-visible:ring-offset-2" href="/">
+            <a
+              className="inline-flex rounded-[var(--cl-radius-control)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--cl-color-ring)] focus-visible:ring-offset-2"
+              href="/"
+            >
               <Image
                 alt="CandorLens"
                 height={37}

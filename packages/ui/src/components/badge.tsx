@@ -9,11 +9,15 @@ export interface BadgeProps extends HTMLAttributes<HTMLSpanElement> {
 }
 
 const toneClasses: Record<BadgeTone, string> = {
-  default: 'bg-[var(--cl-color-accent)] text-[var(--cl-color-accent-foreground)]',
+  default:
+    'bg-[var(--cl-color-accent)] text-[var(--cl-color-accent-foreground)]',
   muted: 'bg-[var(--cl-color-muted)] text-[var(--cl-color-muted-foreground)]',
-  success: 'bg-[var(--cl-color-status-success-surface)] text-[var(--cl-color-status-success)]',
-  warning: 'bg-[var(--cl-color-status-warning-surface)] text-[var(--cl-color-status-warning)]',
-  danger: 'bg-[var(--cl-color-danger-surface)] text-[var(--cl-color-danger-foreground)]',
+  success:
+    'bg-[var(--cl-color-status-success-surface)] text-[var(--cl-color-status-success)]',
+  warning:
+    'bg-[var(--cl-color-status-warning-surface)] text-[var(--cl-color-status-warning)]',
+  danger:
+    'bg-[var(--cl-color-danger-surface)] text-[var(--cl-color-danger-foreground)]',
 };
 
 export const Badge = forwardRef<HTMLSpanElement, BadgeProps>(function Badge(

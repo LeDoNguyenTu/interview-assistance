@@ -11,8 +11,12 @@ describe('DesktopApp', () => {
     render(<DesktopApp />);
 
     expect(screen.getByRole('link', { name: 'CandorLens home' })).toBeTruthy();
-    expect(screen.getByRole('heading', { name: 'CandorLens desktop' })).toBeTruthy();
-    expect(screen.getByRole('status').textContent).toContain('Capture unavailable');
+    expect(
+      screen.getByRole('heading', { name: 'CandorLens desktop' }),
+    ).toBeTruthy();
+    expect(screen.getByRole('status').textContent).toContain(
+      'Capture unavailable',
+    );
     expect(screen.queryByRole('button', { name: /capture/i })).toBeNull();
   });
 });

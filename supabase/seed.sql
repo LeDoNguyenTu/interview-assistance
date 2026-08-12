@@ -1,0 +1,1 @@
+-- Foundation schema has no production-like seed data. pgTAP tests create isolated auth users.

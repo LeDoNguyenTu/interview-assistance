@@ -73,9 +73,16 @@ describe('reduceSession', () => {
     );
     const capturing = reduceSession(consented, { type: 'START_CAPTURE' }, now);
     const processing = reduceSession(capturing, { type: 'STOP_CAPTURE' }, now);
-    const completed = reduceSession(processing, { type: 'COMPLETE_PROCESSING' }, now);
+    const completed = reduceSession(
+      processing,
+      { type: 'COMPLETE_PROCESSING' },
+      now,
+    );
 
-    expect(prepared).toMatchObject({ status: 'ready', updatedAt: '2026-08-12T00:01:00.000Z' });
+    expect(prepared).toMatchObject({
+      status: 'ready',
+      updatedAt: '2026-08-12T00:01:00.000Z',
+    });
     expect(consented).toMatchObject({
       status: 'ready',
       consentedAt: '2026-08-12T00:02:00.000Z',
@@ -98,10 +105,17 @@ describe('reduceSession', () => {
   });
 
   it('rejects capture without recorded consent', () => {
-    const ready = session({ status: 'ready', updatedAt: '2026-08-12T00:01:00.000Z' });
+    const ready = session({
+      status: 'ready',
+      updatedAt: '2026-08-12T00:01:00.000Z',
+    });
 
     const error = transitionError(() =>
-      reduceSession(ready, { type: 'START_CAPTURE' }, clock('2026-08-12T00:02:00.000Z')),
+      reduceSession(
+        ready,
+        { type: 'START_CAPTURE' },
+        clock('2026-08-12T00:02:00.000Z'),
+      ),
     );
 
     expect(error).toMatchObject({
@@ -116,12 +130,18 @@ describe('reduceSession', () => {
     const error = transitionError(() =>
       reduceSession(
         ready,
-        { type: 'CONFIRM_CONSENT', consent: consent({ sessionId: 'session-2' }) },
+        {
+          type: 'CONFIRM_CONSENT',
+          consent: consent({ sessionId: 'session-2' }),
+        },
         clock('2026-08-12T00:02:00.000Z'),
       ),
     );
 
-    expect(error).toMatchObject({ from: 'ready', eventType: 'CONFIRM_CONSENT' });
+    expect(error).toMatchObject({
+      from: 'ready',
+      eventType: 'CONFIRM_CONSENT',
+    });
   });
 
   it('rejects consent authorized for a different owner', () => {
@@ -135,24 +155,40 @@ describe('reduceSession', () => {
       ),
     );
 
-    expect(error).toMatchObject({ from: 'ready', eventType: 'CONFIRM_CONSENT' });
+    expect(error).toMatchObject({
+      from: 'ready',
+      eventType: 'CONFIRM_CONSENT',
+    });
   });
 
   it('rejects consent that does not cover every configured capture source', () => {
-    const ready = session({ status: 'ready', captureSources: ['microphone', 'system-audio'] });
+    const ready = session({
+      status: 'ready',
+      captureSources: ['microphone', 'system-audio'],
+    });
 
     const error = transitionError(() =>
       reduceSession(
         ready,
-        { type: 'CONFIRM_CONSENT', consent: consent({ acceptedSources: ['microphone'] }) },
+        {
+          type: 'CONFIRM_CONSENT',
+          consent: consent({ acceptedSources: ['microphone'] }),
+        },
         clock('2026-08-12T00:02:00.000Z'),
       ),
     );
 
-    expect(error).toMatchObject({ from: 'ready', eventType: 'CONFIRM_CONSENT' });
+    expect(error).toMatchObject({
+      from: 'ready',
+      eventType: 'CONFIRM_CONSENT',
+    });
     expect(
       transitionError(() =>
-        reduceSession(ready, { type: 'START_CAPTURE' }, clock('2026-08-12T00:03:00.000Z')),
+        reduceSession(
+          ready,
+          { type: 'START_CAPTURE' },
+          clock('2026-08-12T00:03:00.000Z'),
+        ),
       ),
     ).toMatchObject({ from: 'ready', eventType: 'START_CAPTURE' });
   });
@@ -166,7 +202,11 @@ describe('reduceSession', () => {
     });
 
     const error = transitionError(() =>
-      reduceSession(capturing, { type: 'START_CAPTURE' }, clock('2026-08-12T00:03:00.000Z')),
+      reduceSession(
+        capturing,
+        { type: 'START_CAPTURE' },
+        clock('2026-08-12T00:03:00.000Z'),
+      ),
     );
 
     expect(error).toMatchObject({
@@ -187,7 +227,10 @@ describe('reduceSession', () => {
     const interrupted = reduceSession(active, { type: 'INTERRUPT' }, now);
     const resumed = reduceSession(interrupted, { type: 'RESUME' }, now);
 
-    expect(interrupted).toMatchObject({ status: 'interrupted', updatedAt: '2026-08-12T00:03:00.000Z' });
+    expect(interrupted).toMatchObject({
+      status: 'interrupted',
+      updatedAt: '2026-08-12T00:03:00.000Z',
+    });
     expect(resumed).toMatchObject({
       status: 'capturing',
       startedAt: '2026-08-12T00:02:00.000Z',
@@ -203,7 +246,11 @@ describe('reduceSession', () => {
       updatedAt: '2026-08-12T00:03:00.000Z',
     });
 
-    const processing = reduceSession(interrupted, { type: 'STOP_CAPTURE' }, clock('2026-08-12T00:04:00.000Z'));
+    const processing = reduceSession(
+      interrupted,
+      { type: 'STOP_CAPTURE' },
+      clock('2026-08-12T00:04:00.000Z'),
+    );
 
     expect(processing).toMatchObject({
       status: 'processing',
@@ -221,9 +268,16 @@ describe('reduceSession', () => {
       updatedAt: '2026-08-12T00:03:00.000Z',
     });
 
-    const failed = reduceSession(processing, { type: 'FAIL' }, clock('2026-08-12T00:04:00.000Z'));
+    const failed = reduceSession(
+      processing,
+      { type: 'FAIL' },
+      clock('2026-08-12T00:04:00.000Z'),
+    );
 
-    expect(failed).toMatchObject({ status: 'failed', updatedAt: '2026-08-12T00:04:00.000Z' });
+    expect(failed).toMatchObject({
+      status: 'failed',
+      updatedAt: '2026-08-12T00:04:00.000Z',
+    });
   });
 
   it('resets a failed session to a new draft while preserving its identity', () => {
@@ -235,7 +289,11 @@ describe('reduceSession', () => {
       updatedAt: '2026-08-12T00:04:00.000Z',
     });
 
-    const reset = reduceSession(failed, { type: 'RESET' }, clock('2026-08-12T00:05:00.000Z'));
+    const reset = reduceSession(
+      failed,
+      { type: 'RESET' },
+      clock('2026-08-12T00:05:00.000Z'),
+    );
 
     expect(reset).toMatchObject({
       id: 'session-1',

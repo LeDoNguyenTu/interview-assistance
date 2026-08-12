@@ -1,4 +1,10 @@
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@candorlens/ui';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@candorlens/ui';
 
 export default function NotFound() {
   return (
@@ -7,7 +13,8 @@ export default function NotFound() {
         <CardHeader>
           <CardTitle>This workspace view is not available.</CardTitle>
           <CardDescription>
-            The page may have moved, or it may require a workspace that has not been configured yet.
+            The page may have moved, or it may require a workspace that has not
+            been configured yet.
           </CardDescription>
         </CardHeader>
         <CardContent>
