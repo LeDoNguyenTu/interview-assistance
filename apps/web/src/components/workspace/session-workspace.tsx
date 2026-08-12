@@ -16,6 +16,13 @@ import {
 } from '@candorlens/ui';
 import { useReducer, useState } from 'react';
 
+type GuidanceProvider = 'gemini' | 'openai';
+type GuidanceState =
+  | { status: 'idle' }
+  | { status: 'loading' }
+  | { status: 'error'; message: string }
+  | { provider: GuidanceProvider; status: 'ready'; text: string };
+
 function workspaceReducer(
   state: ReturnType<typeof createFixtureWorkspace>,
   event: Parameters<typeof reduceWorkspace>[1],
@@ -31,7 +38,9 @@ export function SessionWorkspace({
     session,
     createFixtureWorkspace,
   );
+  const [guidance, setGuidance] = useState<GuidanceState>({ status: 'idle' });
   const [note, setNote] = useState('');
+  const [provider, setProvider] = useState<GuidanceProvider>('openai');
   const active = workspace.state === 'capturing';
 
   function addNote() {
@@ -39,8 +48,59 @@ export function SessionWorkspace({
     setNote('');
   }
 
+  async function requestGuidance() {
+    setGuidance({ status: 'loading' });
+    try {
+      const response = await fetch('/api/guidance', {
+        body: JSON.stringify({
+          mode: session.mode,
+          notes: workspace.notes,
+          provider,
+          title: session.title,
+          transcript: workspace.transcript.map((item) => ({
+            speaker: item.speaker,
+            text: item.text,
+            timestamp: item.timestamp,
+          })),
+        }),
+        headers: { 'Content-Type': 'application/json' },
+        method: 'POST',
+      });
+      const payload = (await response.json()) as {
+        error?: unknown;
+        provider?: unknown;
+        text?: unknown;
+      };
+      if (
+        !response.ok ||
+        typeof payload.text !== 'string' ||
+        (payload.provider !== 'openai' && payload.provider !== 'gemini')
+      ) {
+        setGuidance({
+          message:
+            typeof payload.error === 'string'
+              ? payload.error
+              : 'Unable to generate guidance.',
+          status: 'error',
+        });
+        return;
+      }
+      setGuidance({
+        provider: payload.provider,
+        status: 'ready',
+        text: payload.text,
+      });
+    } catch {
+      setGuidance({
+        message:
+          'Unable to generate guidance. Check your connection and try again.',
+        status: 'error',
+      });
+    }
+  }
+
   return (
-    <section className="space-y-6" aria-label="Session workspace">
+    <section aria-label="Session workspace" className="space-y-6">
       <div className="grid gap-6 xl:grid-cols-[minmax(16rem,0.8fr)_minmax(0,1.6fr)_minmax(16rem,0.8fr)]">
         <Card className="xl:order-1">
           <CardHeader>
@@ -48,8 +108,9 @@ export function SessionWorkspace({
           </CardHeader>
           <CardContent className="space-y-4">
             <p className="text-sm leading-6 text-[var(--cl-color-muted-foreground)]">
-              This is a visible fixture demonstration. It does not access your
-              microphone, system audio, browser tabs, or any provider.
+              This visible fixture does not access your microphone, system
+              audio, or browser tabs. Guidance is sent only after you request
+              it.
             </p>
             <label className="flex gap-3 text-sm leading-6">
               <input
@@ -99,6 +160,7 @@ export function SessionWorkspace({
             ) : null}
           </CardContent>
         </Card>
+
         <div className="space-y-6 xl:order-2">
           <CaptureIndicator
             {...(active ? { elapsedSeconds: 42 } : {})}
@@ -124,7 +186,7 @@ export function SessionWorkspace({
                       key={item.id}
                     >
                       <p className="text-xs font-bold uppercase tracking-[0.08em] text-[var(--cl-color-muted-foreground)]">
-                        {item.speaker} · {item.timestamp}
+                        {item.speaker} - {item.timestamp}
                       </p>
                       <p className="mt-1 leading-6">{item.text}</p>
                     </li>
@@ -138,6 +200,7 @@ export function SessionWorkspace({
             </CardContent>
           </Card>
         </div>
+
         <Card className="xl:order-3">
           <CardHeader>
             <CardTitle>Context and notes</CardTitle>
@@ -167,6 +230,54 @@ export function SessionWorkspace({
                 ))}
               </ul>
             ) : null}
+
+            <div className="border-t border-[var(--cl-color-border)] pt-4">
+              <Label htmlFor="guidance-provider">Guidance provider</Label>
+              <select
+                className="mt-2 min-h-11 w-full rounded-[var(--cl-radius-control)] border border-[var(--cl-color-border)] bg-[var(--cl-color-surface)] px-3 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--cl-color-ring)]"
+                id="guidance-provider"
+                onChange={(event) =>
+                  setProvider(event.target.value as GuidanceProvider)
+                }
+                value={provider}
+              >
+                <option value="openai">OpenAI</option>
+                <option value="gemini">Gemini</option>
+              </select>
+              <Button
+                className="mt-3"
+                disabled={
+                  guidance.status === 'loading' ||
+                  workspace.transcript.length === 0
+                }
+                onClick={requestGuidance}
+                type="button"
+              >
+                {guidance.status === 'loading'
+                  ? 'Generating guidance...'
+                  : 'Generate guidance'}
+              </Button>
+              <p className="mt-3 text-xs leading-5 text-[var(--cl-color-muted-foreground)]">
+                This sends the visible transcript and saved notes only. It never
+                makes a final interview decision.
+              </p>
+              {guidance.status === 'error' ? (
+                <p
+                  className="mt-3 text-sm text-[var(--cl-color-destructive)]"
+                  role="alert"
+                >
+                  {guidance.message}
+                </p>
+              ) : null}
+              {guidance.status === 'ready' ? (
+                <div className="mt-4 rounded-[var(--cl-radius-control)] bg-[var(--cl-color-accent)] p-4">
+                  <p className="text-xs font-bold uppercase tracking-[0.08em] text-[var(--cl-color-accent-foreground)]">
+                    Draft for human review - {guidance.provider}
+                  </p>
+                  <p className="mt-2 text-sm leading-6">{guidance.text}</p>
+                </div>
+              ) : null}
+            </div>
           </CardContent>
         </Card>
       </div>
