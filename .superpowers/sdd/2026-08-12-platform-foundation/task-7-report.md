@@ -124,3 +124,26 @@ Applied the Task 7 static review corrections without any remote command.
 - Added a focused TypeScript regression test. It initially failed typecheck because `utterances.text` was required despite `text text not null default ''` in the migration. `utterances.Insert.text` is now optional and the test/typecheck pass.
 
 The local Docker engine is still unavailable, so pgTAP, local reset, lint, and actual CLI type generation remain unexecuted. The static review changes do not claim those database tests were run. `types.ts` is a provisional hand-maintained interface, not generated output; it must be replaced by `supabase gen types --local` after Docker is running and the migration passes local reset.
+
+## Local verification resumed
+
+Docker Desktop became available on 2026-08-12. An unrelated local `sales-outreach-tool` stack already owned the default Supabase ports, so this project was started temporarily on unused `5532x` ports. The repository config was restored to its tracked ports after verification; no other local stack was stopped or changed.
+
+Using the existing pinned local Supabase CLI `2.113.0` binary (the `corepack pnpm` wrapper remains blocked by the repository's pre-existing minimum-release-age policy for Supabase JS `2.112.3` packages), the following local-only commands completed:
+
+```powershell
+supabase start
+supabase db reset --local
+supabase test db supabase/tests/platform_foundation.test.sql supabase/tests/session_owner_scope.test.sql
+supabase db lint --local --level warning
+supabase gen types --local --schema public
+```
+
+- Reset applied `20260812010234_platform_foundation.sql` and created the three configured private storage buckets.
+- Initial pgTAP execution exposed three test-definition mistakes: owner-prefixed storage checks cover `(storage_path, user_id)`, and utterance time ordering covers `(end_ms, start_ms)`. The corresponding pgTAP tests failed 3 of 87 assertions, were corrected to use the real multi-column constraints, and then passed.
+- Final pgTAP result: both Task 7 foundation and Task 9 two-user session tests passed, `Files=2, Tests=89, Result: PASS`.
+- Local database lint reported `No schema errors found`.
+- `packages/core/src/database/types.ts` is now generated from the local database by the pinned CLI and formatted with the repository formatter; it replaces the provisional hand-maintained type declaration.
+- Fresh package-core checks passed using existing local binaries: Vitest `4 files, 16 tests passed`, TypeScript typecheck, ESLint, and targeted Prettier. `git diff --check` passed.
+
+No remote Supabase command was run.
