@@ -26,9 +26,12 @@ export function AuthForm({ action, mode }: AuthFormProps) {
   return (
     <form action={formAction} className="space-y-5" noValidate>
       <div className="space-y-2">
-        <Label htmlFor="email">Email address</Label>
+        <Label className="text-[#e7e7e1]" htmlFor="email">
+          Email address
+        </Label>
         <Input
           autoComplete="email"
+          className="border-white/15 bg-white/[0.06] text-white placeholder:text-[#9e9e98] focus-visible:ring-offset-[#121212]"
           id="email"
           name="email"
           required
@@ -36,9 +39,12 @@ export function AuthForm({ action, mode }: AuthFormProps) {
         />
       </div>
       <div className="space-y-2">
-        <Label htmlFor="password">Password</Label>
+        <Label className="text-[#e7e7e1]" htmlFor="password">
+          Password
+        </Label>
         <Input
           autoComplete={isSignIn ? 'current-password' : 'new-password'}
+          className="border-white/15 bg-white/[0.06] text-white placeholder:text-[#9e9e98] focus-visible:ring-offset-[#121212]"
           id="password"
           minLength={8}
           name="password"
@@ -49,7 +55,7 @@ export function AuthForm({ action, mode }: AuthFormProps) {
       <p
         aria-atomic="true"
         aria-live={state.status === 'error' ? 'assertive' : 'polite'}
-        className="min-h-6 text-sm text-[var(--cl-color-muted-foreground)]"
+        className="min-h-6 text-sm text-[#b7b7b1]"
         role={state.status === 'error' ? 'alert' : 'status'}
       >
         {isPending ? 'Please wait…' : state.message}
@@ -57,10 +63,10 @@ export function AuthForm({ action, mode }: AuthFormProps) {
       <Button disabled={isPending} type="submit">
         {isPending ? 'Please wait…' : isSignIn ? 'Sign in' : 'Create account'}
       </Button>
-      <p className="text-sm text-[var(--cl-color-muted-foreground)]">
+      <p className="text-sm text-[#b7b7b1]">
         {isSignIn ? 'Need an account? ' : 'Already have an account? '}
         <Link
-          className="font-semibold text-[var(--cl-color-primary)] hover:text-[var(--cl-color-primary-hover)]"
+          className="font-semibold text-[#5ee8bd] hover:text-white"
           href={isSignIn ? '/sign-up' : '/sign-in'}
         >
           {isSignIn ? 'Create one' : 'Sign in'}

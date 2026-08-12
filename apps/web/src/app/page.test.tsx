@@ -11,7 +11,10 @@ describe('HomePage', () => {
     render(<HomePage />);
 
     expect(screen.getByText('CandorLens')).toBeTruthy();
-    expect(screen.getAllByRole('link', { name: 'Sign in' })).toHaveLength(1);
+    const signInLinks = screen.getAllByRole('link', { name: 'Sign in' });
+
+    expect(signInLinks).toHaveLength(1);
+    expect(signInLinks.at(0)?.className).toContain('text-white');
     expect(
       screen.getByText(
         'A consent-first interview workspace for clearer practice, structured conversations, and evidence-oriented review.',

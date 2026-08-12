@@ -31,6 +31,9 @@ describe('DashboardPage', () => {
     expect(
       screen.getByLabelText('Session activity visualization'),
     ).toBeTruthy();
+    expect(
+      screen.getByText('Always visible').parentElement?.className,
+    ).toContain('items-center');
     expect(screen.getByText('No sessions yet')).toBeTruthy();
     expect(
       screen.getByText(/Capture only begins after you confirm consent/i),
