@@ -1,0 +1,8 @@
+**/node_modules/
+**/.next/
+**/.turbo/
+**/coverage/
+**/dist/
+**/build/
+apps/desktop/src-tauri/target/
+supabase/.temp/
