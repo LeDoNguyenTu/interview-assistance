@@ -2,7 +2,7 @@ begin;
 
 create extension if not exists pgtap with schema extensions;
 
-select plan(30);
+select plan(87);
 
 select has_table('public', 'profiles', 'profiles table exists');
 select has_table('public', 'documents', 'documents table exists');
@@ -15,37 +15,70 @@ select has_table('public', 'guidance_events', 'guidance_events table exists');
 select has_table('public', 'reports', 'reports table exists');
 select has_table('public', 'usage_events', 'usage_events table exists');
 
-select ok(
-  exists (
-    select 1
-    from pg_class
-    where oid = 'public.sessions'::regclass
-      and relrowsecurity
-  ),
-  'sessions has RLS enabled'
-);
+select ok((select relrowsecurity from pg_class where oid = 'public.profiles'::regclass), 'profiles has RLS enabled');
+select ok((select relrowsecurity from pg_class where oid = 'public.documents'::regclass), 'documents has RLS enabled');
+select ok((select relrowsecurity from pg_class where oid = 'public.interview_profiles'::regclass), 'interview_profiles has RLS enabled');
+select ok((select relrowsecurity from pg_class where oid = 'public.sessions'::regclass), 'sessions has RLS enabled');
+select ok((select relrowsecurity from pg_class where oid = 'public.recordings'::regclass), 'recordings has RLS enabled');
+select ok((select relrowsecurity from pg_class where oid = 'public.utterances'::regclass), 'utterances has RLS enabled');
+select ok((select relrowsecurity from pg_class where oid = 'public.questions'::regclass), 'questions has RLS enabled');
+select ok((select relrowsecurity from pg_class where oid = 'public.guidance_events'::regclass), 'guidance_events has RLS enabled');
+select ok((select relrowsecurity from pg_class where oid = 'public.reports'::regclass), 'reports has RLS enabled');
+select ok((select relrowsecurity from pg_class where oid = 'public.usage_events'::regclass), 'usage_events has RLS enabled');
 
-select ok(
-  exists (
-    select 1
-    from pg_indexes
-    where schemaname = 'public'
-      and tablename = 'utterances'
-      and indexdef like '%UNIQUE%session_id, sequence%'
-  ),
-  'utterances has a unique session sequence index'
-);
+select has_check('public', 'profiles', 'profiles has required checks');
+select has_check('public', 'documents', 'documents has required checks');
+select has_check('public', 'interview_profiles', 'interview_profiles has required checks');
+select has_check('public', 'sessions', 'sessions has required checks');
+select has_check('public', 'recordings', 'recordings has required checks');
+select has_check('public', 'utterances', 'utterances has required checks');
+select has_check('public', 'questions', 'questions has required checks');
+select has_check('public', 'guidance_events', 'guidance_events has required checks');
+select has_check('public', 'reports', 'reports has required checks');
+select has_check('public', 'usage_events', 'usage_events has required checks');
 
-select ok(
-  exists (
-    select 1
-    from pg_constraint
-    where conrelid = 'public.sessions'::regclass
-      and contype = 'c'
-      and pg_get_constraintdef(oid) like '%consent%'
-  ),
-  'sessions has a consent constraint'
-);
+select col_has_check('public', 'profiles', 'default_provider', 'profiles constrain default provider');
+select col_has_check('public', 'documents', 'storage_path', 'documents constrain owner-prefixed storage paths');
+select col_has_check('public', 'documents', 'byte_size', 'documents constrain storage size');
+select col_has_check('public', 'interview_profiles', 'title', 'interview profiles require titles');
+select col_has_check('public', 'sessions', 'mode', 'sessions constrain mode');
+select col_has_check('public', 'recordings', 'storage_path', 'recordings constrain owner-prefixed storage paths');
+select col_has_check('public', 'recordings', 'byte_size', 'recordings constrain storage size');
+select col_has_check('public', 'recordings', 'duration_ms', 'recordings reject negative duration');
+select col_has_check('public', 'utterances', 'sequence', 'utterances reject negative sequence');
+select col_has_check('public', 'utterances', 'start_ms', 'utterances reject negative start time');
+select col_has_check('public', 'utterances', 'end_ms', 'utterances require ordered timestamps');
+select col_has_check('public', 'utterances', 'confidence', 'utterances constrain confidence');
+select col_has_check('public', 'questions', 'detected_ms', 'questions reject negative detected time');
+select col_has_check('public', 'questions', 'confidence', 'questions constrain confidence');
+select col_has_check('public', 'guidance_events', 'latency_ms', 'guidance events reject negative latency');
+select col_has_check('public', 'guidance_events', 'input_tokens', 'guidance events reject negative input tokens');
+select col_has_check('public', 'guidance_events', 'output_tokens', 'guidance events reject negative output tokens');
+select col_has_check('public', 'usage_events', 'latency_ms', 'usage events reject negative latency');
+select col_has_check('public', 'usage_events', 'input_tokens', 'usage events reject negative input tokens');
+select col_has_check('public', 'usage_events', 'output_tokens', 'usage events reject negative output tokens');
+select col_has_check('public', 'usage_events', 'audio_ms', 'usage events reject negative audio duration');
+
+select has_index('public', 'documents', 'documents_user_id_created_at_idx', 'documents owner access index exists');
+select has_index('public', 'interview_profiles', 'interview_profiles_user_id_updated_at_idx', 'interview profiles owner access index exists');
+select has_index('public', 'sessions', 'sessions_user_id_created_at_idx', 'sessions owner access index exists');
+select has_index('public', 'sessions', 'sessions_interview_profile_id_idx', 'sessions profile access index exists');
+select has_index('public', 'recordings', 'recordings_user_id_created_at_idx', 'recordings owner access index exists');
+select has_index('public', 'recordings', 'recordings_session_id_created_at_idx', 'recordings session access index exists');
+select has_index('public', 'utterances', 'utterances_user_id_created_at_idx', 'utterances owner access index exists');
+select has_index('public', 'questions', 'questions_user_id_created_at_idx', 'questions owner access index exists');
+select has_index('public', 'questions', 'questions_session_id_detected_ms_idx', 'questions session access index exists');
+select has_index('public', 'guidance_events', 'guidance_events_user_id_created_at_idx', 'guidance owner access index exists');
+select has_index('public', 'guidance_events', 'guidance_events_session_id_created_at_idx', 'guidance session access index exists');
+select has_index('public', 'reports', 'reports_user_id_created_at_idx', 'reports owner access index exists');
+select has_index('public', 'reports', 'reports_session_id_created_at_idx', 'reports session access index exists');
+select has_index('public', 'usage_events', 'usage_events_user_id_created_at_idx', 'usage owner access index exists');
+select has_index('public', 'usage_events', 'usage_events_session_id_created_at_idx', 'usage session access index exists');
+
+select col_is_unique('public', 'profiles', 'user_id', 'profiles has one row per owner');
+select col_is_unique('public', 'utterances', array['session_id', 'sequence'], 'utterances have unique session sequences');
+select col_is_unique('public', 'guidance_events', array['session_id', 'idempotency_key'], 'guidance operations are idempotent per session');
+select col_is_unique('public', 'reports', array['session_id', 'idempotency_key'], 'report operations are idempotent per session');
 
 insert into auth.users (id, email)
 values
@@ -81,13 +114,13 @@ select results_eq(
 select throws_ok(
   $$insert into public.documents (user_id, storage_path, original_filename, media_type, byte_size) values ('11111111-1111-1111-1111-111111111111', '11111111-1111-1111-1111-111111111111/too-large.pdf', 'too-large.pdf', 'application/pdf', 52428801)$$,
   '23514',
-  'new row for relation "documents" violates check constraint',
+  null,
   'document storage sizes have a database constraint'
 );
 select throws_ok(
   $$insert into public.sessions (user_id, title, mode, status, provider, platform, capture_sources, recording_enabled, consented_at) values ('11111111-1111-1111-1111-111111111111', 'Invalid consent', 'coach', 'draft', 'fixture', 'web', array['microphone']::text[], false, now())$$,
   '23514',
-  'new row for relation "sessions" violates check constraint',
+  null,
   'sessions reject an incomplete consent state'
 );
 
@@ -106,7 +139,7 @@ values (
 select throws_ok(
   $$insert into public.utterances (user_id, session_id, sequence, speaker, text, start_ms, end_ms, is_final, confidence) values ('11111111-1111-1111-1111-111111111111', 'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa', 0, 'candidate', 'invalid confidence', 0, 1, true, 1.1)$$,
   '23514',
-  'new row for relation "utterances" violates check constraint',
+  null,
   'utterance confidence is constrained to the valid range'
 );
 

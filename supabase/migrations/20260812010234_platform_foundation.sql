@@ -165,7 +165,6 @@ create table public.usage_events (
   updated_at timestamptz not null default now()
 );
 
-create index profiles_user_id_idx on public.profiles (user_id);
 create index documents_user_id_created_at_idx on public.documents (user_id, created_at desc);
 create index interview_profiles_user_id_updated_at_idx on public.interview_profiles (user_id, updated_at desc);
 create index sessions_user_id_created_at_idx on public.sessions (user_id, created_at desc);
@@ -173,7 +172,6 @@ create index sessions_interview_profile_id_idx on public.sessions (interview_pro
 create index recordings_user_id_created_at_idx on public.recordings (user_id, created_at desc);
 create index recordings_session_id_created_at_idx on public.recordings (session_id, created_at desc);
 create index utterances_user_id_created_at_idx on public.utterances (user_id, created_at desc);
-create index utterances_session_id_sequence_idx on public.utterances (session_id, sequence);
 create index questions_user_id_created_at_idx on public.questions (user_id, created_at desc);
 create index questions_session_id_detected_ms_idx on public.questions (session_id, detected_ms);
 create index guidance_events_user_id_created_at_idx on public.guidance_events (user_id, created_at desc);
