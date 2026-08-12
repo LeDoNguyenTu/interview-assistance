@@ -1,0 +1,35 @@
+{
+  "name": "@candorlens/desktop",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "lint": "eslint src vite.config.ts",
+    "typecheck": "tsc --project tsconfig.json",
+    "test": "vitest run",
+    "build": "vite build",
+    "tauri": "tauri"
+  },
+  "dependencies": {
+    "@candorlens/core": "workspace:*",
+    "@candorlens/models": "workspace:*",
+    "@candorlens/ui": "workspace:*",
+    "@tauri-apps/api": "2.11.1",
+    "react": "19.2.8",
+    "react-dom": "19.2.8"
+  },
+  "devDependencies": {
+    "@tailwindcss/vite": "4.3.3",
+    "@tauri-apps/cli": "2.11.4",
+    "@testing-library/dom": "10.4.1",
+    "@testing-library/react": "16.3.2",
+    "@types/react": "19.2.8",
+    "@types/react-dom": "19.2.3",
+    "eslint": "10.8.1",
+    "jsdom": "30.0.1",
+    "typescript": "5.9.3",
+    "vite": "8.2.1",
+    "vitest": "4.1.10"
+  }
+}

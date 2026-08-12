@@ -1,0 +1,31 @@
+{
+  "$schema": "https://schema.tauri.app/config/2",
+  "productName": "CandorLens",
+  "version": "0.0.0",
+  "identifier": "com.candorlens.desktop",
+  "build": {
+    "beforeBuildCommand": "corepack pnpm build",
+    "beforeDevCommand": "corepack pnpm dev",
+    "devUrl": "http://localhost:1420",
+    "frontendDist": "../dist"
+  },
+  "app": {
+    "security": {
+      "csp": "default-src 'self'; img-src 'self' asset: http://asset.localhost; style-src 'self' 'unsafe-inline'; font-src 'self' data:; connect-src 'self' http://localhost:1420 ws://localhost:1420"
+    },
+    "windows": [
+      {
+        "height": 720,
+        "label": "main",
+        "resizable": true,
+        "title": "CandorLens",
+        "width": 1080
+      }
+    ]
+  },
+  "bundle": {
+    "active": true,
+    "icon": ["icons/icon.ico"],
+    "targets": "all"
+  }
+}
