@@ -1,4 +1,4 @@
-import { describe, expect, it, vi } from 'vitest';
+import { afterEach, describe, expect, it, vi } from 'vitest';
 
 vi.mock('../../../lib/supabase/server.js', () => ({
   createClient: vi.fn().mockResolvedValue({}),
@@ -15,6 +15,11 @@ vi.mock('../../../lib/guidance/dispatcher.js', () => ({
 }));
 
 import { POST } from './route';
+import { getValidatedClaims } from '../../../lib/auth/require-user';
+
+afterEach(() => {
+  vi.mocked(getValidatedClaims).mockResolvedValue({ sub: 'owner-1' });
+});
 
 const payload = {
   mode: 'interviewer',
@@ -31,6 +36,21 @@ const payload = {
 };
 
 describe('POST /api/guidance', () => {
+  it('rejects an unauthenticated request without calling a provider', async () => {
+    vi.mocked(getValidatedClaims).mockResolvedValueOnce(null);
+
+    const response = await POST(
+      new Request('https://candorlens.test/api/guidance', {
+        body: JSON.stringify(payload),
+        headers: { 'Content-Type': 'application/json' },
+        method: 'POST',
+      }),
+    );
+
+    expect(response.status).toBe(401);
+    expect(response.headers.get('Cache-Control')).toBe('no-store');
+  });
+
   it('returns a no-store human-review draft for an authenticated request', async () => {
     const response = await POST(
       new Request('https://candorlens.test/api/guidance', {

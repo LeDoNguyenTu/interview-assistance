@@ -57,22 +57,20 @@ describe('generateGuidance', () => {
   });
 
   it('extracts text from Gemini content candidates', async () => {
-    const fetchImpl = vi
-      .fn()
-      .mockResolvedValue(
-        new Response(
-          JSON.stringify({
-            candidates: [
-              {
-                content: {
-                  parts: [{ text: 'Ask about the decision constraint.' }],
-                },
+    const fetchImpl = vi.fn().mockResolvedValue(
+      new Response(
+        JSON.stringify({
+          candidates: [
+            {
+              content: {
+                parts: [{ text: 'Ask about the decision constraint.' }],
               },
-            ],
-          }),
-          { status: 200 },
-        ),
-      );
+            },
+          ],
+        }),
+        { status: 200 },
+      ),
+    );
 
     const result = await generateGuidance(
       { ...input, provider: 'gemini' },
