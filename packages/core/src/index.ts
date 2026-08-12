@@ -7,6 +7,14 @@ export type { SessionEvent } from './session/events.js';
 export { reduceSession, SessionTransitionError } from './session/reducer.js';
 export type { SessionClock } from './session/reducer.js';
 
+export { createFixtureWorkspace, reduceWorkspace } from './session/workspace.js';
+export type {
+  WorkspaceCaptureState,
+  WorkspaceEvent,
+  WorkspaceState,
+  WorkspaceTranscriptItem,
+} from './session/workspace.js';
+
 export {
   captureSourceSchema,
   providerIdSchema,
