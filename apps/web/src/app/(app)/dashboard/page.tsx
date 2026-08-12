@@ -196,7 +196,7 @@ export default async function DashboardPage() {
             },
           ].map(({ iconPath, label, value }) => (
             <div
-              className="group rounded-2xl border border-white/10 bg-white/[0.055] p-5 shadow-[inset_0_1px_0_rgb(255_255_255_/_0.06%)] transition-[background-color,transform] duration-[var(--cl-duration-normal)] hover:-translate-y-0.5 hover:bg-white/[0.085]"
+              className="group flex min-h-44 flex-col items-center justify-center rounded-2xl border border-white/10 bg-white/[0.055] p-5 text-center shadow-[inset_0_1px_0_rgb(255_255_255_/_0.06%)] transition-[background-color,transform] duration-[var(--cl-duration-normal)] hover:-translate-y-0.5 hover:bg-white/[0.085]"
               key={label}
             >
               <PillarIcon
@@ -204,7 +204,7 @@ export default async function DashboardPage() {
                 className="text-[#79e5b5]"
                 path={iconPath}
               />
-              <p className="mt-7 text-sm font-semibold text-[#acc5bb]">
+              <p className="mt-5 text-sm font-semibold text-[#acc5bb]">
                 {label}
               </p>
               <p className="mt-1 text-xl font-semibold tracking-[-0.035em] text-white">
