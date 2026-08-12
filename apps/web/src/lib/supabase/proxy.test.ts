@@ -12,7 +12,9 @@ describe('updateSession', () => {
     vi.stubEnv('NEXT_PUBLIC_SUPABASE_URL', '');
     vi.stubEnv('NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY', '');
 
-    const response = await updateSession(new NextRequest('https://example.com/'));
+    const response = await updateSession(
+      new NextRequest('https://example.com/'),
+    );
 
     expect(response.status).toBe(200);
   });
