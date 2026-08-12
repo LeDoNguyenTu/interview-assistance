@@ -11,6 +11,7 @@
     "build": "next build"
   },
   "dependencies": {
+    "@candorlens/core": "workspace:*",
     "@candorlens/ui": "workspace:*",
     "@supabase/ssr": "0.12.4",
     "@supabase/supabase-js": "2.112.3",
