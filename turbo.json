@@ -3,6 +3,13 @@
   "tasks": {
     "build": {
       "dependsOn": ["^build"],
+      "env": [
+        "candorlens_DATABASE_URL",
+        "candorlens_DATABASE_URL_UNPOOLED",
+        "candorlens_NEON_AUTH_BASE_URL",
+        "NEON_AUTH_COOKIE_SECRET",
+        "NEXT_PUBLIC_APP_URL"
+      ],
       "outputs": [".next/**", "!.next/cache/**", "dist/**", "build/**"]
     },
     "lint": {
