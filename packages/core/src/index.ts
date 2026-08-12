@@ -14,4 +14,14 @@ export {
   sessionRecordSchema,
   sessionStatusSchema,
 } from './session/schema.js';
-export type { CaptureSource, ProviderId, SessionMode, SessionRecord, SessionStatus } from './session/schema.js';
+export type {
+  CaptureSource,
+  ProviderId,
+  SessionMode,
+  SessionRecord,
+  SessionStatus,
+} from './session/schema.js';
+
+export { mapSessionRow } from './database/mappers.js';
+export type { SessionRow } from './database/mappers.js';
+export type { Database } from './database/types.js';
