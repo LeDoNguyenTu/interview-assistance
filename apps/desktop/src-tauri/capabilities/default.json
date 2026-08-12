@@ -1,0 +1,7 @@
+{
+  "$schema": "../gen/schemas/desktop-schema.json",
+  "description": "Allows the visible main window to request runtime information.",
+  "identifier": "default",
+  "permissions": ["allow-runtime-info"],
+  "windows": ["main"]
+}
