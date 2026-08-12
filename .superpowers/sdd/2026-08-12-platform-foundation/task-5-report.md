@@ -53,3 +53,10 @@ GET /assets/brand/logo-horizontal.svg  200 image/svg+xml
 ```
 
 The rendered home HTML contained CandorLens and the full consent-first statement, contained exactly one `Sign in` link, and contained zero capture buttons. A controllable browser was not connected in this environment (and the standalone `agent-browser` executable was unavailable), so a visual screenshot and browser-console capture could not be produced; the direct rendered-response smoke check was completed instead.
+
+## Review fix round 1: approved logo asset
+
+- Added `brand-assets.test.ts`, which parses the served public file as SVG, compares its raw bytes with `assets/brand/logo-horizontal.svg`, and verifies the root layout references `/assets/brand/logo-horizontal.svg`.
+- Red: the new focused test failed on the existing public asset with `text data outside of root node`; its bytes did not match the approved source.
+- Green: replaced the public file with a direct byte-for-byte copy of the approved SVG, without manual SVG recreation. The focused test passed with the existing home-page tests (3/3 total).
+- Follow-up checks passed: `pnpm --filter @candorlens/web lint`, `typecheck`, `test`, and `build`.
