@@ -45,7 +45,7 @@ export function SessionList({
                 <p className="font-mono text-[11px] font-medium uppercase tracking-[0.12em] text-[#86dcb6]">
                   {session.mode} session
                 </p>
-                <h2 className="mt-2 truncate text-xl font-semibold tracking-[-0.035em] text-white sm:text-2xl">
+                <h2 className="mt-2 break-words text-xl font-semibold tracking-[-0.035em] text-white sm:text-2xl">
                   {session.title}
                 </h2>
               </div>

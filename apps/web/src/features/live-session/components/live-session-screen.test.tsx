@@ -77,6 +77,26 @@ function createController(): BrowserCaptureController {
 }
 
 describe('LiveSessionScreen', () => {
+  it('uses the full session frame for setup instead of a narrower floating panel', () => {
+    render(
+      <LiveSessionScreen
+        capabilities={{
+          audioWorklet: true,
+          displayAudioRequested: true,
+          displayMedia: true,
+          microphone: true,
+          secureContext: true,
+        }}
+        createCaptureController={createController}
+        session={session}
+      />,
+    );
+
+    const setup = screen.getByTestId('live-session-setup');
+    expect(setup.className).toContain('w-full');
+    expect(setup.className).not.toContain('max-w-3xl');
+  });
+
   it('keeps setup visible, then shows persistent fixture capture status and an immediate stop control', async () => {
     render(
       <LiveSessionScreen

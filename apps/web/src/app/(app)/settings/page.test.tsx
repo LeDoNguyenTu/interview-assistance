@@ -72,4 +72,14 @@ describe('SettingsPage', () => {
     );
     expect(cards[0]?.parentElement?.className).toContain('lg:grid-cols-2');
   });
+
+  it('uses the same centered workspace rhythm without duplicate route padding', async () => {
+    render(await SettingsPage());
+
+    const page = screen.getByTestId('settings-page');
+    expect(page.className).toContain('mx-auto');
+    expect(page.className).toContain('max-w-6xl');
+    expect(page.className).not.toContain('py-4');
+    expect(page.className).not.toContain('sm:py-6');
+  });
 });

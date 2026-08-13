@@ -1,6 +1,7 @@
 import Link from 'next/link';
 
 import { SessionList } from '../../../components/sessions/session-list';
+import { SessionPageFrame } from '../../../components/sessions/session-page-frame';
 import {
   asSessionSql,
   listSessionsForOwner,
@@ -19,7 +20,7 @@ export default async function SessionsPage() {
   );
 
   return (
-    <section className="relative isolate py-4 sm:py-6">
+    <SessionPageFrame>
       <div className="pointer-events-none absolute -top-24 right-0 -z-10 size-72 rounded-full bg-emerald-300/10 blur-3xl" />
       <div className="flex flex-wrap items-end justify-between gap-6 border-b border-white/10 pb-7 sm:pb-8">
         <div className="max-w-2xl">
@@ -40,9 +41,9 @@ export default async function SessionsPage() {
           Create session <span aria-hidden="true">→</span>
         </Link>
       </div>
-      <div className="mt-8 max-w-4xl">
+      <div className="mt-8 w-full">
         <SessionList sessions={sessions} />
       </div>
-    </section>
+    </SessionPageFrame>
   );
 }

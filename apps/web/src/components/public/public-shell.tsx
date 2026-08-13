@@ -30,7 +30,7 @@ export function PublicShell({
           >
             <Image
               alt="CandorLens"
-              className="h-auto w-[13rem] brightness-0 invert sm:w-[14.5rem]"
+              className="h-auto w-[10.75rem] brightness-0 invert sm:w-[14.5rem]"
               height={47}
               priority
               src="/assets/brand/logo-horizontal.svg"
@@ -38,7 +38,7 @@ export function PublicShell({
             />
           </Link>
           <Link
-            className="inline-flex min-h-11 cursor-pointer items-center justify-center rounded-xl border border-white/15 bg-white/[0.06] px-4 py-2 text-sm font-semibold text-white shadow-[inset_0_1px_0_rgb(255_255_255_/_0.07%)] transition-[background-color,border-color] duration-200 hover:border-white/25 hover:bg-white/[0.11] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#78ecc0] focus-visible:ring-offset-2 focus-visible:ring-offset-[#080808]"
+            className="inline-flex min-h-11 shrink-0 cursor-pointer items-center justify-center whitespace-nowrap rounded-xl border border-white/15 bg-white/[0.06] px-4 py-2 text-sm font-semibold text-white shadow-[inset_0_1px_0_rgb(255_255_255_/_0.07%)] transition-[background-color,border-color] duration-200 hover:border-white/25 hover:bg-white/[0.11] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#78ecc0] focus-visible:ring-offset-2 focus-visible:ring-offset-[#080808]"
             href={actionHref}
           >
             {actionLabel}

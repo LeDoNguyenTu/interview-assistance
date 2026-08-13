@@ -25,7 +25,7 @@ const principles = [
 
 export default function HomePage() {
   return (
-    <PublicShell actionHref="/sign-up" actionLabel="Create account">
+    <PublicShell actionHref="/sign-in" actionLabel="Sign in">
       <main className="relative isolate flex-1 overflow-hidden bg-[#080808] text-[#f7f7f5]">
         <div
           aria-hidden="true"
@@ -51,9 +51,9 @@ export default function HomePage() {
             <div className="mt-9 flex flex-wrap items-center gap-4">
               <a
                 className="inline-flex min-h-12 items-center justify-center rounded-[var(--cl-radius-control)] bg-[#10a37f] px-5 py-3 text-base font-semibold text-white shadow-[0_12px_34px_rgb(16_163_127_/_24%)] transition-[background-color,box-shadow,transform] duration-[var(--cl-duration-fast)] ease-out hover:-translate-y-0.5 hover:bg-[#16b58d] hover:shadow-[0_18px_42px_rgb(16_163_127_/_32%)] motion-safe:active:translate-y-px focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#5ee8bd] focus-visible:ring-offset-2 focus-visible:ring-offset-[#080808]"
-                href="/sign-in"
+                href="/sign-up"
               >
-                Sign in
+                Create account
               </a>
               <span className="text-sm leading-6 text-[#a9a9a2]">
                 Consent is confirmed by people, not assumed by software.

@@ -25,6 +25,8 @@ describe('AppChrome', () => {
     expect(screen.getByRole('contentinfo')).toBeTruthy();
     expect(screen.getByText('\u00A9 2026 CandorLens')).toBeTruthy();
     expect(screen.getByRole('main').className).not.toContain('max-w-');
+    expect(screen.getByRole('main').className).toContain('py-4');
+    expect(screen.getByRole('main').className).not.toContain('sm:py-8');
     expect(
       screen.getByRole('link', { name: 'Account settings' }),
     ).toHaveProperty('href', expect.stringContaining('/settings'));

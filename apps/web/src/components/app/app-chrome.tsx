@@ -78,7 +78,7 @@ export function AppChrome({
         </div>
       </header>
       <main
-        className="relative w-full flex-1 px-4 py-6 sm:px-6 sm:py-8 lg:px-8"
+        className="relative w-full flex-1 px-4 py-4 sm:px-6 lg:px-8"
         id="app-content"
       >
         {children}

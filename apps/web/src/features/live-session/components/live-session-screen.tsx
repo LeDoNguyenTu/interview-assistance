@@ -28,6 +28,7 @@ import {
   type ChunkedTranscriptionController,
 } from '../chunked-transcription-controller';
 import { latestInterviewerQuestion } from '../question-detection';
+import { groupTranscriptByQuestion } from '../conversation-groups';
 
 type LiveSessionScreenProps = {
   session: SessionRecord;
@@ -280,12 +281,14 @@ export function LiveSessionScreen({
   }
 
   const currentQuestion = latestInterviewerQuestion(state.transcript);
+  const conversationGroups = groupTranscriptByQuestion(state.transcript);
 
   if (state.status === 'setup' || state.status === 'failed') {
     return (
       <section
         aria-label="Live session workspace"
-        className="mx-auto max-w-3xl rounded-[1.5rem] border border-white/10 bg-[#0a1d19]/90 p-6 shadow-[0_28px_100px_rgb(0_0_0_/_0.28%)] sm:p-8"
+        className="w-full rounded-[1.5rem] border border-white/10 bg-[#0a1d19]/90 p-6 shadow-[0_28px_100px_rgb(0_0_0_/_0.28%)] sm:p-8"
+        data-testid="live-session-setup"
       >
         {state.error ? (
           <p
@@ -295,22 +298,51 @@ export function LiveSessionScreen({
             {state.error}
           </p>
         ) : null}
-        <ConsentPanel
-          capabilities={capabilities}
-          onRequestCapture={prepareCapture}
-        />
-        {guidanceProviders.length ? (
-          <div className="mt-6 flex flex-wrap gap-2 border-t border-white/10 pt-5">
-            {guidanceProviders.map((provider) => (
-              <span
-                className="inline-flex min-h-9 items-center rounded-full border border-emerald-200/15 bg-emerald-300/10 px-3 font-mono text-xs font-medium text-[#a7e5c8]"
-                key={provider}
-              >
-                {provider === 'openai' ? 'OpenAI' : 'Gemini'} guidance connected
-              </span>
-            ))}
-          </div>
-        ) : null}
+        <div className="grid gap-7 lg:grid-cols-[minmax(0,1.35fr)_minmax(17rem,0.65fr)] lg:items-start">
+          <ConsentPanel
+            capabilities={capabilities}
+            onRequestCapture={prepareCapture}
+          />
+          <aside className="rounded-2xl border border-emerald-200/15 bg-gradient-to-b from-[#123d33] to-[#0a211c] p-5 sm:p-6">
+            <p className="font-mono text-xs font-medium uppercase tracking-[0.12em] text-[#a4e5c6]">
+              Capture promise
+            </p>
+            <h2 className="mt-3 text-xl font-semibold tracking-[-0.04em] text-white">
+              Clear controls at every step.
+            </h2>
+            <ul className="mt-5 space-y-3 text-sm leading-6 text-[#c7ddd4]">
+              <li className="flex gap-3">
+                <span className="mt-2 size-1.5 shrink-0 rounded-full bg-[#75e7b6]" />
+                Capture status stays visible while a source is active.
+              </li>
+              <li className="flex gap-3">
+                <span className="mt-2 size-1.5 shrink-0 rounded-full bg-[#75e7b6]" />
+                Browser permissions are requested only after consent.
+              </li>
+              <li className="flex gap-3">
+                <span className="mt-2 size-1.5 shrink-0 rounded-full bg-[#75e7b6]" />
+                Stop ends capture and cancels pending audio uploads.
+              </li>
+            </ul>
+            {guidanceProviders.length ? (
+              <div className="mt-6 flex flex-wrap gap-2 border-t border-white/10 pt-5">
+                {guidanceProviders.map((provider) => (
+                  <span
+                    className="inline-flex min-h-9 items-center rounded-full border border-emerald-200/15 bg-emerald-300/10 px-3 font-mono text-xs font-medium text-[#a7e5c8]"
+                    key={provider}
+                  >
+                    {provider === 'openai' ? 'OpenAI' : 'Gemini'} guidance
+                    connected
+                  </span>
+                ))}
+              </div>
+            ) : (
+              <p className="mt-6 border-t border-white/10 pt-5 text-sm leading-6 text-[#a9c8ba]">
+                Add a provider in Settings when you want generated guidance.
+              </p>
+            )}
+          </aside>
+        </div>
         {initialGuidance ? (
           <div className="mt-6">
             <GuidanceCard
@@ -420,19 +452,48 @@ export function LiveSessionScreen({
                 {state.transcript.length === 1 ? '' : 's'}
               </span>
             </div>
-            {state.transcript.length ? (
+            {conversationGroups.length ? (
               <ol className="mt-5 space-y-4">
-                {state.transcript.map((item) => (
+                {conversationGroups.map((group) => (
                   <li
-                    className="border-l-2 border-emerald-300/40 pl-4"
-                    key={item.id}
+                    className="overflow-hidden rounded-2xl border border-white/10 bg-black/15"
+                    key={group.id}
                   >
-                    <p className="font-mono text-xs uppercase tracking-[0.1em] text-[#90b8a8]">
-                      {item.speaker} - {item.timestamp}
-                    </p>
-                    <p className="mt-2 text-base leading-7 text-[#e9f3ef]">
-                      {item.text}
-                    </p>
+                    <div className="border-b border-white/10 bg-white/[0.035] px-4 py-4 sm:px-5">
+                      <p className="font-mono text-[11px] font-medium uppercase tracking-[0.12em] text-[#83dcb4]">
+                        {group.question
+                          ? `Question ${group.questionNumber}`
+                          : 'Opening context'}
+                      </p>
+                      {group.question ? (
+                        <>
+                          <p className="mt-2 text-base font-semibold leading-7 text-white">
+                            {group.question.text}
+                          </p>
+                          <p className="mt-1 font-mono text-[11px] text-[#90b8a8]">
+                            Interviewer - {group.question.timestamp}
+                          </p>
+                        </>
+                      ) : null}
+                    </div>
+                    {group.turns.length ? (
+                      <ol className="divide-y divide-white/[0.08] px-4 sm:px-5">
+                        {group.turns.map((turn) => (
+                          <li className="py-4" key={turn.id}>
+                            <p className="font-mono text-[11px] uppercase tracking-[0.1em] text-[#90b8a8]">
+                              {turn.speaker} - {turn.timestamp}
+                            </p>
+                            <p className="mt-2 text-base leading-7 text-[#e9f3ef]">
+                              {turn.text}
+                            </p>
+                          </li>
+                        ))}
+                      </ol>
+                    ) : (
+                      <p className="px-4 py-4 text-sm leading-6 text-[#9fb8ae] sm:px-5">
+                        Waiting for the response.
+                      </p>
+                    )}
                   </li>
                 ))}
               </ol>

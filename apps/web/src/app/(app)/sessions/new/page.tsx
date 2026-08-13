@@ -1,6 +1,8 @@
-import Link from 'next/link';
-
 import { SessionForm } from '../../../../components/sessions/session-form';
+import {
+  SessionBackLink,
+  SessionPageFrame,
+} from '../../../../components/sessions/session-page-frame';
 import { getProviderAvailability } from '../../../../config/providers';
 import {
   asProviderCredentialSql,
@@ -23,33 +25,11 @@ export default async function NewSessionPage() {
     credentials.map((credential) => credential.provider),
   );
   return (
-    <section className="relative isolate py-4 sm:py-6">
+    <SessionPageFrame>
       <div className="pointer-events-none absolute -right-24 top-8 -z-10 size-80 rounded-full bg-[#2f89d8]/10 blur-3xl" />
-      <div
-        className="mx-auto w-full max-w-6xl"
-        data-testid="new-session-container"
-      >
+      <div>
         <div className="flex items-center justify-between gap-4">
-          <Link
-            className="inline-flex min-h-11 cursor-pointer items-center rounded-xl border border-white/15 bg-white/[0.07] px-4 text-sm font-semibold text-white shadow-[inset_0_1px_0_rgb(255_255_255_/_0.07%)] transition-[background-color,border-color,box-shadow] duration-200 hover:border-emerald-200/25 hover:bg-white/[0.11] hover:shadow-[0_10px_28px_rgb(0_0_0_/_18%)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--cl-color-ring)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--cl-color-background)]"
-            href="/sessions"
-          >
-            <svg
-              aria-hidden="true"
-              className="mr-2 size-4"
-              fill="none"
-              viewBox="0 0 20 20"
-            >
-              <path
-                d="m12.5 15-5-5 5-5"
-                stroke="currentColor"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth="1.8"
-              />
-            </svg>
-            Back to sessions
-          </Link>
+          <SessionBackLink />
           <span className="hidden rounded-full border border-emerald-200/15 bg-emerald-300/10 px-3 py-2 font-mono text-xs uppercase tracking-[0.1em] text-[#a7e5c8] sm:inline-flex">
             Setup only
           </span>
@@ -97,6 +77,6 @@ export default async function NewSessionPage() {
           </aside>
         </div>
       </div>
-    </section>
+    </SessionPageFrame>
   );
 }

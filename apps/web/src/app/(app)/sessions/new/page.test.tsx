@@ -33,10 +33,11 @@ describe('NewSessionPage', () => {
     render(await NewSessionPage());
 
     const backLink = screen.getByRole('link', { name: 'Back to sessions' });
-    const container = screen.getByTestId('new-session-container');
+    const container = screen.getByTestId('session-page-frame');
 
     expect(container.className).toContain('mx-auto');
-    expect(backLink.className).toContain('border');
-    expect(backLink.className).toContain('bg-white');
+    expect(container.className).toContain('max-w-6xl');
+    expect(backLink.className).toContain('border-white/20');
+    expect(backLink.querySelector('svg')).toBeTruthy();
   });
 });

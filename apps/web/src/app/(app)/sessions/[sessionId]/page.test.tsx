@@ -82,5 +82,11 @@ describe('SessionDetailPage', () => {
     expect(screen.getByText('Select audio sources.')).toBeTruthy();
     expect(screen.getByText('OpenAI guidance connected')).toBeTruthy();
     expect(screen.getByText('Ask for one measurable result.')).toBeTruthy();
+    expect(screen.getByTestId('session-page-frame').className).toContain(
+      'max-w-6xl',
+    );
+    const backLink = screen.getByRole('link', { name: 'Back to sessions' });
+    expect(backLink.className).toContain('border-white/20');
+    expect(backLink.querySelector('svg')).toBeTruthy();
   });
 });

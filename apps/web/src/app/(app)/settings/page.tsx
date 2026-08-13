@@ -57,7 +57,10 @@ export default async function SettingsPage() {
   );
 
   return (
-    <section className="relative isolate py-4 sm:py-6">
+    <section
+      className="relative isolate mx-auto w-full max-w-6xl"
+      data-testid="settings-page"
+    >
       <div className="pointer-events-none absolute -left-20 top-0 -z-10 size-80 rounded-full bg-[#2f89d8]/10 blur-3xl" />
       <div className="max-w-3xl border-b border-white/10 pb-7 sm:pb-8">
         <Badge
