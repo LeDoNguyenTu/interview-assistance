@@ -1,3 +1,5 @@
+pub mod audio;
+pub mod capture;
 pub mod commands;
 pub mod platform;
 pub mod security;
