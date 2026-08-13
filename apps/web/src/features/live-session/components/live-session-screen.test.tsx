@@ -117,8 +117,8 @@ describe('LiveSessionScreen', () => {
     );
 
     expect(
-      await screen.findByText('Tell me about a challenging project.'),
-    ).toBeTruthy();
+      await screen.findAllByText('Tell me about a challenging project.'),
+    ).toHaveLength(2);
     expect(screen.getByRole('button', { name: 'Stop capture' })).toBeTruthy();
     expect(screen.getByRole('status').textContent).toContain('Capturing');
   });
@@ -129,7 +129,7 @@ describe('LiveSessionScreen', () => {
         ? new Response(
             JSON.stringify({
               provider: 'openai',
-              text: 'Draft a concise example and name the trade-off you made.',
+              text: '**Suggested Response:** *Name the trade-off you made.*',
             }),
             { status: 200 },
           )
@@ -166,7 +166,7 @@ describe('LiveSessionScreen', () => {
     fireEvent.click(
       await screen.findByRole('button', { name: 'Start visible capture' }),
     );
-    await screen.findByText('Tell me about a challenging project.');
+    await screen.findAllByText('Tell me about a challenging project.');
     fireEvent.change(screen.getByLabelText('Private note'), {
       target: { value: 'Focus on the candidate’s own contribution.' },
     });
@@ -174,9 +174,7 @@ describe('LiveSessionScreen', () => {
     fireEvent.click(screen.getByRole('button', { name: 'Generate guidance' }));
 
     expect(
-      await screen.findByText(
-        'Draft a concise example and name the trade-off you made.',
-      ),
+      await screen.findByText('Name the trade-off you made.'),
     ).toBeTruthy();
     const guidanceCall = fetchImpl.mock.calls.find(
       ([input]) => input === '/api/guidance',
@@ -197,7 +195,9 @@ describe('LiveSessionScreen', () => {
         },
       ],
     });
-    expect(screen.getByText(/Draft for human review/i)).toBeTruthy();
+    expect(screen.getByText('Suggested response')).toBeTruthy();
+    expect(screen.queryByText(/Draft for human review/i)).toBeNull();
+    expect(document.body.textContent).not.toContain('**');
   });
 
   it('persists final transcript events and private notes through the session event route', async () => {

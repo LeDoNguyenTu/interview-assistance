@@ -14,6 +14,7 @@ import {
 } from '../../../../../data/live-session/repository';
 import { getAuthenticatedUser } from '../../../../../lib/auth/neon-auth';
 import { getNeonSql } from '../../../../../lib/neon/database';
+import { isLikelyInterviewQuestion } from '../../../../../features/live-session/question-detection';
 
 const noStore = { 'Cache-Control': 'no-store' };
 type RouteContext = { params: Promise<{ sessionId: string }> };
@@ -75,7 +76,10 @@ export async function POST(request: Request, context: RouteContext) {
         );
       }
 
-      if (event.speaker === 'interviewer' && event.text.endsWith('?')) {
+      if (
+        event.speaker === 'interviewer' &&
+        isLikelyInterviewQuestion(event.text)
+      ) {
         await saveDetectedQuestion(sql, claims, sessionId, {
           confidence: event.confidence,
           sourceUtteranceId: event.id,

@@ -37,4 +37,20 @@ describe('SettingsPage', () => {
     expect(screen.getByLabelText('OpenAI API key')).toBeTruthy();
     expect(screen.getByText('Saved key ending in 7890')).toBeTruthy();
   });
+
+  it('renders provider cards as equal-height responsive columns', async () => {
+    render(await SettingsPage());
+
+    const cards = ['OpenAI', 'Gemini'].map((name) =>
+      screen.getByRole('heading', { level: 3, name }).closest('article'),
+    );
+    expect(cards).toHaveLength(2);
+    expect(cards.every((card) => card?.className.includes('h-full'))).toBe(
+      true,
+    );
+    expect(cards.every((card) => card?.className.includes('flex-col'))).toBe(
+      true,
+    );
+    expect(cards[0]?.parentElement?.className).toContain('lg:grid-cols-2');
+  });
 });

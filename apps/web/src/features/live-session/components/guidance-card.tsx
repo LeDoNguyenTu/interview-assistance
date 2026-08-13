@@ -5,6 +5,10 @@ import Link from 'next/link';
 import { useState } from 'react';
 
 import type { ConfigurableProvider } from '../../../data/provider-credentials/input';
+import {
+  guidanceLabelForMode,
+  normalizeGuidanceText,
+} from '../../../lib/guidance/presentation';
 import type { LiveTranscriptItem } from '../live-session-machine';
 
 type GuidanceState =
@@ -50,6 +54,7 @@ export function GuidanceCard({
       ? { ...initialGuidance, status: 'ready' }
       : { status: 'idle' },
   );
+  const guidanceLabel = guidanceLabelForMode(mode);
 
   async function requestGuidance() {
     if (!provider || transcript.length === 0) return;
@@ -114,13 +119,14 @@ export function GuidanceCard({
       />
       <div className="relative">
         <p className="font-mono text-xs font-medium uppercase tracking-[0.12em] text-[#9be8c5]">
-          Human-review draft
+          On-demand guidance
         </p>
         <h2 className="mt-3 text-2xl font-semibold tracking-[-0.04em] text-white">
           Guidance
         </h2>
         <p className="mt-3 text-sm leading-6 text-[#b9d8cc]">
-          Nothing is sent until you request it. Review every draft before use.
+          Nothing is sent until you request it. Review every suggestion before
+          use.
         </p>
 
         {provider ? (
@@ -190,11 +196,16 @@ export function GuidanceCard({
             aria-live="polite"
             className="mt-4 rounded-xl border border-emerald-200/15 bg-black/20 p-4"
           >
-            <p className="font-mono text-xs uppercase tracking-[0.1em] text-[#9be8c5]">
-              Draft for human review - {providerNames[guidance.provider]}
-            </p>
-            <p className="mt-3 text-base leading-7 text-white">
-              {guidance.text}
+            <div className="flex flex-wrap items-center justify-between gap-3">
+              <p className="text-sm font-semibold text-[#b8f4d5]">
+                {guidanceLabel}
+              </p>
+              <span className="rounded-full border border-white/10 bg-white/[0.06] px-2.5 py-1 font-mono text-[0.6875rem] uppercase tracking-[0.08em] text-[#c9ded5]">
+                {providerNames[guidance.provider]}
+              </span>
+            </div>
+            <p className="mt-4 text-[1.0625rem] leading-7 text-white">
+              {normalizeGuidanceText(guidance.text)}
             </p>
           </div>
         ) : null}

@@ -27,6 +27,7 @@ import {
   createChunkedTranscriptionController,
   type ChunkedTranscriptionController,
 } from '../chunked-transcription-controller';
+import { latestInterviewerQuestion } from '../question-detection';
 
 type LiveSessionScreenProps = {
   session: SessionRecord;
@@ -278,9 +279,7 @@ export function LiveSessionScreen({
       );
   }
 
-  const currentQuestion = state.transcript.find(
-    (item) => item.speaker === 'Interviewer' && item.text.endsWith('?'),
-  );
+  const currentQuestion = latestInterviewerQuestion(state.transcript);
 
   if (state.status === 'setup' || state.status === 'failed') {
     return (

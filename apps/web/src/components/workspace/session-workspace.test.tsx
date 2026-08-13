@@ -77,6 +77,7 @@ describe('SessionWorkspace', () => {
 
     await waitFor(() => expect(fetchImpl).toHaveBeenCalledTimes(1));
     expect(screen.getByText('Draft guidance for human review.')).toBeTruthy();
-    expect(screen.getByText(/Draft for human review/i)).toBeTruthy();
+    expect(screen.getByText(/Follow-up question/i)).toBeTruthy();
+    expect(screen.queryByText(/Draft for human review/i)).toBeNull();
   });
 });

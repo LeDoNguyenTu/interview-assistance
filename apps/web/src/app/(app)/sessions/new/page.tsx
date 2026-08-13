@@ -29,9 +29,23 @@ export default async function NewSessionPage() {
         className="inline-flex min-h-11 items-center rounded-xl px-3 text-sm font-semibold text-[#a9d9c3] transition-colors duration-200 hover:bg-white/[0.06] hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--cl-color-ring)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--cl-color-background)]"
         href="/sessions"
       >
-        <span aria-hidden="true">←</span>&nbsp; Back to sessions
+        <svg
+          aria-hidden="true"
+          className="mr-2 size-4"
+          fill="none"
+          viewBox="0 0 20 20"
+        >
+          <path
+            d="m12.5 15-5-5 5-5"
+            stroke="currentColor"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth="1.8"
+          />
+        </svg>
+        Back to sessions
       </Link>
-      <div className="mt-5 grid max-w-5xl gap-6 lg:grid-cols-[minmax(0,1fr)_18rem] lg:items-start">
+      <div className="mt-5 grid max-w-6xl items-stretch gap-6 lg:grid-cols-[minmax(0,2fr)_minmax(19rem,1fr)]">
         <div className="rounded-[1.5rem] border border-white/10 bg-[#0a1d19]/90 p-6 shadow-[0_28px_100px_rgb(0_0_0_/_0.22%)] sm:p-8">
           <p className="font-mono text-xs font-medium uppercase tracking-[0.12em] text-[#83dcb4]">
             New live workspace
@@ -40,14 +54,14 @@ export default async function NewSessionPage() {
             Set up the room first.
           </h1>
           <p className="mt-4 max-w-2xl text-base leading-7 text-[#b9c9c4]">
-            A draft prepares the workspace. It does not request browser
+            This step prepares the workspace. It does not request browser
             permissions, start capture, or record consent.
           </p>
           <div className="mt-8 border-t border-white/10 pt-7">
             <SessionForm action={createSession} providers={providers} />
           </div>
         </div>
-        <aside className="rounded-[1.5rem] border border-emerald-200/15 bg-gradient-to-b from-[#123d33] to-[#0a211c] p-6 shadow-[0_24px_80px_rgb(0_0_0_/_18%)]">
+        <aside className="flex h-full flex-col rounded-[1.5rem] border border-emerald-200/15 bg-gradient-to-b from-[#123d33] to-[#0a211c] p-6 shadow-[0_24px_80px_rgb(0_0_0_/_18%)]">
           <p className="font-mono text-xs font-medium uppercase tracking-[0.12em] text-[#a4e5c6]">
             The sequence
           </p>
@@ -67,7 +81,7 @@ export default async function NewSessionPage() {
               </li>
             ))}
           </ol>
-          <p className="mt-7 border-t border-white/10 pt-5 text-sm leading-6 text-[#b9d8cc]">
+          <p className="mt-auto border-t border-white/10 pt-5 text-sm leading-6 text-[#b9d8cc]">
             You stay in control. A persistent status and immediate stop control
             remain visible during capture.
           </p>

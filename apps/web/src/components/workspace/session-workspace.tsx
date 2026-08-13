@@ -16,6 +16,11 @@ import {
 } from '@candorlens/ui';
 import { useReducer, useState } from 'react';
 
+import {
+  guidanceLabelForMode,
+  normalizeGuidanceText,
+} from '../../lib/guidance/presentation';
+
 type GuidanceProvider = 'gemini' | 'openai';
 type GuidanceState =
   | { status: 'idle' }
@@ -272,9 +277,11 @@ export function SessionWorkspace({
               {guidance.status === 'ready' ? (
                 <div className="mt-4 rounded-[var(--cl-radius-control)] bg-[var(--cl-color-accent)] p-4">
                   <p className="text-xs font-bold uppercase tracking-[0.08em] text-[var(--cl-color-accent-foreground)]">
-                    Draft for human review - {guidance.provider}
+                    {guidanceLabelForMode(session.mode)} - {guidance.provider}
                   </p>
-                  <p className="mt-2 text-sm leading-6">{guidance.text}</p>
+                  <p className="mt-2 text-sm leading-6">
+                    {normalizeGuidanceText(guidance.text)}
+                  </p>
                 </div>
               ) : null}
             </div>

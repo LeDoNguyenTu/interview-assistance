@@ -34,14 +34,14 @@ const guardrails = [
 const providerDetails = [
   {
     description:
-      'Connect a personal OpenAI key and choose the text model you want to use for human-review drafts.',
+      'Connect a personal OpenAI key and choose the text model used for live session guidance.',
     provider: 'openai' as const,
     step: '01',
     title: 'OpenAI',
   },
   {
     description:
-      'Connect a personal Gemini key and choose the model you want to use for human-review drafts.',
+      'Connect a personal Gemini key and choose the model used for live session guidance.',
     provider: 'gemini' as const,
     step: '02',
     title: 'Gemini',
@@ -91,7 +91,7 @@ export default async function SettingsPage() {
             Encrypted at rest
           </span>
         </div>
-        <div className="mt-6 grid gap-5 xl:grid-cols-2">
+        <div className="mt-6 grid items-stretch gap-5 lg:grid-cols-2">
           {providerDetails.map((provider) => {
             const credential = credentials.find(
               (item) => item.provider === provider.provider,
@@ -99,19 +99,23 @@ export default async function SettingsPage() {
 
             return (
               <article
-                className="relative overflow-hidden rounded-[1.5rem] border border-white/10 bg-[#0a1d19]/90 p-6 shadow-[0_24px_80px_rgb(0_0_0_/_18%)] sm:p-7"
+                aria-labelledby={`${provider.provider}-settings-title`}
+                className="relative flex h-full flex-col overflow-hidden rounded-[1.5rem] border border-white/10 bg-[#0a1d19]/90 p-6 shadow-[0_24px_80px_rgb(0_0_0_/_18%)] sm:p-7"
                 key={provider.provider}
               >
                 <div
                   aria-hidden="true"
                   className="absolute -right-16 -top-16 size-44 rounded-full bg-emerald-300/10 blur-3xl"
                 />
-                <div className="relative flex items-start gap-4">
+                <div className="relative flex items-start gap-4 lg:min-h-36">
                   <span className="inline-flex size-10 shrink-0 items-center justify-center rounded-2xl border border-white/10 bg-white/[0.055] font-mono text-xs font-medium text-[#a7e5c8]">
                     {provider.step}
                   </span>
                   <div>
-                    <h3 className="text-xl font-semibold tracking-[-0.035em] text-white">
+                    <h3
+                      className="text-xl font-semibold tracking-[-0.035em] text-white"
+                      id={`${provider.provider}-settings-title`}
+                    >
                       {provider.title}
                     </h3>
                     <p className="mt-2 text-sm leading-6 text-[#b9c9c4]">

@@ -1,5 +1,7 @@
 import 'server-only';
 
+import { normalizeGuidanceText } from './presentation';
+
 type Provider = 'gemini' | 'openai';
 
 export interface GuidanceInput {
@@ -47,7 +49,7 @@ function promptFor(input: GuidanceInput): string {
   return [
     `Session title: ${input.title}`,
     `Mode: ${input.mode}`,
-    'Visible transcript:',
+    'Visible transcript in chronological order, with the most recent turn last:',
     ...input.transcript.map(
       (item) => `[${item.timestamp}] ${item.speaker}: ${item.text}`,
     ),
@@ -57,11 +59,14 @@ function promptFor(input: GuidanceInput): string {
 }
 
 function instructionsFor(mode: GuidanceInput['mode']): string {
-  const focus =
-    mode === 'interviewer'
-      ? 'suggest fair follow-up questions and evidence to clarify'
-      : 'suggest a concise preparation or reflection prompt';
-  return `Create a short draft for human review. ${focus}. Do not make a hiring decision, rank a person, or recommend hire or no-hire.`;
+  const task =
+    mode === 'coach'
+      ? 'Return exactly one direct, speakable response to the latest interviewer question. Write in first person using the participant context that is actually available. If the latest question is a technical check, answer it naturally in one short sentence. Do not summarize the session and do not create a reflection prompt.'
+      : mode === 'interviewer'
+        ? 'Return exactly one fair follow-up question grounded in the latest participant answer. Ask for useful evidence or clarification without leading the participant.'
+        : 'Return one concise evidence check that identifies a missing fact or unsupported inference, followed by one fair follow-up question.';
+
+  return `${task} Return plain text only. Do not use Markdown, headings, labels, preambles, or commentary about the task. Never make a hiring decision, rank a person, or recommend hire or no-hire.`;
 }
 
 function validInput(input: GuidanceInput): boolean {
@@ -125,6 +130,7 @@ export async function generateGuidance(
         body: JSON.stringify({
           input: promptFor(input),
           instructions: instructionsFor(input.mode),
+          max_output_tokens: 180,
           model,
           store: false,
         }),
@@ -137,7 +143,7 @@ export async function generateGuidance(
     );
     const text = textFromOpenAI(payload);
     if (!text) throw new GuidanceDispatcherError('provider_failed');
-    return { provider: 'openai', text };
+    return { provider: 'openai', text: normalizeGuidanceText(text) };
   }
 
   const key = dependencies.env.GEMINI_API_KEY;
@@ -149,6 +155,7 @@ export async function generateGuidance(
       {
         body: JSON.stringify({
           contents: [{ parts: [{ text: promptFor(input) }], role: 'user' }],
+          generationConfig: { maxOutputTokens: 180, temperature: 0.2 },
           systemInstruction: { parts: [{ text: instructionsFor(input.mode) }] },
         }),
         headers: { 'Content-Type': 'application/json' },
@@ -158,5 +165,5 @@ export async function generateGuidance(
   );
   const text = textFromGemini(payload);
   if (!text) throw new GuidanceDispatcherError('provider_failed');
-  return { provider: 'gemini', text };
+  return { provider: 'gemini', text: normalizeGuidanceText(text) };
 }

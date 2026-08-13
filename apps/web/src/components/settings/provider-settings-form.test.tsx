@@ -28,4 +28,19 @@ describe('ProviderSettingsForm', () => {
     expect(screen.getByText('Saved key ending in 7890')).toBeTruthy();
     expect(document.body.textContent).not.toContain('sk-user-owned-key');
   });
+
+  it('keeps its action aligned to the bottom and spans the card width', () => {
+    render(
+      <ProviderSettingsForm
+        action={async () => ({ message: null, status: 'idle' })}
+        credential={null}
+        provider="gemini"
+      />,
+    );
+
+    const button = screen.getByRole('button', { name: 'Save provider key' });
+    expect(button.className).toContain('w-full');
+    expect(button.parentElement?.className).toContain('mt-auto');
+    expect(button.closest('form')?.className).toContain('flex-1');
+  });
 });

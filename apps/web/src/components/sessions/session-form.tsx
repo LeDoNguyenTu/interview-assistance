@@ -24,8 +24,12 @@ export function SessionForm({ action, providers }: SessionFormProps) {
   const [state, formAction, isPending] = useActionState(action, initialState);
 
   return (
-    <form action={formAction} className="space-y-6" noValidate>
-      <div className="space-y-2">
+    <form
+      action={formAction}
+      className="grid gap-x-5 gap-y-6 sm:grid-cols-2"
+      noValidate
+    >
+      <div className="space-y-2 sm:col-span-2">
         <Label className="text-sm font-semibold text-[#e9f3ef]" htmlFor="title">
           Session title
         </Label>
@@ -59,6 +63,9 @@ export function SessionForm({ action, providers }: SessionFormProps) {
             Defense
           </option>
         </select>
+        <p className="text-sm leading-6 text-[#a8c0b6]">
+          Choose the perspective used for session guidance.
+        </p>
       </div>
       <div className="space-y-2">
         <Label
@@ -94,18 +101,20 @@ export function SessionForm({ action, providers }: SessionFormProps) {
       <p
         aria-atomic="true"
         aria-live={state.status === 'error' ? 'assertive' : 'polite'}
-        className="min-h-6 text-sm text-[#b9c9c4]"
+        className="min-h-6 text-sm text-[#b9c9c4] sm:col-span-2"
         role={state.status === 'error' ? 'alert' : 'status'}
       >
-        {isPending ? 'Creating draft session...' : state.message}
+        {isPending ? 'Creating session...' : state.message}
       </p>
-      <Button
-        className="min-h-12 rounded-2xl px-5 text-sm font-bold shadow-[0_18px_50px_rgb(31_194_142_/_26%)] hover:-translate-y-0.5 hover:brightness-110"
-        disabled={isPending}
-        type="submit"
-      >
-        {isPending ? 'Creating draft session...' : 'Create draft session'}
-      </Button>
+      <div className="sm:col-span-2">
+        <Button
+          className="min-h-12 w-full rounded-2xl px-5 text-base font-bold shadow-[0_18px_50px_rgb(31_194_142_/_26%)] hover:brightness-110"
+          disabled={isPending}
+          type="submit"
+        >
+          {isPending ? 'Creating session...' : 'Create session'}
+        </Button>
+      </div>
     </form>
   );
 }

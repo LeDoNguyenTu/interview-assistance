@@ -176,6 +176,37 @@ describe('POST /api/sessions/[sessionId]/events', () => {
     );
   });
 
+  it('detects a transcribed interview question without terminal punctuation', async () => {
+    const event = {
+      confidence: 0.88,
+      endMs: 4200,
+      id: 'segment-no-punctuation',
+      sequence: 2,
+      speaker: 'interviewer',
+      startMs: 1200,
+      text: 'Tell me about a time you changed your approach',
+      type: 'utterance',
+    };
+
+    const response = await POST(
+      new Request('https://candorlens.test/api/sessions/session-1/events', {
+        body: JSON.stringify(event),
+        method: 'POST',
+      }),
+      context,
+    );
+
+    expect(response.status).toBe(201);
+    expect(dependencies.saveDetectedQuestion).toHaveBeenCalledWith(
+      'neon-sql',
+      { sub: 'owner-1' },
+      'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa',
+      expect.objectContaining({
+        sourceUtteranceId: 'segment-no-punctuation',
+      }),
+    );
+  });
+
   it('returns not found when the user does not own the session', async () => {
     dependencies.saveSessionNote.mockResolvedValueOnce(false);
 

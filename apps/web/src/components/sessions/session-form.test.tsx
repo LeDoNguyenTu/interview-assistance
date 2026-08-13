@@ -77,4 +77,33 @@ describe('SessionForm', () => {
     expect(geminiOption.className).toContain('text-[#f3fbf7]');
     expect(openAiOption.className).toContain('disabled:text-[#8ca399]');
   });
+
+  it('uses a balanced responsive field grid and a full-width action', () => {
+    render(
+      <SessionForm
+        action={async () => ({ message: null, status: 'idle' })}
+        providers={[
+          {
+            available: true,
+            id: 'gemini',
+            label: 'Gemini',
+            reason: null,
+          },
+        ]}
+      />,
+    );
+
+    const form = screen
+      .getByRole('button', {
+        name: 'Create session',
+      })
+      .closest('form');
+    expect(form?.className).toContain('sm:grid-cols-2');
+    expect(
+      screen.getByLabelText('Session title').parentElement?.className,
+    ).toContain('sm:col-span-2');
+    expect(
+      screen.getByRole('button', { name: 'Create session' }).className,
+    ).toContain('w-full');
+  });
 });

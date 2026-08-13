@@ -51,7 +51,11 @@ export function ProviderSettingsForm({
   const modelFieldId = `${provider}-model`;
 
   return (
-    <form action={formAction} className="mt-6 space-y-5" noValidate>
+    <form
+      action={formAction}
+      className="mt-6 flex flex-1 flex-col gap-5"
+      noValidate
+    >
       <input name="provider" type="hidden" value={provider} />
       <div className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-white/10 bg-black/15 px-4 py-3">
         <p className="text-sm font-medium text-white">
@@ -113,13 +117,15 @@ export function ProviderSettingsForm({
       >
         {isPending ? 'Saving provider settings...' : state.message}
       </p>
-      <Button
-        className="min-h-12 rounded-2xl px-5 text-sm font-bold shadow-[0_18px_50px_rgb(31_194_142_/_26%)] hover:-translate-y-0.5 hover:brightness-110"
-        disabled={isPending}
-        type="submit"
-      >
-        {credential ? 'Replace saved key' : 'Save provider key'}
-      </Button>
+      <div className="mt-auto pt-1">
+        <Button
+          className="min-h-12 w-full rounded-2xl px-5 text-base font-bold shadow-[0_18px_50px_rgb(31_194_142_/_26%)] hover:brightness-110"
+          disabled={isPending}
+          type="submit"
+        >
+          {credential ? 'Replace saved key' : 'Save provider key'}
+        </Button>
+      </div>
     </form>
   );
 }
