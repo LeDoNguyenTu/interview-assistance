@@ -12,7 +12,7 @@ const captureStateSchema = z.enum([
   'failed',
 ]);
 
-const audioSourceSchema = z.enum(['microphone', 'system-output']);
+export const audioSourceSchema = z.enum(['microphone', 'system-output']);
 
 const audioDeviceSchema = z.object({
   channels: z.number().int().positive(),
@@ -69,6 +69,7 @@ const nativeErrorSchema = z.object({
 });
 
 export type AudioDevice = z.infer<typeof audioDeviceSchema>;
+export type AudioSourceKind = z.infer<typeof audioSourceSchema>;
 export type CaptureConfig = z.infer<typeof captureConfigSchema>;
 export type CaptureStatus = z.infer<typeof captureStatusSchema>;
 export type AudioFrame = z.infer<typeof audioFrameSchema>;

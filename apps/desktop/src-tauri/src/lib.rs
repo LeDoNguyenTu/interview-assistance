@@ -24,7 +24,10 @@ pub fn run() {
                 .plugin(tauri_plugin_stronghold::Builder::with_argon2(&salt_path).build())?;
             Ok(())
         })
-        .invoke_handler(tauri::generate_handler![commands::runtime::runtime_info])
+        .invoke_handler(tauri::generate_handler![
+            commands::audio_devices::list_audio_devices,
+            commands::runtime::runtime_info
+        ])
         .run(tauri::generate_context!())
         .expect("failed to run CandorLens desktop");
 }
