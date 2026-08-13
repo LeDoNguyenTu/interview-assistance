@@ -1,5 +1,6 @@
 import { Badge } from '@candorlens/ui';
 
+import { AccountSecurityPanel } from '../../../components/settings/account-security-panel';
 import { ProviderSettingsForm } from '../../../components/settings/provider-settings-form';
 import {
   asProviderCredentialSql,
@@ -8,9 +9,9 @@ import {
 import { requireUser } from '../../../lib/auth/require-user-server';
 import { getNeonSql } from '../../../lib/neon/database';
 
-import { saveProviderSettings } from './actions';
+import { saveProviderSettings, signOut } from './actions';
 
-export const metadata = { title: 'Workspace settings' };
+export const metadata = { title: 'Account and workspace settings' };
 export const dynamic = 'force-dynamic';
 
 const guardrails = [
@@ -63,16 +64,41 @@ export default async function SettingsPage() {
           className="border border-white/10 bg-white/[0.055] px-3 text-[#d8e7e1]"
           tone="muted"
         >
-          Workspace controls
+          Account controls
         </Badge>
         <h1 className="mt-5 text-4xl font-semibold tracking-[-0.06em] text-white sm:text-5xl">
-          Workspace settings
+          Account and workspace settings
         </h1>
         <p className="mt-4 max-w-2xl text-base leading-7 text-[#b9c9c4]">
-          Connect a provider under your own account, then choose it when you
-          create a session. You can replace a saved key at any time.
+          Manage sign-in security and provider connections from one organized
+          control center.
         </p>
       </div>
+
+      <section aria-labelledby="account-security-title" className="mt-8">
+        <div className="flex flex-wrap items-end justify-between gap-4">
+          <div>
+            <p className="font-mono text-xs font-medium uppercase tracking-[0.12em] text-[#83dcb4]">
+              Personal access
+            </p>
+            <h2
+              className="mt-3 text-2xl font-semibold tracking-[-0.045em] text-white sm:text-3xl"
+              id="account-security-title"
+            >
+              Account security
+            </h2>
+          </div>
+          <span className="rounded-full border border-white/10 bg-white/[0.055] px-3 py-2 font-mono text-xs uppercase tracking-[0.1em] text-[#b9d8cc]">
+            Private to you
+          </span>
+        </div>
+        <div className="mt-6">
+          <AccountSecurityPanel
+            email={claims.email ?? ''}
+            signOutAction={signOut}
+          />
+        </div>
+      </section>
 
       <section aria-labelledby="provider-keys-title" className="mt-8">
         <div className="flex flex-wrap items-end justify-between gap-4">

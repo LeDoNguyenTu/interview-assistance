@@ -3,7 +3,7 @@ import 'server-only';
 import { createNeonAuth, type NeonAuth } from '@neondatabase/auth/next/server';
 
 type NeonSession = {
-  data: { user: { id: string } } | null;
+  data: { user: { email?: unknown; id: string } } | null;
 };
 
 type SessionReader = () => Promise<NeonSession>;
@@ -28,9 +28,12 @@ export function getNeonAuth(): NeonAuth {
 
 export async function getAuthenticatedUser(
   readSession: SessionReader = () => getNeonAuth().getSession(),
-): Promise<{ sub: string } | null> {
+): Promise<{ email?: string; sub: string } | null> {
   const { data } = await readSession();
   const id = data?.user.id;
 
-  return typeof id === 'string' && id ? { sub: id } : null;
+  if (typeof id !== 'string' || !id) return null;
+
+  const email = data?.user.email;
+  return typeof email === 'string' && email ? { email, sub: id } : { sub: id };
 }

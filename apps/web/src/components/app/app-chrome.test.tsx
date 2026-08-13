@@ -26,7 +26,7 @@ describe('AppChrome', () => {
     expect(screen.getByText('\u00A9 2026 CandorLens')).toBeTruthy();
     expect(screen.getByRole('main').className).not.toContain('max-w-');
     expect(
-      screen.getByRole('link', { name: 'Provider settings' }),
+      screen.getByRole('link', { name: 'Account settings' }),
     ).toHaveProperty('href', expect.stringContaining('/settings'));
   });
 });

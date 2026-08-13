@@ -60,7 +60,11 @@ export function AuthForm({ action, mode }: AuthFormProps) {
       >
         {isPending ? 'Please wait…' : state.message}
       </p>
-      <Button disabled={isPending} type="submit">
+      <Button
+        className="min-h-12 w-full rounded-xl text-base font-bold shadow-[0_16px_42px_rgb(16_163_127_/_25%)]"
+        disabled={isPending}
+        type="submit"
+      >
         {isPending ? 'Please wait…' : isSignIn ? 'Sign in' : 'Create account'}
       </Button>
       <p className="text-sm text-[#b7b7b1]">

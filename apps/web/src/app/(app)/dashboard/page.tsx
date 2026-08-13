@@ -10,8 +10,6 @@ import {
 import { requireUser } from '../../../lib/auth/require-user-server';
 import { getNeonSql } from '../../../lib/neon/database';
 
-import { signOut } from './actions';
-
 export const metadata = { title: 'Dashboard' };
 export const dynamic = 'force-dynamic';
 
@@ -267,14 +265,6 @@ export default async function DashboardPage() {
               Create a session
               <ArrowUpRightIcon aria-hidden="true" size={16} />
             </Link>
-            <form action={signOut} className="mt-6">
-              <button
-                className="text-sm font-semibold text-[#b9d8cc] underline decoration-[#7ccaa9]/50 underline-offset-4 transition-colors hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#9bf0cb]"
-                type="submit"
-              >
-                Sign out
-              </button>
-            </form>
           </aside>
         </div>
       </div>

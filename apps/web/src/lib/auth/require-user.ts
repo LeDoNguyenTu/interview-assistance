@@ -1,6 +1,6 @@
 import { getAuthenticatedUser } from './neon-auth';
 
-export type ValidatedClaims = { sub: string };
+export type ValidatedClaims = { email?: string; sub: string };
 
 export async function requireUserForRoute(
   redirectToSignIn: (path: string) => never,

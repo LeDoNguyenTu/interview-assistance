@@ -12,8 +12,6 @@ vi.mock('../../../data/sessions/repository.js', () => ({
   asSessionSql: vi.fn((sql) => sql),
   listSessionsForOwner: vi.fn().mockResolvedValue([]),
 }));
-vi.mock('./actions.js', () => ({ signOut: vi.fn() }));
-
 import DashboardPage from './page';
 
 afterEach(cleanup);
@@ -48,5 +46,6 @@ describe('DashboardPage', () => {
     expect(
       screen.getByRole('heading', { level: 1 }).closest('section')?.className,
     ).toContain('cl-full-bleed');
+    expect(screen.queryByRole('button', { name: 'Sign out' })).toBeNull();
   });
 });

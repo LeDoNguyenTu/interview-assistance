@@ -10,7 +10,9 @@ describe('HomePage', () => {
   it('presents CandorLens with one sign-in action and a consent-first introduction', () => {
     render(<HomePage />);
 
-    expect(screen.getByText('CandorLens')).toBeTruthy();
+    const logo = screen.getByRole('img', { name: 'CandorLens' });
+    expect(logo).toBeTruthy();
+    expect(logo.className).toContain('w-[13rem]');
     const signInLinks = screen.getAllByRole('link', { name: 'Sign in' });
 
     expect(signInLinks).toHaveLength(1);
@@ -20,6 +22,8 @@ describe('HomePage', () => {
         'A consent-first interview workspace for clearer practice, structured conversations, and evidence-oriented review.',
       ),
     ).toBeTruthy();
+    expect(screen.getByRole('contentinfo')).toBeTruthy();
+    expect(screen.getByText('\u00A9 2026 CandorLens')).toBeTruthy();
   });
 
   it('does not offer capture controls before authentication', () => {

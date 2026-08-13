@@ -35,10 +35,13 @@ describe('Neon Auth server configuration', () => {
 
   it('normalizes a signed-in Neon user to the existing owner shape', async () => {
     const owner = await getAuthenticatedUser(async () => ({
-      data: { user: { id: 'neon-user-1' } },
+      data: { user: { email: 'owner@example.com', id: 'neon-user-1' } },
     }));
 
-    expect(owner).toEqual({ sub: 'neon-user-1' });
+    expect(owner).toEqual({
+      email: 'owner@example.com',
+      sub: 'neon-user-1',
+    });
   });
 
   it('returns null when a Neon session has no user', async () => {

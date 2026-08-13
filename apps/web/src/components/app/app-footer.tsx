@@ -3,7 +3,7 @@ import Link from 'next/link';
 const shortcuts = [
   { href: '/dashboard', label: 'Dashboard' },
   { href: '/sessions', label: 'Session history' },
-  { href: '/settings', label: 'Provider settings' },
+  { href: '/settings', label: 'Account settings' },
 ] as const;
 
 export function AppFooter() {

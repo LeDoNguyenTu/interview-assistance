@@ -1,6 +1,7 @@
 'use server';
 
 import { revalidatePath } from 'next/cache';
+import { redirect } from 'next/navigation';
 
 import type { ProviderSettingsFormState } from '../../../components/settings/provider-settings-form';
 import {
@@ -16,6 +17,7 @@ import {
   saveProviderCredential,
 } from '../../../data/provider-credentials/repository';
 import { requireUser } from '../../../lib/auth/require-user-server';
+import { getNeonAuth } from '../../../lib/auth/neon-auth';
 import { getNeonSql } from '../../../lib/neon/database';
 
 export async function saveProviderSettings(
@@ -64,4 +66,9 @@ export async function saveProviderSettings(
       status: 'error',
     };
   }
+}
+
+export async function signOut() {
+  await getNeonAuth().signOut();
+  redirect('/sign-in');
 }
