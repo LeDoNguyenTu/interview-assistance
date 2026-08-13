@@ -1,11 +1,3 @@
-import {
-  Badge,
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from '@candorlens/ui';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 
@@ -15,7 +7,7 @@ import {
 } from '../../../../data/sessions/repository';
 import { requireUser } from '../../../../lib/auth/require-user-server';
 import { getNeonSql } from '../../../../lib/neon/database';
-import { SessionWorkspace } from '../../../../components/workspace/session-workspace';
+import { LiveSessionScreen } from '../../../../features/live-session/components/live-session-screen';
 
 export const metadata = { title: 'Session details' };
 export const dynamic = 'force-dynamic';
@@ -36,58 +28,27 @@ export default async function SessionDetailPage({
   }
 
   return (
-    <section className="py-8 sm:py-12">
+    <section className="space-y-6 py-2 sm:py-4">
       <Link
-        className="text-sm font-semibold text-[var(--cl-color-primary)] hover:text-[var(--cl-color-primary-hover)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--cl-color-ring)] focus-visible:ring-offset-2"
+        className="inline-flex min-h-11 items-center rounded-xl px-3 text-sm font-semibold text-[#a9d9c3] transition-colors duration-200 hover:bg-white/[0.06] hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--cl-color-ring)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--cl-color-background)]"
         href="/sessions"
       >
         Back to sessions
       </Link>
-      <div className="mt-6 space-y-6">
+      <div className="flex flex-wrap items-end justify-between gap-4">
         <div>
-          <Badge tone="muted">{session.status}</Badge>
-          <h1 className="mt-4 text-3xl font-bold tracking-[-0.035em] text-[var(--cl-color-deep-forest)]">
+          <p className="font-mono text-xs font-medium uppercase tracking-[0.12em] text-[#83dcb4]">
+            Live session
+          </p>
+          <h1 className="mt-3 text-3xl font-semibold tracking-[-0.05em] text-white sm:text-4xl">
             {session.title}
           </h1>
         </div>
-        <Card>
-          <CardHeader>
-            <CardTitle>Session details</CardTitle>
-            <CardDescription>
-              Draft details stay private to your workspace.
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <dl className="grid gap-4 text-sm sm:grid-cols-2">
-              <div>
-                <dt className="font-semibold">Status</dt>
-                <dd className="mt-1 text-[var(--cl-color-muted-foreground)]">
-                  {session.status}
-                </dd>
-              </div>
-              <div>
-                <dt className="font-semibold">Consent</dt>
-                <dd className="mt-1 text-[var(--cl-color-muted-foreground)]">
-                  {session.consentedAt ? 'Recorded' : 'Not recorded'}
-                </dd>
-              </div>
-              <div>
-                <dt className="font-semibold">Provider</dt>
-                <dd className="mt-1 text-[var(--cl-color-muted-foreground)]">
-                  {session.providerId}
-                </dd>
-              </div>
-              <div>
-                <dt className="font-semibold">Mode</dt>
-                <dd className="mt-1 text-[var(--cl-color-muted-foreground)]">
-                  {session.mode}
-                </dd>
-              </div>
-            </dl>
-          </CardContent>
-        </Card>
-        <SessionWorkspace session={session} />
+        <span className="rounded-full border border-white/10 bg-white/[0.045] px-3 py-2 font-mono text-xs uppercase tracking-[0.1em] text-[#b9c9c4]">
+          {session.status}
+        </span>
       </div>
+      <LiveSessionScreen session={session} />
     </section>
   );
 }

@@ -1,5 +1,7 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
+vi.mock('server-only', () => ({}));
+
 const dependencies = vi.hoisted(() => ({
   asSessionSql: vi.fn((sql) => sql),
   createDraftSession: vi.fn(),

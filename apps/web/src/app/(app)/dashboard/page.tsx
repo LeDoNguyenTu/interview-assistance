@@ -228,7 +228,7 @@ export default async function DashboardPage() {
                   Recent sessions
                 </h2>
                 <p className="mt-2 text-base leading-7 text-[#c0d4cc]">
-                  Open a session to continue with the visible fixture workspace.
+                  Open a session to continue with the visible live workspace.
                 </p>
               </div>
               <Link
@@ -251,20 +251,20 @@ export default async function DashboardPage() {
               size={28}
             />
             <p className="mt-8 text-sm font-semibold tracking-[0.02em] text-[#a9d7c2]">
-              Fixture mode
+              Live workspace
             </p>
             <h2 className="mt-2 text-2xl font-semibold tracking-[-0.045em] text-white">
-              Try the full flow, transparently.
+              Prepare the flow, transparently.
             </h2>
             <p className="mt-4 text-base leading-7 text-[#c8e1d6]">
-              This milestone demonstrates the session flow with sample content
-              only.
+              Choose a configured provider or use the fixture preview to walk
+              through the consented session flow.
             </p>
             <Link
               className="mt-8 inline-flex min-h-11 items-center gap-2 rounded-xl bg-white px-4 py-2 text-sm font-bold text-[#0d362e] transition-[transform,box-shadow] duration-[var(--cl-duration-normal)] hover:-translate-y-0.5 hover:shadow-xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-[#164d40]"
               href="/sessions/new"
             >
-              Create a fixture session
+              Create a session
               <ArrowUpRightIcon aria-hidden="true" size={16} />
             </Link>
             <form action={signOut} className="mt-6">
