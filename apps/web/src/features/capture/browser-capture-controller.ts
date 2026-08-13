@@ -7,9 +7,14 @@ type MediaTrackLike = {
   removeEventListener?(type: 'ended', listener: () => void): void;
 };
 
-type MediaStreamLike = {
+export type MediaStreamLike = {
   getAudioTracks(): MediaTrackLike[];
   getTracks(): MediaTrackLike[];
+};
+
+export type BrowserAudioSource = {
+  source: 'microphone' | 'browser-tab';
+  stream: MediaStreamLike;
 };
 
 export type BrowserMediaAdapter = {
@@ -45,6 +50,7 @@ export type BrowserCaptureSnapshot = {
 export type CaptureStopReason = 'user' | 'permission-ended' | 'error';
 
 export interface BrowserCaptureController {
+  audioSources(): readonly BrowserAudioSource[];
   prepare(selection: CaptureSelection): Promise<BrowserCaptureSnapshot>;
   start(): Promise<BrowserCaptureSnapshot>;
   stop(reason: CaptureStopReason): Promise<BrowserCaptureSnapshot>;
@@ -69,7 +75,7 @@ export function createBrowserCaptureController(
   adapter: BrowserMediaAdapter,
 ): BrowserCaptureController {
   let current = { ...idleSnapshot };
-  let streams: MediaStreamLike[] = [];
+  let streams: BrowserAudioSource[] = [];
   let endingListeners = new Map<MediaTrackLike, () => void>();
   const listeners = new Set<(snapshot: BrowserCaptureSnapshot) => void>();
   let stopping = false;
@@ -89,7 +95,7 @@ export function createBrowserCaptureController(
 
   function releaseTracks(): void {
     const uniqueTracks = new Set<MediaTrackLike>();
-    streams.forEach((stream) => {
+    streams.forEach(({ stream }) => {
       stream.getTracks().forEach((track) => uniqueTracks.add(track));
     });
     detachEndingListeners();
@@ -128,6 +134,9 @@ export function createBrowserCaptureController(
   }
 
   return {
+    audioSources() {
+      return streams.map((item) => ({ ...item }));
+    },
     async prepare(selection) {
       if (!hasSource(selection)) {
         publish({
@@ -143,26 +152,26 @@ export function createBrowserCaptureController(
       }
 
       publish({ ...idleSnapshot, status: 'preparing' });
-      const acquiredStreams: MediaStreamLike[] = [];
+      const acquiredStreams: BrowserAudioSource[] = [];
       try {
         if (selection.microphone) {
           const microphone = await adapter.getUserMedia({
             audio: true,
             video: false,
           });
-          acquiredStreams.push(microphone);
+          acquiredStreams.push({ source: 'microphone', stream: microphone });
         }
         if (selection.displayAudio) {
           const display = await adapter.getDisplayMedia({
             audio: true,
             video: true,
           });
-          acquiredStreams.push(display);
+          acquiredStreams.push({ source: 'browser-tab', stream: display });
         }
 
-        const displayStream = selection.displayAudio
-          ? acquiredStreams.at(-1)
-          : undefined;
+        const displayStream = acquiredStreams.find(
+          (item) => item.source === 'browser-tab',
+        )?.stream;
         const displayAudioAvailable = selection.displayAudio
           ? (displayStream?.getAudioTracks().length ?? 0) > 0
           : null;
@@ -171,7 +180,7 @@ export function createBrowserCaptureController(
         if (displayAudioAvailable) activeSources.push('browser-tab');
 
         if (activeSources.length === 0) {
-          acquiredStreams.forEach((stream) =>
+          acquiredStreams.forEach(({ stream }) =>
             stream.getTracks().forEach((track) => track.stop()),
           );
           publish({
@@ -187,7 +196,7 @@ export function createBrowserCaptureController(
         }
 
         streams = acquiredStreams;
-        streams.forEach(listenForEnding);
+        streams.forEach(({ stream }) => listenForEnding(stream));
         return publish({
           activeSources,
           displayAudioAvailable,
@@ -196,7 +205,7 @@ export function createBrowserCaptureController(
           status: 'ready',
         });
       } catch (error) {
-        acquiredStreams.forEach((stream) =>
+        acquiredStreams.forEach(({ stream }) =>
           stream.getTracks().forEach((track) => track.stop()),
         );
         streams = [];

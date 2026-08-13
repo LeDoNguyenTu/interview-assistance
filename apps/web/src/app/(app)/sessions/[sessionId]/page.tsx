@@ -5,9 +5,17 @@ import {
   asSessionSql,
   getSessionForOwner,
 } from '../../../../data/sessions/repository';
+import {
+  asProviderCredentialSql,
+  listProviderCredentialSummaries,
+} from '../../../../data/provider-credentials/repository';
 import { requireUser } from '../../../../lib/auth/require-user-server';
 import { getNeonSql } from '../../../../lib/neon/database';
 import { LiveSessionScreen } from '../../../../features/live-session/components/live-session-screen';
+import {
+  asLiveSessionSql,
+  listLiveSessionSnapshot,
+} from '../../../../data/live-session/repository';
 
 export const metadata = { title: 'Session details' };
 export const dynamic = 'force-dynamic';
@@ -17,11 +25,12 @@ export default async function SessionDetailPage({
 }: Readonly<{ params: Promise<{ sessionId: string }> }>) {
   const claims = await requireUser();
   const { sessionId } = await params;
-  const session = await getSessionForOwner(
-    asSessionSql(getNeonSql()),
-    claims,
-    sessionId,
-  );
+  const sql = getNeonSql();
+  const [session, credentials, snapshot] = await Promise.all([
+    getSessionForOwner(asSessionSql(sql), claims, sessionId),
+    listProviderCredentialSummaries(asProviderCredentialSql(sql), claims),
+    listLiveSessionSnapshot(asLiveSessionSql(sql), claims, sessionId),
+  ]);
 
   if (!session) {
     notFound();
@@ -48,7 +57,13 @@ export default async function SessionDetailPage({
           {session.status}
         </span>
       </div>
-      <LiveSessionScreen session={session} />
+      <LiveSessionScreen
+        guidanceProviders={credentials.map((credential) => credential.provider)}
+        initialGuidance={snapshot.guidance}
+        initialNotes={snapshot.notes}
+        initialTranscript={snapshot.transcript}
+        session={session}
+      />
     </section>
   );
 }

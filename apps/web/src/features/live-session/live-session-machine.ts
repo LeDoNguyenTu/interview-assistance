@@ -4,8 +4,12 @@ export type LiveSessionStatus =
   'setup' | 'ready' | 'capturing' | 'interrupted' | 'finished' | 'failed';
 
 export type LiveTranscriptItem = {
+  confidence: number | null;
+  endMs: number;
   id: string;
+  sequence: number;
   speaker: 'Interviewer' | 'Participant';
+  startMs: number;
   text: string;
   timestamp: string;
   partial: boolean;
@@ -26,26 +30,32 @@ export type LiveSessionEvent =
   | { type: 'capture-stopped' }
   | { type: 'capture-interrupted' }
   | { message: string; type: 'capture-failed' }
+  | { item: LiveTranscriptItem; type: 'transcript-finalized' }
   | { body: string; type: 'add-note' };
 
 export function createLiveSessionState(
   session: SessionRecord,
+  initial?: { notes?: string[]; transcript?: LiveTranscriptItem[] },
 ): LiveSessionState {
   return {
     activeSources: [],
     error: null,
-    notes: [],
+    notes: initial?.notes ?? [],
     session,
     status: 'setup',
-    transcript: [],
+    transcript: initial?.transcript ?? [],
   };
 }
 
 function fixtureTranscript(sessionId: string): LiveTranscriptItem {
   return {
+    confidence: 0.98,
+    endMs: 4000,
     id: `${sessionId}-fixture-question-1`,
     partial: false,
+    sequence: 0,
     speaker: 'Interviewer',
+    startMs: 0,
     text: 'Tell me about a challenging project.',
     timestamp: '00:04',
   };
@@ -69,7 +79,8 @@ export function reduceLiveSession(
         error: null,
         status: 'capturing',
         transcript:
-          state.session.providerId === 'fixture'
+          state.session.providerId === 'fixture' &&
+          state.transcript.length === 0
             ? [fixtureTranscript(state.session.id)]
             : state.transcript,
       };
@@ -90,6 +101,10 @@ export function reduceLiveSession(
         error: event.message,
         status: 'failed',
       };
+    case 'transcript-finalized':
+      return state.transcript.some((item) => item.id === event.item.id)
+        ? state
+        : { ...state, transcript: [...state.transcript, event.item] };
     case 'add-note': {
       const note = event.body.trim();
       return note ? { ...state, notes: [...state.notes, note] } : state;

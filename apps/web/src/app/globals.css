@@ -21,7 +21,11 @@ a {
 
 .cl-app-shell {
   background:
-    radial-gradient(circle at 83% -8%, rgb(44 185 136 / 16%), transparent 31rem),
+    radial-gradient(
+      circle at 83% -8%,
+      rgb(44 185 136 / 16%),
+      transparent 31rem
+    ),
     radial-gradient(circle at 3% 72%, rgb(54 134 220 / 10%), transparent 26rem),
     var(--cl-color-background);
 }
@@ -36,4 +40,14 @@ a {
     linear-gradient(90deg, rgb(255 255 255 / 0.025) 1px, transparent 1px);
   background-size: 52px 52px;
   mask-image: linear-gradient(to bottom, black, transparent 88%);
+}
+
+.cl-full-bleed {
+  box-sizing: border-box;
+  left: 50%;
+  margin-left: -50dvw;
+  margin-right: -50dvw;
+  position: relative;
+  right: 50%;
+  width: 100dvw;
 }

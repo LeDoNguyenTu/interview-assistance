@@ -45,5 +45,8 @@ describe('DashboardPage', () => {
     expect(
       screen.getByText(/Capture only begins after you confirm consent/i),
     ).toBeTruthy();
+    expect(
+      screen.getByRole('heading', { level: 1 }).closest('section')?.className,
+    ).toContain('cl-full-bleed');
   });
 });

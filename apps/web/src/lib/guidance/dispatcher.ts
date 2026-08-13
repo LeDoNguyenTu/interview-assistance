@@ -6,6 +6,7 @@ export interface GuidanceInput {
   mode: 'coach' | 'defense' | 'interviewer';
   notes: string[];
   provider: Provider;
+  sessionId: string;
   title: string;
   transcript: Array<{
     speaker: 'Interviewer' | 'Participant';
@@ -65,6 +66,7 @@ function instructionsFor(mode: GuidanceInput['mode']): string {
 
 function validInput(input: GuidanceInput): boolean {
   const values = [
+    input.sessionId,
     input.title,
     ...input.notes,
     ...input.transcript.flatMap((item) => [

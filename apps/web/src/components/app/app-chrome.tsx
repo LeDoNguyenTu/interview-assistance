@@ -5,6 +5,8 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import type { ReactNode } from 'react';
 
+import { AppFooter } from './app-footer';
+
 const navigation = [
   { href: '/dashboard', label: 'Dashboard' },
   { href: '/sessions', label: 'Sessions' },
@@ -19,7 +21,7 @@ export function AppChrome({
   const currentPath = activePath ?? pathname;
 
   return (
-    <div className="cl-app-shell min-h-dvh overflow-x-clip bg-[var(--cl-color-background)] text-[var(--cl-color-foreground)]">
+    <div className="cl-app-shell flex min-h-dvh flex-col overflow-x-clip bg-[var(--cl-color-background)] text-[var(--cl-color-foreground)]">
       <a
         className="sr-only fixed left-4 top-4 z-[100] min-h-11 rounded-xl bg-[var(--cl-color-primary)] px-4 py-2 text-sm font-semibold text-[var(--cl-color-primary-foreground)] focus:not-sr-only focus:outline-none focus:ring-2 focus:ring-[var(--cl-color-ring)] focus:ring-offset-2 focus:ring-offset-[var(--cl-color-background)]"
         href="#app-content"
@@ -76,11 +78,12 @@ export function AppChrome({
         </div>
       </header>
       <main
-        className="relative mx-auto w-full max-w-[90rem] px-4 py-6 sm:px-6 sm:py-8 lg:px-8"
+        className="relative w-full flex-1 px-4 py-6 sm:px-6 sm:py-8 lg:px-8"
         id="app-content"
       >
         {children}
       </main>
+      <AppFooter />
     </div>
   );
 }

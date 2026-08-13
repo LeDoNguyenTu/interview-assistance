@@ -16,16 +16,34 @@ import {
 } from '../../capture/browser-capabilities';
 import type { CaptureSelection } from '../../capture/consent-machine';
 import { ConsentPanel } from '../../capture/components/consent-panel';
+import type { ConfigurableProvider } from '../../../data/provider-credentials/input';
 import {
   createLiveSessionState,
   reduceLiveSession,
   type LiveSessionState,
 } from '../live-session-machine';
+import { GuidanceCard } from './guidance-card';
+import {
+  createChunkedTranscriptionController,
+  type ChunkedTranscriptionController,
+} from '../chunked-transcription-controller';
 
 type LiveSessionScreenProps = {
   session: SessionRecord;
   capabilities?: BrowserCaptureCapabilities;
   createCaptureController?: () => BrowserCaptureController;
+  createTranscriptionController?: (
+    sessionId: string,
+    startingSequence: number,
+  ) => ChunkedTranscriptionController;
+  fetchImpl?: typeof fetch;
+  guidanceProviders?: readonly ConfigurableProvider[];
+  initialGuidance?: {
+    provider: ConfigurableProvider;
+    text: string;
+  } | null;
+  initialNotes?: string[];
+  initialTranscript?: LiveSessionState['transcript'];
 };
 
 function sourceLabel(source: 'microphone' | 'browser-tab'): string {
@@ -53,6 +71,13 @@ export function LiveSessionScreen({
   capabilities: suppliedCapabilities,
   createCaptureController = () =>
     createBrowserCaptureController(createNavigatorMediaAdapter()),
+  createTranscriptionController = (sessionId, startingSequence) =>
+    createChunkedTranscriptionController({ sessionId, startingSequence }),
+  fetchImpl = fetch,
+  guidanceProviders = [],
+  initialGuidance = null,
+  initialNotes = [],
+  initialTranscript = [],
   session,
 }: Readonly<LiveSessionScreenProps>) {
   const [capabilities, setCapabilities] = useState<BrowserCaptureCapabilities>(
@@ -64,9 +89,22 @@ export function LiveSessionScreen({
       secureContext: false,
     },
   );
-  const [state, setState] = useState(() => createLiveSessionState(session));
+  const [state, setState] = useState(() =>
+    createLiveSessionState(session, {
+      notes: initialNotes,
+      transcript: initialTranscript,
+    }),
+  );
   const [note, setNote] = useState('');
+  const [persistenceWarning, setPersistenceWarning] = useState<string | null>(
+    null,
+  );
   const controllerRef = useRef<BrowserCaptureController | null>(null);
+  const transcriptionControllerRef =
+    useRef<ChunkedTranscriptionController | null>(null);
+  const persistedTranscriptIdsRef = useRef(
+    new Set(initialTranscript.map((item) => item.id)),
+  );
   const unsubscribeRef = useRef<(() => void) | null>(null);
 
   useEffect(() => {
@@ -77,10 +115,46 @@ export function LiveSessionScreen({
   useEffect(
     () => () => {
       unsubscribeRef.current?.();
+      void transcriptionControllerRef.current?.stop();
       void controllerRef.current?.dispose();
     },
     [],
   );
+
+  useEffect(() => {
+    const pending = state.transcript.filter(
+      (item) =>
+        !item.partial && !persistedTranscriptIdsRef.current.has(item.id),
+    );
+    for (const item of pending) {
+      persistedTranscriptIdsRef.current.add(item.id);
+      void fetchImpl(`/api/sessions/${session.id}/events`, {
+        body: JSON.stringify({
+          confidence: item.confidence,
+          endMs: item.endMs,
+          id: item.id,
+          sequence: item.sequence,
+          speaker:
+            item.speaker === 'Interviewer' ? 'interviewer' : 'interviewee',
+          startMs: item.startMs,
+          text: item.text,
+          type: 'utterance',
+        }),
+        headers: { 'Content-Type': 'application/json' },
+        method: 'POST',
+      })
+        .then((response) => {
+          if (!response.ok) throw new Error('Unable to save transcript.');
+          setPersistenceWarning(null);
+        })
+        .catch(() => {
+          persistedTranscriptIdsRef.current.delete(item.id);
+          setPersistenceWarning(
+            'A transcript event could not be saved. Keep this page open and retry capture.',
+          );
+        });
+    }
+  }, [fetchImpl, session.id, state.transcript]);
 
   function transition(event: Parameters<typeof reduceLiveSession>[1]) {
     setState((current) => reduceLiveSession(current, event));
@@ -88,9 +162,15 @@ export function LiveSessionScreen({
 
   function handleControllerSnapshot(snapshot: BrowserCaptureSnapshot) {
     if (snapshot.status === 'interrupted') {
+      const transcriptionController = transcriptionControllerRef.current;
+      transcriptionControllerRef.current = null;
+      void transcriptionController?.stop();
       transition({ type: 'capture-interrupted' });
     }
     if (snapshot.status === 'failed') {
+      const transcriptionController = transcriptionControllerRef.current;
+      transcriptionControllerRef.current = null;
+      void transcriptionController?.stop();
       transition({
         message: 'Unable to prepare the selected browser sources.',
         type: 'capture-failed',
@@ -108,15 +188,51 @@ export function LiveSessionScreen({
   }
 
   async function prepareCapture(selection: CaptureSelection) {
+    const sources: Array<'microphone' | 'browser-tab'> = [];
+    if (selection.microphone) sources.push('microphone');
+    if (selection.displayAudio) sources.push('browser-tab');
+    const consentResponse = await fetchImpl(
+      `/api/sessions/${session.id}/events`,
+      {
+        body: JSON.stringify({ sources, type: 'consent' }),
+        headers: { 'Content-Type': 'application/json' },
+        method: 'POST',
+      },
+    );
+    if (!consentResponse.ok) {
+      throw new Error('Unable to record capture consent.');
+    }
     const snapshot = await getController().prepare(selection);
     transition({ sources: snapshot.activeSources, type: 'sources-prepared' });
   }
 
   async function startCapture() {
     try {
-      await getController().start();
+      const controller = getController();
+      await controller.start();
+      if (session.providerId !== 'fixture') {
+        const transcriptionController =
+          transcriptionControllerRef.current ??
+          createTranscriptionController(
+            session.id,
+            state.transcript.reduce(
+              (maximum, item) => Math.max(maximum, item.sequence + 1),
+              0,
+            ),
+          );
+        transcriptionControllerRef.current = transcriptionController;
+        transcriptionController.start(
+          controller.audioSources(),
+          (item) => transition({ item, type: 'transcript-finalized' }),
+          (message) => setPersistenceWarning(message),
+        );
+      }
       transition({ type: 'capture-started' });
     } catch {
+      const transcriptionController = transcriptionControllerRef.current;
+      transcriptionControllerRef.current = null;
+      await getController().stop('error');
+      await transcriptionController?.stop();
       transition({
         message:
           'Unable to start capture. Review the selected browser sources.',
@@ -126,13 +242,40 @@ export function LiveSessionScreen({
   }
 
   async function stopCapture() {
+    const transcriptionController = transcriptionControllerRef.current;
+    transcriptionControllerRef.current = null;
     await getController().stop('user');
+    await transcriptionController?.stop();
     transition({ type: 'capture-stopped' });
   }
 
   function addNote() {
-    transition({ body: note, type: 'add-note' });
+    const body = note.trim();
+    if (!body) return;
+    transition({ body, type: 'add-note' });
     setNote('');
+    const randomPart =
+      typeof crypto.randomUUID === 'function'
+        ? crypto.randomUUID()
+        : `${Date.now()}-${Math.random().toString(36).slice(2)}`;
+    void fetchImpl(`/api/sessions/${session.id}/events`, {
+      body: JSON.stringify({
+        body,
+        idempotencyKey: `note-${randomPart}`,
+        type: 'note',
+      }),
+      headers: { 'Content-Type': 'application/json' },
+      method: 'POST',
+    })
+      .then((response) => {
+        if (!response.ok) throw new Error('Unable to save note.');
+        setPersistenceWarning(null);
+      })
+      .catch(() =>
+        setPersistenceWarning(
+          'Your note is visible here but could not be saved. Copy it before leaving.',
+        ),
+      );
   }
 
   const currentQuestion = state.transcript.find(
@@ -145,10 +288,44 @@ export function LiveSessionScreen({
         aria-label="Live session workspace"
         className="mx-auto max-w-3xl rounded-[1.5rem] border border-white/10 bg-[#0a1d19]/90 p-6 shadow-[0_28px_100px_rgb(0_0_0_/_0.28%)] sm:p-8"
       >
+        {state.error ? (
+          <p
+            className="mb-5 rounded-xl border border-rose-200/15 bg-rose-400/10 px-4 py-3 text-sm text-[#ffd7dd]"
+            role="alert"
+          >
+            {state.error}
+          </p>
+        ) : null}
         <ConsentPanel
           capabilities={capabilities}
           onRequestCapture={prepareCapture}
         />
+        {guidanceProviders.length ? (
+          <div className="mt-6 flex flex-wrap gap-2 border-t border-white/10 pt-5">
+            {guidanceProviders.map((provider) => (
+              <span
+                className="inline-flex min-h-9 items-center rounded-full border border-emerald-200/15 bg-emerald-300/10 px-3 font-mono text-xs font-medium text-[#a7e5c8]"
+                key={provider}
+              >
+                {provider === 'openai' ? 'OpenAI' : 'Gemini'} guidance connected
+              </span>
+            ))}
+          </div>
+        ) : null}
+        {initialGuidance ? (
+          <div className="mt-6">
+            <GuidanceCard
+              fetchImpl={fetchImpl}
+              initialGuidance={initialGuidance}
+              mode={session.mode}
+              notes={state.notes}
+              providers={guidanceProviders}
+              sessionId={session.id}
+              title={session.title}
+              transcript={state.transcript}
+            />
+          </div>
+        ) : null}
       </section>
     );
   }
@@ -196,6 +373,15 @@ export function LiveSessionScreen({
         </p>
       ) : null}
 
+      {persistenceWarning ? (
+        <p
+          className="rounded-xl border border-amber-200/20 bg-amber-300/10 px-4 py-3 text-sm text-[#ffe2ac]"
+          role="alert"
+        >
+          {persistenceWarning}
+        </p>
+      ) : null}
+
       <div className="grid gap-5 xl:grid-cols-[minmax(0,1.15fr)_minmax(18rem,0.85fr)]">
         <div className="space-y-5">
           <article className="overflow-hidden rounded-[1.5rem] border border-white/10 bg-[#0a1d19]/90 p-6 shadow-[0_28px_100px_rgb(0_0_0_/_0.2%)]">
@@ -221,7 +407,7 @@ export function LiveSessionScreen({
             <p className="mt-5 text-sm leading-6 text-[#b9c9c4]">
               {session.providerId === 'fixture'
                 ? 'Fixture mode provides deterministic sample transcript while browser capture remains visible and user-controlled.'
-                : 'Your configured provider can generate human-review drafts from a visible transcript. Live transcription is not included yet.'}
+                : 'Audio is transcribed in short visible-capture segments using your configured provider. Final transcript events are saved to this session.'}
             </p>
           </article>
 
@@ -315,6 +501,17 @@ export function LiveSessionScreen({
               </ul>
             ) : null}
           </article>
+
+          <GuidanceCard
+            fetchImpl={fetchImpl}
+            initialGuidance={initialGuidance}
+            mode={session.mode}
+            notes={state.notes}
+            providers={guidanceProviders}
+            sessionId={session.id}
+            title={session.title}
+            transcript={state.transcript}
+          />
         </aside>
       </div>
     </section>

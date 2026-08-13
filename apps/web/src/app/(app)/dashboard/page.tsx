@@ -132,7 +132,7 @@ export default async function DashboardPage() {
   );
 
   return (
-    <section className="relative isolate -mx-4 -my-8 overflow-hidden bg-[#071b18] px-4 py-10 text-[#f5f9f7] sm:-mx-6 sm:px-6 sm:py-14 lg:-mx-8 lg:px-8">
+    <section className="cl-full-bleed relative isolate -my-8 overflow-hidden bg-[#071b18] px-4 py-10 text-[#f5f9f7] sm:px-6 sm:py-14 lg:px-8">
       <div
         className="pointer-events-none absolute inset-0 overflow-hidden"
         aria-hidden="true"

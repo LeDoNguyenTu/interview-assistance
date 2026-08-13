@@ -12,6 +12,7 @@ const input: GuidanceInput = {
   mode: 'interviewer',
   notes: ['Probe the trade-off behind the answer.'],
   provider: 'openai',
+  sessionId: 'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa',
   title: 'Product interview',
   transcript: [
     {

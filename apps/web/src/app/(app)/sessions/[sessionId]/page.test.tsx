@@ -21,6 +21,8 @@ const session: SessionRecord = {
 const dependencies = vi.hoisted(() => ({
   getNeonSql: vi.fn(),
   getSessionForOwner: vi.fn(),
+  listProviderCredentialSummaries: vi.fn(),
+  listLiveSessionSnapshot: vi.fn(),
   requireUser: vi.fn(),
 }));
 
@@ -35,6 +37,14 @@ vi.mock('../../../../lib/auth/require-user-server', () => ({
 vi.mock('../../../../lib/neon/database', () => ({
   getNeonSql: dependencies.getNeonSql,
 }));
+vi.mock('../../../../data/provider-credentials/repository', () => ({
+  asProviderCredentialSql: (sql: unknown) => sql,
+  listProviderCredentialSummaries: dependencies.listProviderCredentialSummaries,
+}));
+vi.mock('../../../../data/live-session/repository', () => ({
+  asLiveSessionSql: (sql: unknown) => sql,
+  listLiveSessionSnapshot: dependencies.listLiveSessionSnapshot,
+}));
 
 import SessionDetailPage from './page';
 
@@ -44,6 +54,22 @@ describe('SessionDetailPage', () => {
   it('mounts the visible live-session workspace for an owner-scoped session', async () => {
     dependencies.getNeonSql.mockReturnValue({});
     dependencies.getSessionForOwner.mockResolvedValue(session);
+    dependencies.listProviderCredentialSummaries.mockResolvedValue([
+      {
+        keyHint: '7890',
+        model: 'gpt-4.1-mini',
+        provider: 'openai',
+        updatedAt: '2026-08-14T00:00:00.000Z',
+      },
+    ]);
+    dependencies.listLiveSessionSnapshot.mockResolvedValue({
+      guidance: {
+        provider: 'openai',
+        text: 'Ask for one measurable result.',
+      },
+      notes: ['Follow up on scope.'],
+      transcript: [],
+    });
     dependencies.requireUser.mockResolvedValue({ sub: 'owner-1' });
 
     render(
@@ -54,5 +80,7 @@ describe('SessionDetailPage', () => {
 
     expect(screen.getByLabelText('Live session workspace')).toBeTruthy();
     expect(screen.getByText('Select audio sources.')).toBeTruthy();
+    expect(screen.getByText('OpenAI guidance connected')).toBeTruthy();
+    expect(screen.getByText('Ask for one measurable result.')).toBeTruthy();
   });
 });

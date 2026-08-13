@@ -39,6 +39,10 @@ describe('BrowserCaptureController', () => {
     });
 
     await controller.prepare({ displayAudio: true, microphone: true });
+    expect(controller.audioSources().map((item) => item.source)).toEqual([
+      'microphone',
+      'browser-tab',
+    ]);
     await controller.start();
     await controller.stop('user');
 

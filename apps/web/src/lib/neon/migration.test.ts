@@ -11,6 +11,10 @@ const providerCredentialsMigrationPath = resolve(
   process.cwd(),
   '../../database/migrations/202608122_provider_credentials.sql',
 );
+const liveSessionMigrationPath = resolve(
+  process.cwd(),
+  '../../database/migrations/202608123_live_session_events.sql',
+);
 
 describe('Neon session migration', () => {
   it('defines an owner-scoped sessions table without a Supabase auth dependency', () => {
@@ -33,5 +37,20 @@ describe('Neon session migration', () => {
     expect(migration).toContain("provider in ('openai', 'gemini')");
     expect(migration).toContain('encrypted_api_key text not null');
     expect(migration).not.toContain('auth.users');
+  });
+
+  it('defines durable transcript, question, note, and guidance records', () => {
+    const migration = readFileSync(liveSessionMigrationPath, 'utf8');
+
+    expect(migration).toContain('create table if not exists public.utterances');
+    expect(migration).toContain('create table if not exists public.questions');
+    expect(migration).toContain(
+      'create table if not exists public.session_notes',
+    );
+    expect(migration).toContain(
+      'create table if not exists public.guidance_events',
+    );
+    expect(migration).toContain('unique (session_id, sequence)');
+    expect(migration).toContain('unique (session_id, idempotency_key)');
   });
 });

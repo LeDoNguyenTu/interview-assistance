@@ -1,7 +1,16 @@
 import { NextResponse } from 'next/server';
+import { createHash } from 'node:crypto';
 
+import {
+  asLiveSessionSql,
+  saveGuidanceEvent,
+} from '../../../data/live-session/repository';
 import { asProviderCredentialSql } from '../../../data/provider-credentials/repository';
 import { resolveProviderRuntimeEnvironment } from '../../../data/provider-credentials/runtime';
+import {
+  asSessionSql,
+  getSessionForOwner,
+} from '../../../data/sessions/repository';
 import { getAuthenticatedUser } from '../../../lib/auth/neon-auth';
 import {
   GuidanceDispatcherError,
@@ -32,18 +41,49 @@ export async function POST(request: Request) {
   }
 
   try {
+    const sql = getNeonSql();
+    const session = await getSessionForOwner(
+      asSessionSql(sql),
+      claims,
+      input.sessionId,
+    );
+    if (!session) {
+      return NextResponse.json(
+        { error: 'The session is not available.' },
+        { headers: noStore, status: 404 },
+      );
+    }
+    const guidanceInput: GuidanceInput = {
+      ...input,
+      mode: session.mode,
+      title: session.title,
+    };
     const environment = await resolveProviderRuntimeEnvironment(
-      asProviderCredentialSql(getNeonSql()),
+      asProviderCredentialSql(sql),
       claims,
       input.provider,
       process.env,
     );
-    return NextResponse.json(
-      await generateGuidance(input, { env: environment, fetchImpl: fetch }),
+    const result = await generateGuidance(guidanceInput, {
+      env: environment,
+      fetchImpl: fetch,
+    });
+    const idempotencyKey = createHash('sha256')
+      .update(JSON.stringify(guidanceInput))
+      .digest('hex');
+    const saved = await saveGuidanceEvent(
+      asLiveSessionSql(sql),
+      claims,
+      session.id,
       {
-        headers: noStore,
+        idempotencyKey,
+        provider: result.provider,
+        text: result.text,
       },
     );
+    if (!saved) throw new Error('Unable to save guidance.');
+
+    return NextResponse.json(result, { headers: noStore });
   } catch (error) {
     const status =
       error instanceof GuidanceDispatcherError && error.code === 'invalid_input'
