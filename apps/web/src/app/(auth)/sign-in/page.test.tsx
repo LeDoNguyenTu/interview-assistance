@@ -30,4 +30,12 @@ describe('SignInPage', () => {
       'We could not complete authentication. Please try again.',
     );
   });
+
+  it('confirms successful email verification before sign-in', () => {
+    render(<SignInErrorAlert error={undefined} verified="1" />);
+
+    expect(screen.getByRole('status').textContent).toBe(
+      'Email verified. Sign in to open your workspace.',
+    );
+  });
 });

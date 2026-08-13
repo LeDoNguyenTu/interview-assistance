@@ -2,12 +2,8 @@
 
 import { redirect } from 'next/navigation';
 
+import type { AuthActionState } from '../../../components/auth/auth-action-state';
 import { getNeonAuth } from '../../../lib/auth/neon-auth';
-
-type AuthFormState = {
-  message: string | null;
-  status: 'error' | 'success' | 'idle';
-};
 
 function readCredentials(formData: FormData) {
   const email = formData.get('email');
@@ -22,13 +18,13 @@ function readCredentials(formData: FormData) {
     return null;
   }
 
-  return { email: email.trim(), password };
+  return { email: email.trim().toLowerCase(), password };
 }
 
 export async function signIn(
-  _: AuthFormState,
+  _: AuthActionState,
   formData: FormData,
-): Promise<AuthFormState> {
+): Promise<AuthActionState> {
   const credentials = readCredentials(formData);
   if (!credentials) {
     return {
@@ -50,9 +46,9 @@ export async function signIn(
 }
 
 export async function signUp(
-  _: AuthFormState,
+  _: AuthActionState,
   formData: FormData,
-): Promise<AuthFormState> {
+): Promise<AuthActionState> {
   const credentials = readCredentials(formData);
   if (!credentials) {
     return {
@@ -73,8 +69,5 @@ export async function signUp(
     };
   }
 
-  return {
-    message: 'If an account can be created, check your email to continue.',
-    status: 'success',
-  };
+  redirect(`/verify-email?email=${encodeURIComponent(credentials.email)}`);
 }

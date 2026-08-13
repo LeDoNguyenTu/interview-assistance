@@ -17,8 +17,10 @@ export const metadata = {
 
 export default async function SignInPage({
   searchParams,
-}: Readonly<{ searchParams: Promise<{ error?: string }> }>) {
-  const { error } = await searchParams;
+}: Readonly<{
+  searchParams: Promise<{ error?: string; verified?: string }>;
+}>) {
+  const { error, verified } = await searchParams;
 
   return (
     <PublicShell actionHref="/sign-up" actionLabel="Create account">
@@ -76,7 +78,7 @@ export default async function SignInPage({
               </CardDescription>
             </CardHeader>
             <CardContent className="p-7 sm:p-8">
-              <SignInErrorAlert error={error} />
+              <SignInErrorAlert error={error} verified={verified} />
               <AuthForm action={signIn} mode="sign-in" />
             </CardContent>
           </Card>

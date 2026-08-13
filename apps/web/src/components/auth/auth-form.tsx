@@ -4,22 +4,23 @@ import { Button, Input, Label } from '@candorlens/ui';
 import Link from 'next/link';
 import { useActionState } from 'react';
 
-type AuthFormState = {
-  message: string | null;
-  status: 'error' | 'success' | 'idle';
-};
-
-const initialAuthFormState: AuthFormState = { message: null, status: 'idle' };
+import {
+  initialAuthActionState,
+  type AuthActionState,
+} from './auth-action-state';
 
 type AuthFormProps = {
-  action: (state: AuthFormState, formData: FormData) => Promise<AuthFormState>;
+  action: (
+    state: AuthActionState,
+    formData: FormData,
+  ) => Promise<AuthActionState>;
   mode: 'sign-in' | 'sign-up';
 };
 
 export function AuthForm({ action, mode }: AuthFormProps) {
   const [state, formAction, isPending] = useActionState(
     action,
-    initialAuthFormState,
+    initialAuthActionState,
   );
   const isSignIn = mode === 'sign-in';
 
