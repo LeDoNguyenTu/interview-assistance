@@ -151,6 +151,28 @@ describe('session repository', () => {
     });
   });
 
+  it('creates an enabled live-provider draft without recording consent or capture start', async () => {
+    const database = new MemorySessionDatabase();
+
+    const created = await createDraftSession(
+      database.sql,
+      owner,
+      {
+        mode: 'coach',
+        providerId: 'openai',
+        title: 'OpenAI practice',
+      },
+      ['fixture', 'openai'],
+    );
+
+    expect(created).toMatchObject({
+      providerId: 'openai',
+      status: 'draft',
+      title: 'OpenAI practice',
+    });
+    expect(database.rows[0]?.provider).toBe('openai');
+  });
+
   it('lists only the validated owner sessions with the newest first', async () => {
     const database = new MemorySessionDatabase([
       sessionRow({

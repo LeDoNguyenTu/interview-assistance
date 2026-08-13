@@ -3,6 +3,8 @@
 import { Button, Input, Label } from '@candorlens/ui';
 import { useActionState } from 'react';
 
+import type { ProviderAvailability } from '../../config/provider-types';
+
 export type SessionFormState = {
   message: string | null;
   status: 'error' | 'idle';
@@ -15,9 +17,10 @@ type SessionFormProps = {
     state: SessionFormState,
     formData: FormData,
   ) => Promise<SessionFormState>;
+  providers: readonly ProviderAvailability[];
 };
 
-export function SessionForm({ action }: SessionFormProps) {
+export function SessionForm({ action, providers }: SessionFormProps) {
   const [state, formAction, isPending] = useActionState(action, initialState);
 
   return (
@@ -47,15 +50,27 @@ export function SessionForm({ action }: SessionFormProps) {
       </div>
       <div className="space-y-2">
         <Label htmlFor="provider">Provider</Label>
-        <Input
+        <select
+          className="min-h-11 w-full rounded-[var(--cl-radius-control)] border border-[var(--cl-color-border)] bg-[var(--cl-color-surface)] px-4 py-2 text-sm text-[var(--cl-color-foreground)] shadow-[var(--cl-shadow-control)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--cl-color-ring)] focus-visible:ring-offset-2"
+          defaultValue={providers.find((provider) => provider.available)?.id}
           id="provider"
           name="provider"
-          readOnly
-          value="Fixture provider"
-        />
+        >
+          {providers.map((provider) => (
+            <option
+              disabled={!provider.available}
+              key={provider.id}
+              value={provider.id}
+            >
+              {provider.label}
+            </option>
+          ))}
+        </select>
         <p className="text-sm leading-6 text-[var(--cl-color-muted-foreground)]">
-          Fixture provider is used for this foundation workspace. No live
-          provider traffic will start.
+          {providers
+            .filter((provider) => !provider.available && provider.reason)
+            .map((provider) => provider.reason)
+            .join(' ')}
         </p>
       </div>
       <p

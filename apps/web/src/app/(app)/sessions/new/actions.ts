@@ -9,6 +9,10 @@ import {
 } from '../../../../data/sessions/repository';
 import { requireUser } from '../../../../lib/auth/require-user-server';
 import { getNeonSql } from '../../../../lib/neon/database';
+import {
+  getEnabledProviderIds,
+  getProviderAvailability,
+} from '../../../../config/providers';
 import type { SessionFormState } from '../../../../components/sessions/session-form';
 
 export async function createSession(
@@ -18,6 +22,7 @@ export async function createSession(
   const claims = await requireUser();
   const title = formData.get('title');
   const mode = formData.get('mode');
+  const providerId = formData.get('provider');
   let sessionId: string;
 
   try {
@@ -26,9 +31,10 @@ export async function createSession(
       claims,
       {
         mode,
-        providerId: 'fixture',
+        providerId,
         title,
       },
+      getEnabledProviderIds(getProviderAvailability(process.env)),
     );
     sessionId = session.id;
   } catch (error) {

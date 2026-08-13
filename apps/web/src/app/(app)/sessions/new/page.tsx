@@ -8,11 +8,13 @@ import {
 import Link from 'next/link';
 
 import { SessionForm } from '../../../../components/sessions/session-form';
+import { getProviderAvailability } from '../../../../config/providers';
 import { createSession } from './actions';
 
 export const metadata = { title: 'Create session' };
 
 export default function NewSessionPage() {
+  const providers = getProviderAvailability(process.env);
   return (
     <section className="py-8 sm:py-12">
       <Link
@@ -30,7 +32,7 @@ export default function NewSessionPage() {
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <SessionForm action={createSession} />
+          <SessionForm action={createSession} providers={providers} />
         </CardContent>
       </Card>
     </section>

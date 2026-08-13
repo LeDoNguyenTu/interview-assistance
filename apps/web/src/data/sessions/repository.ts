@@ -1,4 +1,4 @@
-import type { Database, SessionRecord } from '@candorlens/core';
+import type { Database, ProviderId, SessionRecord } from '@candorlens/core';
 import type { NeonSql } from '../../lib/neon/database';
 
 type SessionRow = Database['public']['Tables']['sessions']['Row'];
@@ -33,7 +33,10 @@ export class SessionInputError extends Error {
   }
 }
 
-function parseDraftSessionInput(input: unknown) {
+function parseDraftSessionInput(
+  input: unknown,
+  enabledProviderIds: readonly ProviderId[],
+) {
   if (typeof input !== 'object' || input === null) {
     throw new SessionInputError('Enter valid session details.');
   }
@@ -54,12 +57,16 @@ function parseDraftSessionInput(input: unknown) {
   if (!sessionModes.includes(candidate.mode as (typeof sessionModes)[number])) {
     throw new SessionInputError('Choose a valid interview mode.');
   }
-  if (candidate.providerId !== 'fixture') {
-    throw new SessionInputError('Draft sessions use the fixture provider.');
+  if (!providerIds.includes(candidate.providerId as ProviderId)) {
+    throw new SessionInputError('Choose a valid provider.');
+  }
+  if (!enabledProviderIds.includes(candidate.providerId as ProviderId)) {
+    throw new SessionInputError('The selected provider is not available.');
   }
 
-  return { mode: candidate.mode, title } as {
+  return { mode: candidate.mode, providerId: candidate.providerId, title } as {
     mode: SessionRow['mode'];
+    providerId: ProviderId;
     title: string;
   };
 }
@@ -93,8 +100,9 @@ export async function createDraftSession(
   sql: SessionSql,
   owner: ValidatedOwner,
   input: unknown,
+  enabledProviderIds: readonly ProviderId[] = ['fixture'],
 ): Promise<SessionRecord> {
-  const result = parseDraftSessionInput(input);
+  const result = parseDraftSessionInput(input, enabledProviderIds);
 
   const [row] = await sql`
     insert into public.sessions (
@@ -111,7 +119,7 @@ export async function createDraftSession(
       ${owner.sub},
       ${result.mode},
       ${'web'},
-      ${'fixture'},
+      ${result.providerId},
       ${'draft'},
       ${[]},
       ${false},
