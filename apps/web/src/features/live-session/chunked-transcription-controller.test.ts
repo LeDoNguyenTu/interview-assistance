@@ -46,7 +46,7 @@ describe('chunked transcription controller', () => {
       now: vi.fn().mockReturnValueOnce(1_000).mockReturnValue(7_000),
       randomId: () => 'segment-1',
       scheduleEvery: (callback, milliseconds) => {
-        expect(milliseconds).toBe(6_000);
+        expect(milliseconds).toBe(3_000);
         rotate = callback;
         return vi.fn();
       },
@@ -106,5 +106,116 @@ describe('chunked transcription controller', () => {
 
     expect(recorder.start).toHaveBeenCalledOnce();
     expect(fetchImpl).not.toHaveBeenCalled();
+  });
+
+  it('uploads microphone and browser segments on independent queues', async () => {
+    const listeners = new Map<BrowserAudioSource['source'], EventListener>();
+    const sourceOrder: BrowserAudioSource['source'][] = [
+      'microphone',
+      'browser-tab',
+    ];
+    const responses: Array<(response: Response) => void> = [];
+    const fetchImpl = vi.fn(
+      () =>
+        new Promise<Response>((resolve) => {
+          responses.push(resolve);
+        }),
+    );
+    let recorderIndex = 0;
+    const controller = createChunkedTranscriptionController({
+      fetchImpl,
+      mediaRecorderFactory: () => {
+        const sourceKind = sourceOrder[recorderIndex++]!;
+        return {
+          addEventListener: vi.fn(
+            (type: string, listener: EventListenerOrEventListenerObject) => {
+              if (type === 'dataavailable' && typeof listener === 'function') {
+                listeners.set(sourceKind, listener);
+              }
+            },
+          ),
+          mimeType: 'audio/webm',
+          start: vi.fn(),
+          state: 'recording',
+          stop: vi.fn(),
+        };
+      },
+      scheduleEvery: () => vi.fn(),
+      sessionId: 'session-1',
+    });
+
+    controller.start(
+      [source('microphone'), source('browser-tab')],
+      vi.fn(),
+      vi.fn(),
+    );
+    listeners.get('microphone')?.({
+      data: new Blob(['microphone'], { type: 'audio/webm' }),
+    } as unknown as Event);
+    listeners.get('browser-tab')?.({
+      data: new Blob(['browser'], { type: 'audio/webm' }),
+    } as unknown as Event);
+
+    await vi.waitFor(() => expect(fetchImpl).toHaveBeenCalledTimes(2));
+    responses.forEach((resolve, index) =>
+      resolve(
+        new Response(JSON.stringify({ text: `segment ${index + 1}` }), {
+          status: 200,
+        }),
+      ),
+    );
+    await controller.flush();
+  });
+
+  it('bounds the pending queue for a slow source', async () => {
+    let dataListener: EventListener | undefined;
+    const responses: Array<(response: Response) => void> = [];
+    const fetchImpl = vi.fn(
+      () =>
+        new Promise<Response>((resolve) => {
+          responses.push(resolve);
+        }),
+    );
+    const onError = vi.fn();
+    const controller = createChunkedTranscriptionController({
+      fetchImpl,
+      maxPendingSegmentsPerSource: 2,
+      mediaRecorderFactory: () => ({
+        addEventListener: vi.fn(
+          (type: string, listener: EventListenerOrEventListenerObject) => {
+            if (type === 'dataavailable' && typeof listener === 'function') {
+              dataListener = listener;
+            }
+          },
+        ),
+        mimeType: 'audio/webm',
+        start: vi.fn(),
+        state: 'recording',
+        stop: vi.fn(),
+      }),
+      scheduleEvery: () => vi.fn(),
+      sessionId: 'session-1',
+    });
+
+    controller.start([source('microphone')], vi.fn(), onError);
+    for (let index = 0; index < 3; index += 1) {
+      dataListener?.({
+        data: new Blob([`audio-${index}`], { type: 'audio/webm' }),
+      } as unknown as Event);
+    }
+
+    await vi.waitFor(() => expect(fetchImpl).toHaveBeenCalledOnce());
+    expect(onError).toHaveBeenCalledWith(
+      'Transcription is falling behind. One audio segment was skipped to keep the live session responsive.',
+    );
+    responses.shift()?.(
+      new Response(JSON.stringify({ text: 'first' }), { status: 200 }),
+    );
+    await vi.waitFor(() => expect(fetchImpl).toHaveBeenCalledTimes(2));
+    responses.shift()?.(
+      new Response(JSON.stringify({ text: 'second' }), { status: 200 }),
+    );
+    await controller.flush();
+    expect(fetchImpl).toHaveBeenCalledTimes(2);
   });
 });

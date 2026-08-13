@@ -59,4 +59,30 @@ describe('live session state', () => {
     });
     expect(state.transcript).toHaveLength(1);
   });
+
+  it('keeps parallel transcription results ordered by capture sequence', () => {
+    let state = createLiveSessionState(session);
+    const item = (sequence: number) => ({
+      confidence: null,
+      endMs: sequence * 3_000 + 3_000,
+      id: `segment-${sequence}`,
+      partial: false as const,
+      sequence,
+      speaker: 'Participant' as const,
+      startMs: sequence * 3_000,
+      text: `Segment ${sequence}`,
+      timestamp: `00:0${sequence}`,
+    });
+
+    state = reduceLiveSession(state, {
+      item: item(2),
+      type: 'transcript-finalized',
+    });
+    state = reduceLiveSession(state, {
+      item: item(1),
+      type: 'transcript-finalized',
+    });
+
+    expect(state.transcript.map((entry) => entry.sequence)).toEqual([1, 2]);
+  });
 });

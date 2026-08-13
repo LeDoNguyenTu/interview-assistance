@@ -104,7 +104,12 @@ export function reduceLiveSession(
     case 'transcript-finalized':
       return state.transcript.some((item) => item.id === event.item.id)
         ? state
-        : { ...state, transcript: [...state.transcript, event.item] };
+        : {
+            ...state,
+            transcript: [...state.transcript, event.item].sort(
+              (left, right) => left.sequence - right.sequence,
+            ),
+          };
     case 'add-note': {
       const note = event.body.trim();
       return note ? { ...state, notes: [...state.notes, note] } : state;

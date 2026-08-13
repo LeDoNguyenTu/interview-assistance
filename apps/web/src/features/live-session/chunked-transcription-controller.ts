@@ -14,7 +14,9 @@ type RecorderLike = {
 };
 
 type Dependencies = {
+  chunkDurationMs: number;
   fetchImpl: typeof fetch;
+  maxPendingSegmentsPerSource: number;
   mediaRecorderFactory: (stream: unknown) => RecorderLike;
   now: () => number;
   randomId: () => string;
@@ -62,6 +64,14 @@ export function createChunkedTranscriptionController(
   dependencies: Partial<Dependencies> & Pick<Dependencies, 'sessionId'>,
 ): ChunkedTranscriptionController {
   const fetchImpl = dependencies.fetchImpl ?? fetch;
+  const chunkDurationMs = Math.max(
+    1_000,
+    dependencies.chunkDurationMs ?? 3_000,
+  );
+  const maxPendingSegmentsPerSource = Math.max(
+    1,
+    dependencies.maxPendingSegmentsPerSource ?? 4,
+  );
   const mediaRecorderFactory =
     dependencies.mediaRecorderFactory ?? defaultRecorder;
   const now = dependencies.now ?? Date.now;
@@ -73,7 +83,9 @@ export function createChunkedTranscriptionController(
     BrowserAudioSource['stream']
   >();
   const activeRequests = new Set<AbortController>();
-  let queue = Promise.resolve();
+  const queues = new Map<BrowserAudioSource['source'], Promise<void>>();
+  const pendingCounts = new Map<BrowserAudioSource['source'], number>();
+  const backpressureWarnings = new Set<BrowserAudioSource['source']>();
   let sequence = dependencies.startingSequence ?? 0;
   let cancelRotation: (() => void) | null = null;
   let captureStartedAt = 0;
@@ -88,68 +100,95 @@ export function createChunkedTranscriptionController(
     onTranscript: (item: LiveTranscriptItem) => void,
     onError: (message: string) => void,
   ) {
-    if (blob.size < 1) return;
-    const queuedGeneration = generation;
-    queue = queue.then(async () => {
-      if (!running || queuedGeneration !== generation) return;
-      try {
-        const requestController = new AbortController();
-        activeRequests.add(requestController);
-        const requestTimeout = globalThis.setTimeout(
-          () => requestController.abort(),
-          20_000,
-        );
-        const form = new FormData();
-        form.set('audio', blob, 'live-segment.webm');
-        let response: Response;
-        try {
-          response = await fetchImpl(
-            `/api/sessions/${dependencies.sessionId}/transcribe`,
-            {
-              body: form,
-              method: 'POST',
-              signal: requestController.signal,
-            },
-          );
-        } finally {
-          globalThis.clearTimeout(requestTimeout);
-          activeRequests.delete(requestController);
-        }
-        const payload = (await response.json()) as {
-          error?: unknown;
-          text?: unknown;
-        };
-        if (!response.ok || typeof payload.text !== 'string') {
-          throw new Error();
-        }
-        const text = payload.text.trim();
-        if (!text) return;
-        onTranscript({
-          confidence: null,
-          endMs,
-          id: randomId(),
-          partial: false,
-          sequence: sequence++,
-          speaker: source === 'browser-tab' ? 'Interviewer' : 'Participant',
-          startMs,
-          text,
-          timestamp: timestamp(startMs),
-        });
-      } catch {
-        if (!running || queuedGeneration !== generation) return;
+    if (blob.size < 1 || !running) return;
+    const pendingCount = pendingCounts.get(source) ?? 0;
+    if (pendingCount >= maxPendingSegmentsPerSource) {
+      if (!backpressureWarnings.has(source)) {
+        backpressureWarnings.add(source);
         onError(
-          'A live audio segment could not be transcribed. Capture remains visible and active.',
+          'Transcription is falling behind. One audio segment was skipped to keep the live session responsive.',
         );
       }
-    });
+      return;
+    }
+
+    const queuedGeneration = generation;
+    const itemSequence = sequence++;
+    pendingCounts.set(source, pendingCount + 1);
+    const previousQueue = queues.get(source) ?? Promise.resolve();
+    const nextQueue = previousQueue
+      .then(async () => {
+        if (!running || queuedGeneration !== generation) return;
+        try {
+          const requestController = new AbortController();
+          activeRequests.add(requestController);
+          const requestTimeout = globalThis.setTimeout(
+            () => requestController.abort(),
+            20_000,
+          );
+          const form = new FormData();
+          form.set('audio', blob, 'live-segment.webm');
+          let response: Response;
+          try {
+            response = await fetchImpl(
+              `/api/sessions/${dependencies.sessionId}/transcribe`,
+              {
+                body: form,
+                method: 'POST',
+                signal: requestController.signal,
+              },
+            );
+          } finally {
+            globalThis.clearTimeout(requestTimeout);
+            activeRequests.delete(requestController);
+          }
+          const payload = (await response.json()) as {
+            error?: unknown;
+            text?: unknown;
+          };
+          if (!response.ok || typeof payload.text !== 'string') {
+            throw new Error();
+          }
+          const text = payload.text.trim();
+          if (!text) return;
+          onTranscript({
+            confidence: null,
+            endMs,
+            id: randomId(),
+            partial: false,
+            sequence: itemSequence,
+            speaker: source === 'browser-tab' ? 'Interviewer' : 'Participant',
+            startMs,
+            text,
+            timestamp: timestamp(startMs),
+          });
+        } catch {
+          if (!running || queuedGeneration !== generation) return;
+          onError(
+            'A live audio segment could not be transcribed. Capture remains visible and active.',
+          );
+        }
+      })
+      .finally(() => {
+        pendingCounts.set(
+          source,
+          Math.max(0, (pendingCounts.get(source) ?? 1) - 1),
+        );
+      });
+    queues.set(source, nextQueue);
   }
 
   return {
-    flush: () => queue,
+    flush: async () => {
+      await Promise.all(queues.values());
+    },
     start(sources, onTranscript, onError) {
       if (running) return;
       running = true;
       generation += 1;
+      queues.clear();
+      pendingCounts.clear();
+      backpressureWarnings.clear();
       captureStartedAt = now();
       const beginSegment = (
         source: BrowserAudioSource['source'],
@@ -184,7 +223,7 @@ export function createChunkedTranscriptionController(
           if (recorder?.state !== 'inactive') recorder?.stop();
           beginSegment(source, stream);
         });
-      }, 6_000);
+      }, chunkDurationMs);
     },
     async stop() {
       running = false;
@@ -205,7 +244,7 @@ export function createChunkedTranscriptionController(
       );
       activeRecorders.clear();
       await Promise.all(stopped);
-      await queue;
+      await Promise.all(queues.values());
     },
   };
 }
