@@ -44,14 +44,20 @@ export function SessionForm({ action, providers }: SessionFormProps) {
           Interview mode
         </Label>
         <select
-          className="min-h-12 w-full rounded-[var(--cl-radius-control)] border border-white/15 bg-black/15 px-4 py-2 text-sm text-white outline-none transition-[border-color,box-shadow] duration-150 focus-visible:border-[var(--cl-color-ring)] focus-visible:ring-2 focus-visible:ring-[var(--cl-color-ring)] focus-visible:ring-offset-2 focus-visible:ring-offset-[#0a1d19]"
+          className="min-h-12 w-full cursor-pointer rounded-[var(--cl-radius-control)] border border-white/20 bg-[#10231e] px-4 py-2 text-base font-medium text-[#f3fbf7] [color-scheme:dark] outline-none transition-[border-color,box-shadow,background-color] duration-200 hover:border-[#75d9b0]/60 hover:bg-[#142b25] focus-visible:border-[#75d9b0] focus-visible:ring-2 focus-visible:ring-[#75d9b0] focus-visible:ring-offset-2 focus-visible:ring-offset-[#0a1d19]"
           defaultValue="coach"
           id="mode"
           name="mode"
         >
-          <option value="coach">Coach</option>
-          <option value="interviewer">Interviewer</option>
-          <option value="defense">Defense</option>
+          <option className="bg-[#10231e] text-[#f3fbf7]" value="coach">
+            Coach
+          </option>
+          <option className="bg-[#10231e] text-[#f3fbf7]" value="interviewer">
+            Interviewer
+          </option>
+          <option className="bg-[#10231e] text-[#f3fbf7]" value="defense">
+            Defense
+          </option>
         </select>
       </div>
       <div className="space-y-2">
@@ -62,13 +68,14 @@ export function SessionForm({ action, providers }: SessionFormProps) {
           Provider
         </Label>
         <select
-          className="min-h-12 w-full rounded-[var(--cl-radius-control)] border border-white/15 bg-black/15 px-4 py-2 text-sm text-white outline-none transition-[border-color,box-shadow] duration-150 focus-visible:border-[var(--cl-color-ring)] focus-visible:ring-2 focus-visible:ring-[var(--cl-color-ring)] focus-visible:ring-offset-2 focus-visible:ring-offset-[#0a1d19]"
+          className="min-h-12 w-full cursor-pointer rounded-[var(--cl-radius-control)] border border-white/20 bg-[#10231e] px-4 py-2 text-base font-medium text-[#f3fbf7] [color-scheme:dark] outline-none transition-[border-color,box-shadow,background-color] duration-200 hover:border-[#75d9b0]/60 hover:bg-[#142b25] focus-visible:border-[#75d9b0] focus-visible:ring-2 focus-visible:ring-[#75d9b0] focus-visible:ring-offset-2 focus-visible:ring-offset-[#0a1d19]"
           defaultValue={providers.find((provider) => provider.available)?.id}
           id="provider"
           name="provider"
         >
           {providers.map((provider) => (
             <option
+              className="bg-[#10231e] text-[#f3fbf7] disabled:text-[#8ca399]"
               disabled={!provider.available}
               key={provider.id}
               value={provider.id}
