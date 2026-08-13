@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-labelledby="title desc">
+  <title id="title">CandorLens</title>
+  <desc id="desc">Two conversational ribbons form an open passage for clearer dialogue.</desc>
+  <rect width="64" height="64" rx="14" fill="#061310"/>
+  <g aria-hidden="true">
+    <path d="M10 7C7.8 6.3 6 8 6 10.5V38.5C6 42.1 8.9 45 12.5 45H16L12 56L30 47V21L36 16Z" fill="#F5F9F7"/>
+    <path d="M54 11C56.2 10.3 58 12 58 14.5V42.5C58 46.1 55.1 49 51.5 49H48L52 60L34 51V25L28 20Z" fill="#67CFA8"/>
+  </g>
+</svg>
