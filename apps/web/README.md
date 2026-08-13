@@ -20,3 +20,5 @@ corepack pnpm typecheck
 corepack pnpm lint
 corepack pnpm build
 ```
+
+Production publishing is handled by the linked Vercel Git deployment after a verified push to `main`.
