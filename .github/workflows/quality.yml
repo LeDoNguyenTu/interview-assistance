@@ -2,11 +2,15 @@ name: Quality
 
 on:
   pull_request:
+    paths-ignore:
+      - '**/*.md'
   push:
     branches:
       - main
       - feature/**
       - fix/**
+    paths-ignore:
+      - '**/*.md'
 
 permissions:
   contents: read
