@@ -24,13 +24,13 @@ describe('getProviderAvailability', () => {
         available: false,
         id: 'openai',
         label: 'OpenAI',
-        reason: 'Configure a server-side OpenAI provider to enable it.',
+        reason: 'Add an OpenAI key in Settings to enable it.',
       },
       {
         available: false,
         id: 'gemini',
         label: 'Gemini',
-        reason: 'Configure a server-side Gemini provider to enable it.',
+        reason: 'Add a Gemini key in Settings to enable it.',
       },
     ]);
     expect(JSON.stringify(providers)).not.toMatch(/api[_-]?key|model/i);
@@ -44,11 +44,27 @@ describe('getProviderAvailability', () => {
       OPENAI_TEXT_MODEL: undefined,
     });
 
-    expect(providers.find((provider) => provider.id === 'gemini')).toMatchObject(
-      { available: true, reason: null },
+    expect(
+      providers.find((provider) => provider.id === 'gemini'),
+    ).toMatchObject({ available: true, reason: null });
+    expect(
+      providers.find((provider) => provider.id === 'openai'),
+    ).toMatchObject({ available: false });
+  });
+
+  it('makes a provider available for the current user when a saved credential exists', () => {
+    const providers = getProviderAvailability(
+      {
+        GEMINI_API_KEY: undefined,
+        GEMINI_TEXT_MODEL: undefined,
+        OPENAI_API_KEY: undefined,
+        OPENAI_TEXT_MODEL: undefined,
+      },
+      ['openai'],
     );
-    expect(providers.find((provider) => provider.id === 'openai')).toMatchObject(
-      { available: false },
-    );
+
+    expect(
+      providers.find((provider) => provider.id === 'openai'),
+    ).toMatchObject({ available: true, reason: null });
   });
 });

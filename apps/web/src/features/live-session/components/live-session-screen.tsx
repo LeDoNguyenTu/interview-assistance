@@ -221,7 +221,7 @@ export function LiveSessionScreen({
             <p className="mt-5 text-sm leading-6 text-[#b9c9c4]">
               {session.providerId === 'fixture'
                 ? 'Fixture mode provides deterministic sample transcript while browser capture remains visible and user-controlled.'
-                : 'Provider setup is selected for this session. Live transcription activates only after its server-side runtime is configured.'}
+                : 'Your configured provider can generate human-review drafts from a visible transcript. Live transcription is not included yet.'}
             </p>
           </article>
 

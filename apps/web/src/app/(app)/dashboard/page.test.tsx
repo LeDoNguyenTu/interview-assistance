@@ -29,6 +29,12 @@ describe('DashboardPage', () => {
       expect.stringContaining('/sessions/new'),
     );
     expect(newSession.className).toContain('text-white');
+    const createSession = screen.getByRole('link', {
+      name: 'Create a session',
+    });
+
+    expect(createSession.className).toContain('bg-[#149c75]');
+    expect(createSession.className).toContain('text-white');
     expect(
       screen.getByLabelText('Session activity visualization'),
     ).toBeTruthy();

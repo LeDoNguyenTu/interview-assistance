@@ -261,7 +261,7 @@ export default async function DashboardPage() {
               through the consented session flow.
             </p>
             <Link
-              className="mt-8 inline-flex min-h-11 items-center gap-2 rounded-xl bg-white px-4 py-2 text-sm font-bold text-[#0d362e] transition-[transform,box-shadow] duration-[var(--cl-duration-normal)] hover:-translate-y-0.5 hover:shadow-xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-[#164d40]"
+              className="mt-8 inline-flex min-h-11 items-center gap-2 rounded-xl bg-[#149c75] px-4 py-2 text-sm font-bold text-white shadow-[0_14px_34px_rgb(20_156_117_/_28%)] transition-[transform,box-shadow,background-color] duration-[var(--cl-duration-normal)] hover:-translate-y-0.5 hover:bg-[#1bb184] hover:shadow-[0_18px_42px_rgb(20_156_117_/_38%)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#c5f9dc] focus-visible:ring-offset-2 focus-visible:ring-offset-[#164d40]"
               href="/sessions/new"
             >
               Create a session

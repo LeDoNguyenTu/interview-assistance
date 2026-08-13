@@ -3,6 +3,7 @@ import 'server-only';
 import type { ProviderId } from '@candorlens/core';
 
 import type { ProviderAvailability } from './provider-types.js';
+import type { ConfigurableProvider } from '../data/provider-credentials/input.js';
 
 type ProviderEnvironment = Readonly<Record<string, string | undefined>>;
 
@@ -12,7 +13,17 @@ function configured(...values: Array<string | undefined>): boolean {
 
 export function getProviderAvailability(
   environment: ProviderEnvironment,
+  savedProviders: readonly ConfigurableProvider[] = [],
 ): ProviderAvailability[] {
+  const hasSavedOpenAi = savedProviders.includes('openai');
+  const hasSavedGemini = savedProviders.includes('gemini');
+  const openAiAvailable =
+    hasSavedOpenAi ||
+    configured(environment.OPENAI_API_KEY, environment.OPENAI_TEXT_MODEL);
+  const geminiAvailable =
+    hasSavedGemini ||
+    configured(environment.GEMINI_API_KEY, environment.GEMINI_TEXT_MODEL);
+
   return [
     {
       available: true,
@@ -21,32 +32,20 @@ export function getProviderAvailability(
       reason: null,
     },
     {
-      available: configured(
-        environment.OPENAI_API_KEY,
-        environment.OPENAI_TEXT_MODEL,
-      ),
+      available: openAiAvailable,
       id: 'openai',
       label: 'OpenAI',
-      reason: configured(
-        environment.OPENAI_API_KEY,
-        environment.OPENAI_TEXT_MODEL,
-      )
+      reason: openAiAvailable
         ? null
-        : 'Configure a server-side OpenAI provider to enable it.',
+        : 'Add an OpenAI key in Settings to enable it.',
     },
     {
-      available: configured(
-        environment.GEMINI_API_KEY,
-        environment.GEMINI_TEXT_MODEL,
-      ),
+      available: geminiAvailable,
       id: 'gemini',
       label: 'Gemini',
-      reason: configured(
-        environment.GEMINI_API_KEY,
-        environment.GEMINI_TEXT_MODEL,
-      )
+      reason: geminiAvailable
         ? null
-        : 'Configure a server-side Gemini provider to enable it.',
+        : 'Add a Gemini key in Settings to enable it.',
     },
   ];
 }

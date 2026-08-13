@@ -4,8 +4,10 @@ vi.mock('server-only', () => ({}));
 
 const dependencies = vi.hoisted(() => ({
   asSessionSql: vi.fn((sql) => sql),
+  asProviderCredentialSql: vi.fn((sql) => sql),
   createDraftSession: vi.fn(),
   getNeonSql: vi.fn(),
+  listProviderCredentialSummaries: vi.fn(),
   redirect: vi.fn((path: string): never => {
     throw new Error(`NEXT_REDIRECT:${path}`);
   }),
@@ -23,6 +25,10 @@ vi.mock('../../../../lib/auth/require-user-server', () => ({
 }));
 vi.mock('../../../../lib/neon/database', () => ({
   getNeonSql: dependencies.getNeonSql,
+}));
+vi.mock('../../../../data/provider-credentials/repository', () => ({
+  asProviderCredentialSql: dependencies.asProviderCredentialSql,
+  listProviderCredentialSummaries: dependencies.listProviderCredentialSummaries,
 }));
 
 import { createSession } from './actions.js';
@@ -43,6 +49,7 @@ describe('createSession', () => {
       sub: '11111111-1111-1111-1111-111111111111',
     });
     dependencies.getNeonSql.mockReturnValue({});
+    dependencies.listProviderCredentialSummaries.mockResolvedValue([]);
     dependencies.redirect.mockImplementation((path: string): never => {
       throw new Error(`NEXT_REDIRECT:${path}`);
     });
@@ -71,5 +78,28 @@ describe('createSession', () => {
       message: 'We could not create this draft. Please try again.',
       status: 'error',
     });
+  });
+
+  it('allows the owner to select a provider they configured in Settings', async () => {
+    dependencies.createDraftSession.mockResolvedValue({
+      id: 'bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb',
+    });
+    dependencies.listProviderCredentialSummaries.mockResolvedValue([
+      { provider: 'openai' },
+    ]);
+    const formData = sessionFormData();
+    formData.set('provider', 'openai');
+
+    await expect(createSession(initialState, formData)).rejects.toThrow(
+      'NEXT_REDIRECT:/sessions/bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb',
+    );
+
+    expect(dependencies.listProviderCredentialSummaries).toHaveBeenCalled();
+    expect(dependencies.createDraftSession).toHaveBeenCalledWith(
+      expect.anything(),
+      expect.objectContaining({ sub: '11111111-1111-1111-1111-111111111111' }),
+      expect.objectContaining({ providerId: 'openai' }),
+      expect.arrayContaining(['fixture', 'openai']),
+    );
   });
 });

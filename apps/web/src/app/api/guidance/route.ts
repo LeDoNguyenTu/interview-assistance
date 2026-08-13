@@ -1,11 +1,14 @@
 import { NextResponse } from 'next/server';
 
+import { asProviderCredentialSql } from '../../../data/provider-credentials/repository';
+import { resolveProviderRuntimeEnvironment } from '../../../data/provider-credentials/runtime';
 import { getAuthenticatedUser } from '../../../lib/auth/neon-auth';
 import {
   GuidanceDispatcherError,
   generateGuidance,
   type GuidanceInput,
 } from '../../../lib/guidance/dispatcher';
+import { getNeonSql } from '../../../lib/neon/database';
 
 const noStore = { 'Cache-Control': 'no-store' };
 
@@ -29,9 +32,18 @@ export async function POST(request: Request) {
   }
 
   try {
-    return NextResponse.json(await generateGuidance(input), {
-      headers: noStore,
-    });
+    const environment = await resolveProviderRuntimeEnvironment(
+      asProviderCredentialSql(getNeonSql()),
+      claims,
+      input.provider,
+      process.env,
+    );
+    return NextResponse.json(
+      await generateGuidance(input, { env: environment, fetchImpl: fetch }),
+      {
+        headers: noStore,
+      },
+    );
   } catch (error) {
     const status =
       error instanceof GuidanceDispatcherError && error.code === 'invalid_input'

@@ -7,6 +7,10 @@ const migrationPath = resolve(
   process.cwd(),
   '../../database/migrations/202608121_neon_sessions.sql',
 );
+const providerCredentialsMigrationPath = resolve(
+  process.cwd(),
+  '../../database/migrations/202608122_provider_credentials.sql',
+);
 
 describe('Neon session migration', () => {
   it('defines an owner-scoped sessions table without a Supabase auth dependency', () => {
@@ -17,5 +21,17 @@ describe('Neon session migration', () => {
     expect(migration).toContain('sessions_user_id_created_at_idx');
     expect(migration).not.toContain('auth.users');
     expect(migration).not.toContain('storage.objects');
+  });
+
+  it('defines owner-scoped encrypted provider credentials', () => {
+    const migration = readFileSync(providerCredentialsMigrationPath, 'utf8');
+
+    expect(migration).toContain(
+      'create table if not exists public.provider_credentials',
+    );
+    expect(migration).toContain('user_id text not null');
+    expect(migration).toContain("provider in ('openai', 'gemini')");
+    expect(migration).toContain('encrypted_api_key text not null');
+    expect(migration).not.toContain('auth.users');
   });
 });

@@ -1,7 +1,23 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
 
+const dependencies = vi.hoisted(() => ({
+  asProviderCredentialSql: vi.fn((sql) => sql),
+  getNeonSql: vi.fn(() => 'neon-sql'),
+  resolveProviderRuntimeEnvironment: vi.fn().mockResolvedValue(process.env),
+}));
+
 vi.mock('../../../lib/auth/neon-auth.js', () => ({
   getAuthenticatedUser: vi.fn().mockResolvedValue({ sub: 'owner-1' }),
+}));
+vi.mock('../../../data/provider-credentials/repository.js', () => ({
+  asProviderCredentialSql: dependencies.asProviderCredentialSql,
+}));
+vi.mock('../../../data/provider-credentials/runtime.js', () => ({
+  resolveProviderRuntimeEnvironment:
+    dependencies.resolveProviderRuntimeEnvironment,
+}));
+vi.mock('../../../lib/neon/database.js', () => ({
+  getNeonSql: dependencies.getNeonSql,
 }));
 vi.mock('../../../lib/guidance/dispatcher.js', () => ({
   GuidanceDispatcherError: class GuidanceDispatcherError extends Error {},
@@ -16,6 +32,7 @@ import { getAuthenticatedUser } from '../../../lib/auth/neon-auth';
 
 afterEach(() => {
   vi.mocked(getAuthenticatedUser).mockResolvedValue({ sub: 'owner-1' });
+  dependencies.resolveProviderRuntimeEnvironment.mockResolvedValue(process.env);
 });
 
 const payload = {
@@ -59,6 +76,12 @@ describe('POST /api/guidance', () => {
 
     expect(response.status).toBe(200);
     expect(response.headers.get('Cache-Control')).toBe('no-store');
+    expect(dependencies.resolveProviderRuntimeEnvironment).toHaveBeenCalledWith(
+      'neon-sql',
+      { sub: 'owner-1' },
+      'openai',
+      process.env,
+    );
     await expect(response.json()).resolves.toEqual({
       provider: 'openai',
       text: 'Ask how they measured the trade-off.',

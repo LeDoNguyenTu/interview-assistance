@@ -2,12 +2,26 @@ import Link from 'next/link';
 
 import { SessionForm } from '../../../../components/sessions/session-form';
 import { getProviderAvailability } from '../../../../config/providers';
+import {
+  asProviderCredentialSql,
+  listProviderCredentialSummaries,
+} from '../../../../data/provider-credentials/repository';
+import { requireUser } from '../../../../lib/auth/require-user-server';
+import { getNeonSql } from '../../../../lib/neon/database';
 import { createSession } from './actions';
 
 export const metadata = { title: 'Create session' };
 
-export default function NewSessionPage() {
-  const providers = getProviderAvailability(process.env);
+export default async function NewSessionPage() {
+  const claims = await requireUser();
+  const credentials = await listProviderCredentialSummaries(
+    asProviderCredentialSql(getNeonSql()),
+    claims,
+  );
+  const providers = getProviderAvailability(
+    process.env,
+    credentials.map((credential) => credential.provider),
+  );
   return (
     <section className="relative isolate py-4 sm:py-6">
       <div className="pointer-events-none absolute -right-24 top-8 -z-10 size-80 rounded-full bg-[#2f89d8]/10 blur-3xl" />

@@ -7,6 +7,10 @@ import {
   asSessionSql,
   createDraftSession,
 } from '../../../../data/sessions/repository';
+import {
+  asProviderCredentialSql,
+  listProviderCredentialSummaries,
+} from '../../../../data/provider-credentials/repository';
 import { requireUser } from '../../../../lib/auth/require-user-server';
 import { getNeonSql } from '../../../../lib/neon/database';
 import {
@@ -26,15 +30,25 @@ export async function createSession(
   let sessionId: string;
 
   try {
+    const sql = getNeonSql();
+    const credentials = await listProviderCredentialSummaries(
+      asProviderCredentialSql(sql),
+      claims,
+    );
     const session = await createDraftSession(
-      asSessionSql(getNeonSql()),
+      asSessionSql(sql),
       claims,
       {
         mode,
         providerId,
         title,
       },
-      getEnabledProviderIds(getProviderAvailability(process.env)),
+      getEnabledProviderIds(
+        getProviderAvailability(
+          process.env,
+          credentials.map((credential) => credential.provider),
+        ),
+      ),
     );
     sessionId = session.id;
   } catch (error) {
