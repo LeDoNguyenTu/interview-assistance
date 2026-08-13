@@ -27,5 +27,12 @@
     "active": true,
     "icon": ["icons/icon.ico"],
     "targets": "all"
+  },
+  "plugins": {
+    "deep-link": {
+      "desktop": {
+        "schemes": ["candorlens"]
+      }
+    }
   }
 }

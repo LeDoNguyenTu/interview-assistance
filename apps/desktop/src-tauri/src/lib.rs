@@ -1,7 +1,27 @@
 pub mod commands;
+pub mod platform;
+pub mod security;
+
+use tauri::Manager;
 
 pub fn run() {
     tauri::Builder::default()
+        .plugin(tauri_plugin_single_instance::init(
+            |app, _arguments, _cwd| {
+                if let Some(window) = app.get_webview_window("main") {
+                    let _ = window.show();
+                    let _ = window.set_focus();
+                }
+            },
+        ))
+        .plugin(tauri_plugin_deep_link::init())
+        .plugin(tauri_plugin_opener::init())
+        .setup(|app| {
+            let salt_path = app.path().app_local_data_dir()?.join("stronghold-salt");
+            app.handle()
+                .plugin(tauri_plugin_stronghold::Builder::with_argon2(&salt_path).build())?;
+            Ok(())
+        })
         .invoke_handler(tauri::generate_handler![commands::runtime::runtime_info])
         .run(tauri::generate_context!())
         .expect("failed to run CandorLens desktop");
