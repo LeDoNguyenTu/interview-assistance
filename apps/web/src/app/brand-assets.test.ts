@@ -12,21 +12,24 @@ const publicLogoPath = resolve(
   process.cwd(),
   'public/assets/brand/logo-horizontal.svg',
 );
-const layoutPath = resolve(process.cwd(), 'src/app/layout.tsx');
+const appChromePath = resolve(
+  process.cwd(),
+  'src/components/app/app-chrome.tsx',
+);
 
 describe('brand assets', () => {
-  it('serves the approved horizontal SVG from the root layout', () => {
+  it('serves the approved horizontal SVG from the signed-in app shell', () => {
     const approvedLogo = readFileSync(approvedLogoPath);
     const publicLogo = readFileSync(publicLogoPath);
     const parsedSvg = new DOMParser().parseFromString(
       publicLogo.toString('utf8'),
       'image/svg+xml',
     );
-    const layout = readFileSync(layoutPath, 'utf8');
+    const appChrome = readFileSync(appChromePath, 'utf8');
 
     expect(parsedSvg.querySelector('parsererror')).toBeNull();
     expect(parsedSvg.documentElement.localName).toBe('svg');
     expect(publicLogo.equals(approvedLogo)).toBe(true);
-    expect(layout).toContain('src="/assets/brand/logo-horizontal.svg"');
+    expect(appChrome).toContain('src="/assets/brand/logo-horizontal.svg"');
   });
 });

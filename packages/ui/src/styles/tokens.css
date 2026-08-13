@@ -11,29 +11,29 @@
 }
 
 :root {
-  --cl-color-ink: #171717;
-  --cl-color-deep-forest: #101010;
-  --cl-color-action-forest: #10a37f;
-  --cl-color-action-forest-dark: #0d8c6d;
-  --cl-color-warm-mint: #67cfa8;
-  --cl-color-mint-surface: #ddf5eb;
-  --cl-color-canvas: #f7f7f5;
+  --cl-color-ink: #f7fbf9;
+  --cl-color-deep-forest: #f7fbf9;
+  --cl-color-action-forest: #16a879;
+  --cl-color-action-forest-dark: #0e875f;
+  --cl-color-warm-mint: #9aedc8;
+  --cl-color-mint-surface: #123c31;
+  --cl-color-canvas: #061310;
   --cl-color-white: #ffffff;
-  --cl-color-muted-surface: #f0f0ed;
-  --cl-color-border-base: #deded8;
-  --cl-color-muted-text: #5f5f5a;
-  --cl-color-destructive-base: #dc2626;
-  --cl-color-destructive-hover-base: #b91c1c;
-  --cl-color-status-success-base: #176b45;
-  --cl-color-status-success-surface-base: #def7e9;
-  --cl-color-status-warning-base: #8a4b08;
-  --cl-color-status-warning-surface-base: #fff2d5;
-  --cl-color-danger-foreground-base: #991b1b;
-  --cl-color-danger-surface-base: #fff1f2;
+  --cl-color-muted-surface: #0c211d;
+  --cl-color-border-base: #23423a;
+  --cl-color-muted-text: #aec2ba;
+  --cl-color-destructive-base: #e65168;
+  --cl-color-destructive-hover-base: #f16d81;
+  --cl-color-status-success-base: #9aedc8;
+  --cl-color-status-success-surface-base: #123c31;
+  --cl-color-status-warning-base: #ffd08a;
+  --cl-color-status-warning-surface-base: #4b3214;
+  --cl-color-danger-foreground-base: #ffd7dd;
+  --cl-color-danger-surface-base: #4d202a;
 
   --cl-color-background: var(--cl-color-canvas);
   --cl-color-foreground: var(--cl-color-ink);
-  --cl-color-surface: var(--cl-color-white);
+  --cl-color-surface: #0b1b17;
   --cl-color-muted: var(--cl-color-muted-surface);
   --cl-color-muted-foreground: var(--cl-color-muted-text);
   --cl-color-primary: var(--cl-color-action-forest);
@@ -42,7 +42,7 @@
   --cl-color-accent: var(--cl-color-mint-surface);
   --cl-color-accent-foreground: var(--cl-color-deep-forest);
   --cl-color-border: var(--cl-color-border-base);
-  --cl-color-ring: var(--cl-color-action-forest);
+  --cl-color-ring: #8ff2c6;
   --cl-color-destructive: var(--cl-color-destructive-base);
   --cl-color-destructive-hover: var(--cl-color-destructive-hover-base);
   --cl-color-on-destructive: var(--cl-color-white);
@@ -56,12 +56,10 @@
   );
   --cl-color-danger-foreground: var(--cl-color-danger-foreground-base);
   --cl-color-danger-surface: var(--cl-color-danger-surface-base);
-  --cl-color-overlay: rgb(9 31 26 / 56%);
+  --cl-color-overlay: rgb(2 12 9 / 72%);
 
-  --cl-font-sans:
-    ui-sans-serif, -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica,
-    Arial, sans-serif;
-  --cl-font-mono: 'Fira Code', Consolas, monospace;
+  --cl-font-sans: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
+  --cl-font-mono: var(--font-geist-mono), ui-monospace, monospace;
   /* Layout spacing is deliberately limited to strict 8px increments. */
   --cl-space-8: 0.5rem;
   --cl-space-16: 1rem;

@@ -95,6 +95,9 @@ importers:
       '@neondatabase/serverless':
         specifier: 1.0.2
         version: 1.0.2
+      geist:
+        specifier: 1.7.0
+        version: 1.7.0(next@16.3.0(@types/node@24.10.0)(react-dom@19.2.8(react@19.2.8))(react@19.2.8))
       next:
         specifier: 16.3.0
         version: 16.3.0(@types/node@24.10.0)(react-dom@19.2.8(react@19.2.8))(react@19.2.8)
@@ -3238,6 +3241,14 @@ packages:
       }
     engines: { node: ^8.16.0 || ^10.6.0 || >=11.0.0 }
     os: [darwin]
+
+  geist@1.7.0:
+    resolution:
+      {
+        integrity: sha512-ZaoiZwkSf0DwwB1ncdLKp+ggAldqxl5L1+SXaNIBGkPAqcu+xjVJLxlf3/S8vLt9UHx1xu5fz3lbzKCj5iOVdQ==,
+      }
+    peerDependencies:
+      next: '>=13.2.0'
 
   get-nonce@1.0.1:
     resolution:
@@ -6482,6 +6493,10 @@ snapshots:
 
   fsevents@2.3.3:
     optional: true
+
+  geist@1.7.0(next@16.3.0(@types/node@24.10.0)(react-dom@19.2.8(react@19.2.8))(react@19.2.8)):
+    dependencies:
+      next: 16.3.0(@types/node@24.10.0)(react-dom@19.2.8(react@19.2.8))(react@19.2.8)
 
   get-nonce@1.0.1: {}
 
